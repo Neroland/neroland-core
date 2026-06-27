@@ -5,6 +5,7 @@ plugins {
     id 'net.minecraftforge.gradle'
     id 'net.minecraftforge.jarjar'
     id 'eclipse'
+    id 'maven-publish'
 }
 
 // MC version comes from the Stonecutter node (e.g. :forge:26.1.2), not a global property.
@@ -24,6 +25,21 @@ def forgeMajor = forgeBuild.split('\\.')[0]
 
 // Distinct, descriptive jar name per cell.
 base { archivesName = "nerolandcore-forge-${mc}" }
+
+// Publish this cell's jar to Maven Local (~/.m2) so sibling Nero mods (e.g. Nerospace) can declare
+// Core a dependency in dev: `za.co.neroland.nerolandcore:nerolandcore-forge-<mc>:<version>`.
+// Dependency-free POM on purpose — the consumer already resolves Minecraft + Forge itself.
+// `./gradlew publishToMavenLocal` installs all six cells.
+publishing {
+    publications {
+        register('mod', MavenPublication) {
+            groupId = rootProject.mod_group_id
+            artifactId = "nerolandcore-forge-${mc}"
+            version = rootProject.mod_version
+            artifact tasks.named('jar')
+        }
+    }
+}
 
 // Enable Forge's Jar-in-Jar task for embedded Sentry, mirroring Fabric include and NeoForge JarJar.
 jarJar.register()
