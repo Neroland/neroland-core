@@ -13,13 +13,13 @@
 
 ## Phase 1 — Registry & platform-seam plumbing
 
-- [ ] Define the ServiceLoader platform-seam pattern and a `Services` loader helper in `common/` **(seam)**
-- [ ] Cross-loader registration helper (register blocks/items/block-entities/creative tabs) **(seam)**
-- [ ] Creative-tab registration helper so downstream mods append into shared tabs **(api)**
-- [ ] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)**
-- [ ] Event-bus seam for economic/reputation/progression change events **(seam)**
-- [ ] Wire each loader entry point (`NerolandCoreFabric/Forge/NeoForge`) through `NerolandCoreCommon.init()`
-- [ ] Keep `common/` free of `net.neoforged.*` / `net.fabricmc.*` / `net.minecraftforge.*` imports (verify)
+- [x] Define the ServiceLoader platform-seam pattern and a `Services` loader helper in `common/` **(seam)** — `platform/Services.java` + `platform/IPlatformHelper.java`, with `Fabric/Forge/NeoForgePlatformHelper` impls + service files
+- [x] Cross-loader registration helper (register blocks/items/block-entities/creative tabs) **(seam)** — `registry/RegistrationProvider.java` + `Fabric/Forge/NeoForgeRegistrationFactory`
+- [x] Creative-tab registration helper so downstream mods append into shared tabs **(api)** — `registry/CoreCreativeTab.java` (shared "Neroland" tab + `add(Supplier)` API)
+- [ ] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)** — deferred: built in Phase 3 with the first concrete sync payload (config), then reused by gates + currency/reputation
+- [ ] Event-bus seam for economic/reputation/progression change events **(seam)** — deferred: built in Phase 4/5 alongside the first change events it carries
+- [x] Wire each loader entry point (`NerolandCoreFabric/Forge/NeoForge`) through `NerolandCoreCommon.init()` — NeoForge/Forge also attach the DeferredRegisters via `registerAll(...)`
+- [x] Keep `common/` free of `net.neoforged.*` / `net.fabricmc.*` / `net.minecraftforge.*` imports (verify) — grep clean (only javadoc references)
 
 ## Phase 2 — Materials, tags & datapack hooks
 
