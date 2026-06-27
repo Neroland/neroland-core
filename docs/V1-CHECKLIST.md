@@ -70,14 +70,14 @@
 
 ## Phase 6 — Machine / power / upgrade framework
 
-- [ ] Base machine block-entity downstream mods extend **(api)**
-- [ ] Neroland energy unit power type **(api)**
-- [ ] Bridges to common Forge/Fabric energy systems **(seam)**
-- [ ] Config-driven energy conversion ratios (rough parity with Mekanism/FE)
-- [ ] Upgrade-module system: typed slots, stackable modules, declared effects **(api)**
-- [ ] Modifier resolution math with configurable caps
-- [ ] Common upgrade-module serialization (so modules survive NeroLogistics transit later)
-- [ ] Document how Nerotech/NeroPower extend the framework
+- [x] Base machine block-entity downstream mods extend **(api)** — `AbstractMachineBlockEntity` (energy + upgrades + save/load + tick hook)
+- [x] Neroland energy unit power type **(api)** — `NeroEnergyStorage` contract + `EnergyBuffer` impl
+- [x] Bridges to common Forge/Fabric energy systems **(seam)** — `EnergyLookup` + Core-owned `nerolandcore:energy` capability/lookup per loader (NeoForge `BlockCapability`, Fabric `BlockApiLookup`, Forge `Capability`); external-FE-lib bridge deferred until those port to 26.x
+- [x] Config-driven energy conversion ratios (rough parity with FE) — `EnergyConversions` over `neroEnergyToForgeEnergyRatio`
+- [x] Upgrade-module system: typed slots, stackable modules, declared effects **(api)** — `UpgradeType` + `UpgradeContainer` (host-supplied classifier)
+- [x] Modifier resolution math with configurable caps — `UpgradeModifiers` (diminishing curve via `upgradeStackingDiminish`, slot cap via `upgradeModuleSlotCap`, per-effect caps)
+- [x] Common upgrade-module serialization (so modules survive NeroLogistics transit later) — `UpgradeContainer.save/load` via `ItemStack.OPTIONAL_CODEC`
+- [x] Document how Nerotech/NeroPower extend the framework — `docs/MACHINES-POWER-UPGRADES.md`
 
 ## Phase 7 — Compliance, freeze & release
 
