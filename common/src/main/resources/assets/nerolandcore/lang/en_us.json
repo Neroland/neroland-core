@@ -1,6 +1,8 @@
 {
   "itemGroup.nerolandcore": "Neroland",
 
+  "currency.nerolandcore.credits": "Credits",
+
   "block.nerolandcore.nero_alloy_block": "Block of Nero Alloy",
   "item.nerolandcore.nero_alloy_block": "Block of Nero Alloy",
   "block.nerolandcore.starsteel_block": "Block of Starsteel",
