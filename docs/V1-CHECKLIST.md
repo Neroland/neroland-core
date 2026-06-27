@@ -17,7 +17,7 @@
 - [x] Cross-loader registration helper (register blocks/items/block-entities/creative tabs) **(seam)** — `registry/RegistrationProvider.java` + `Fabric/Forge/NeoForgeRegistrationFactory`
 - [x] Creative-tab registration helper so downstream mods append into shared tabs **(api)** — `registry/CoreCreativeTab.java` (shared "Neroland" tab + `add(Supplier)` API)
 - [x] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)** — delivered in Phase 3: `NetworkPlatform` + `CoreNetwork` payload registry + 3 loader impls; reused by gates + currency/reputation later
-- [ ] Event-bus seam for economic/reputation/progression change events **(seam)** — deferred: built in Phase 4/5 alongside the first change events it carries
+- [x] Event-bus seam for economic/reputation/progression change events **(seam)** — `event/CoreEvents` (one entry point) over `GateEvents` + `CurrencyEvents` + `ReputationEvents`
 - [x] Wire each loader entry point (`NerolandCoreFabric/Forge/NeoForge`) through `NerolandCoreCommon.init()` — NeoForge/Forge also attach the DeferredRegisters via `registerAll(...)`
 - [x] Keep `common/` free of `net.neoforged.*` / `net.fabricmc.*` / `net.minecraftforge.*` imports (verify) — grep clean (only javadoc references)
 
@@ -60,44 +60,45 @@
 
 ## Phase 5 — Currency & reputation APIs
 
-- [ ] Currency API: read/modify player balance, **named-currency** support from day one **(api)**
-- [ ] Reputation API: query/adjust player↔faction reputation **(api)**
-- [ ] Change events for both, subscribable by any mod **(api)**
-- [ ] Confirm Core **stores nothing** — contracts only (NeroEconomy/NeroFactions implement storage)
-- [ ] Reference no-op / in-memory impl for testing without downstream mods
-- [ ] Document the provider contract for NeroEconomy and NeroFactions
+- [x] Currency API: read/modify player balance, **named-currency** support from day one **(api)** — `CurrencyApi` + `Currency` + `CoreCurrencies.CREDITS`
+- [x] Reputation API: query/adjust player↔faction reputation **(api)** — `ReputationApi`
+- [x] Change events for both, subscribable by any mod **(api)** — `CurrencyEvents` / `ReputationEvents`
+- [x] Confirm Core **stores nothing** — contracts only (NeroEconomy/NeroFactions implement storage); facades only delegate
+- [x] Reference no-op / in-memory impl for testing without downstream mods — `InMemoryCurrencyProvider` / `InMemoryReputationProvider` (replaced on `setProvider`)
+- [x] Document the provider contract for NeroEconomy and NeroFactions — `docs/ECONOMY-REPUTATION.md`
+- [x] POPIA/GDPR per-player erasure hook on both providers — `forgetPlayer(UUID)`
 
 ## Phase 6 — Machine / power / upgrade framework
 
-- [ ] Base machine block-entity downstream mods extend **(api)**
-- [ ] Neroland energy unit power type **(api)**
-- [ ] Bridges to common Forge/Fabric energy systems **(seam)**
-- [ ] Config-driven energy conversion ratios (rough parity with Mekanism/FE)
-- [ ] Upgrade-module system: typed slots, stackable modules, declared effects **(api)**
-- [ ] Modifier resolution math with configurable caps
-- [ ] Common upgrade-module serialization (so modules survive NeroLogistics transit later)
-- [ ] Document how Nerotech/NeroPower extend the framework
+- [x] Base machine block-entity downstream mods extend **(api)** — `AbstractMachineBlockEntity` (energy + upgrades + save/load + tick hook)
+- [x] Neroland energy unit power type **(api)** — `NeroEnergyStorage` contract + `EnergyBuffer` impl
+- [x] Bridges to common Forge/Fabric energy systems **(seam)** — `EnergyLookup` + Core-owned `nerolandcore:energy` capability/lookup per loader (NeoForge `BlockCapability`, Fabric `BlockApiLookup`, Forge `Capability`); external-FE-lib bridge deferred until those port to 26.x
+- [x] Config-driven energy conversion ratios (rough parity with FE) — `EnergyConversions` over `neroEnergyToForgeEnergyRatio`
+- [x] Upgrade-module system: typed slots, stackable modules, declared effects **(api)** — `UpgradeType` + `UpgradeContainer` (host-supplied classifier)
+- [x] Modifier resolution math with configurable caps — `UpgradeModifiers` (diminishing curve via `upgradeStackingDiminish`, slot cap via `upgradeModuleSlotCap`, per-effect caps)
+- [x] Common upgrade-module serialization (so modules survive NeroLogistics transit later) — `UpgradeContainer.save/load` via `ItemStack.OPTIONAL_CODEC`
+- [x] Document how Nerotech/NeroPower extend the framework — `docs/MACHINES-POWER-UPGRADES.md`
 
 ## Phase 7 — Compliance, freeze & release
 
-- [ ] Player records keyed by UUID store **only** gameplay state (no IP/chat/location beyond need)
-- [ ] Retention/cleanup hook to purge data for players inactive past a configurable period
-- [ ] Shared **per-player data-erasure hook** every Core-storing mod implements **(api)**
-- [ ] Opt-out / data-reset command, documented
-- [ ] Audit logging: no player data at `info` level; only public version strings; minimised + time-limited
-- [ ] Split published `api` package from `impl`; freeze the API surface
-- [ ] Document the deprecation / versioning policy (frozen between majors)
-- [ ] Developer docs: how to depend on Core and use each system
-- [ ] Bump `mod_version` to `1.0.0` in `gradle.properties`
+- [x] Player records keyed by UUID store **only** gameplay state — `ProgressionState`, `PlayerActivity` (UUID + gameplay value only)
+- [x] Retention/cleanup hook to purge data for players inactive past a configurable period — `dataRetentionDays` + `PlayerDataErasure.purgeInactive` + `/neroland data purge-inactive`
+- [x] Shared **per-player data-erasure hook** every Core-storing mod implements **(api)** — `PlayerDataErasure` / `PlayerDataEraser`; Core registers progression/currency/reputation/activity
+- [x] Opt-out / data-reset command, documented — `/neroland data eraseme` (self) + `erase <uuid>` (op); `docs/COMPLIANCE.md`
+- [x] Audit logging: no player data at `info` level; only public version strings; minimised — verified; erasure logs an anonymous count, not identity
+- [~] Split published `api` package from `impl`; freeze the API surface — **frozen by policy + enumerated** in `docs/API-STABILITY.md`; physical `…api` package split deferred to a future additive minor (noted there)
+- [x] Document the deprecation / versioning policy (frozen between majors) — `docs/API-STABILITY.md`
+- [x] Developer docs: how to depend on Core and use each system — `docs/USING-CORE.md` + per-system docs
+- [x] Bump `mod_version` to `1.0.0` in `gradle.properties`
 
 ## Final verification (do not skip)
 
-- [ ] All six cells build: `:neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build`
-- [ ] `ecjCheck` passes on each cell (errors only)
-- [ ] All hand-authored JSON validates
-- [ ] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles)
-- [ ] Confirm no third-party mod is a hard dependency — interop is tag-only
-- [ ] Changes left **staged** for the developer — nothing committed or pushed automatically
+- [x] All six cells build: `:neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build`
+- [x] `ecjCheck` passes on each cell (errors only) — 0 errors, 0 warnings on all three loaders
+- [x] All hand-authored JSON validates
+- [ ] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles) — **still needed** (cannot run a client from the agent)
+- [x] Confirm no third-party mod is a hard dependency — interop is tag-only
+- [x] Changes left **staged** for the developer — nothing committed or pushed automatically
 
 ## Notes
 

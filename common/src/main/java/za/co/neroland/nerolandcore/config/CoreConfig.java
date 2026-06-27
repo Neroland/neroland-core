@@ -36,6 +36,11 @@ public final class CoreConfig {
             "neroEnergyToForgeEnergyRatio", 1.0D, 0.01D, 100.0D, true,
             "Conversion ratio: 1 Nero energy unit equals N Forge Energy (rough parity by default).");
 
+    // --- Data retention (POPIA/GDPR) ----------------------------------------
+    public static final ConfigValue<Integer> DATA_RETENTION_DAYS = SCHEMA.intRange(
+            "dataRetentionDays", 0, 0, 3650, false,
+            "Days of inactivity after which a player's stored data is purged (0 = never; opt-in).");
+
     // --- Local-only toggles -------------------------------------------------
     public static final ConfigValue<Boolean> DEBUG_LOGGING = SCHEMA.bool(
             "debugLogging", false, false,
