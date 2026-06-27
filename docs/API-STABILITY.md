@@ -38,16 +38,28 @@ major:
 
 ## What is internal (may change any time)
 
-- The `*Impl` / loader-specific classes behind the seams (`FabricPlatformHelper`,
-  `NeoForgeRegistrationFactory`, the in-memory providers, the `SavedData` classes,
-  payload records, …). Use the facade/interface, never the implementation.
-- Procedural placeholder textures and exact balance constants (these are config- or
-  datapack-tunable and expected to be re-skinned / re-tuned).
+Implementation types are **marked `@org.jetbrains.annotations.ApiStatus.Internal`**,
+so IDEs and tooling flag any downstream use. This is the enforced api/impl boundary:
+anything annotated `@ApiStatus.Internal` (or living in a loader module —
+`fabric` / `forge` / `neoforge`) is not API and may change in any release.
 
-> Note: V1 keeps the public and internal types in the same package tree. A future
-> minor may physically split a published `…api` package and mark internals
-> `@ApiStatus.Internal`; that move will be additive (the existing types stay or are
-> deprecated-with-replacement, never removed within a major).
+Internal includes:
+
+- Loader-specific classes behind the seams (`FabricPlatformHelper`,
+  `NeoForgeRegistrationFactory`, the loader `*Network` / `*EnergyLookup` impls — note
+  the `*EnergyLookup.ENERGY` capability fields they expose *are* API).
+- Core's content-registration internals (`ModBlocks`, `ModItems`, `CoreRegistries`),
+  the in-memory providers, the `SavedData` stores (`ProgressionState`,
+  `PlayerActivity`), the gate loader (`GateDefinitions`), and the wire payloads
+  (`ConfigSyncPayload`, `GateSyncPayload`) — all `@ApiStatus.Internal`. Use the
+  facade/interface and reference materials by tag, never these classes.
+- Procedural placeholder textures and exact balance constants (config- or
+  datapack-tunable; expected to be re-skinned / re-tuned).
+
+> The boundary is enforced by annotation rather than a separate package tree, which
+> keeps the ServiceLoader wiring and downstream imports stable. A future minor may
+> additionally relocate internals into `…internal` packages; because they are already
+> `@ApiStatus.Internal`, that move can't break any supported (non-internal) usage.
 
 ## Deprecation
 

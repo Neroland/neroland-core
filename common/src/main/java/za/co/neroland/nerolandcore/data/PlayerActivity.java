@@ -25,6 +25,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
  * IPs, chat or location. It exists precisely to <em>support</em> data minimisation
  * (drive erasure of stale records), and is itself cleared for a player on erasure.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class PlayerActivity extends SavedData {
 
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "player_activity");

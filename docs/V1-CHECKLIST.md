@@ -86,7 +86,7 @@
 - [x] Shared **per-player data-erasure hook** every Core-storing mod implements **(api)** — `PlayerDataErasure` / `PlayerDataEraser`; Core registers progression/currency/reputation/activity
 - [x] Opt-out / data-reset command, documented — `/neroland data eraseme` (self) + `erase <uuid>` (op); `docs/COMPLIANCE.md`
 - [x] Audit logging: no player data at `info` level; only public version strings; minimised — verified; erasure logs an anonymous count, not identity
-- [~] Split published `api` package from `impl`; freeze the API surface — **frozen by policy + enumerated** in `docs/API-STABILITY.md`; physical `…api` package split deferred to a future additive minor (noted there)
+- [x] Split published `api` package from `impl`; freeze the API surface — boundary enforced in code with `@ApiStatus.Internal` on all implementation classes (registration internals, in-memory providers, `SavedData` stores, gate loader, wire payloads, loader modules) + enumerated public surface in `docs/API-STABILITY.md`
 - [x] Document the deprecation / versioning policy (frozen between majors) — `docs/API-STABILITY.md`
 - [x] Developer docs: how to depend on Core and use each system — `docs/USING-CORE.md` + per-system docs
 - [x] Bump `mod_version` to `1.0.0` in `gradle.properties`

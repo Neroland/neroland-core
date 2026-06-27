@@ -17,6 +17,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
  *
  * <p>Privacy (POPIA/GDPR): carries only gate ids — never identity or world data.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public record GateSyncPayload(List<String> gates) implements CustomPacketPayload {
 
     public static final Type<GateSyncPayload> TYPE =

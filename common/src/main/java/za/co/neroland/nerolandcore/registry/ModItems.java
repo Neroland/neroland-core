@@ -17,6 +17,7 @@ import za.co.neroland.nerolandcore.registry.RegistrationProvider.RegistryEntry;
  * derived forms live here — the single source of truth other mods reference by
  * tag (see the {@code c:} and {@code neroland:} tag set).
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class ModItems {
 
     public static final RegistrationProvider<Item> ITEMS =

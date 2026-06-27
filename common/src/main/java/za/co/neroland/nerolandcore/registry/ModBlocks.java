@@ -22,6 +22,7 @@ import za.co.neroland.nerolandcore.registry.RegistrationProvider.RegistryEntry;
  * (e.g. Nerospace planet ores smelt into these). This is the single source of
  * truth for Nero material blocks — referenced everywhere by tag, never by class.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class ModBlocks {
 
     public static final RegistrationProvider<Block> BLOCKS =

@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
  * economy — it holds nothing across a restart and is replaced the moment a real
  * provider registers.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class InMemoryCurrencyProvider implements CurrencyProvider {
 
     private final Map<UUID, Map<Identifier, Long>> balances = new ConcurrentHashMap<>();

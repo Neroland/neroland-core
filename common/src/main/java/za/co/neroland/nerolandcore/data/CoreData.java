@@ -10,6 +10,7 @@ import za.co.neroland.nerolandcore.reputation.ReputationApi;
  * reputation and activity record together. Downstream mods register their own
  * erasers the same way. Called once from {@link za.co.neroland.nerolandcore.NerolandCoreCommon#init()}.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class CoreData {
 
     private CoreData() {

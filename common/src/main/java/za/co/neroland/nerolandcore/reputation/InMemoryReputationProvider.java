@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
  * standings. Active until NeroFactions registers a real store, so the API works (and
  * is testable) without NeroFactions installed. Holds nothing across a restart.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class InMemoryReputationProvider implements ReputationProvider {
 
     private final Map<UUID, Map<Identifier, Integer>> standings = new ConcurrentHashMap<>();

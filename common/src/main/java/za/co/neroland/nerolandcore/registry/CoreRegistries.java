@@ -10,6 +10,7 @@ package za.co.neroland.nerolandcore.registry;
  * NeoForge / Forge each provider wraps a {@code DeferredRegister} that the loader
  * entry point attaches to the mod bus after this runs.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class CoreRegistries {
 
     private CoreRegistries() {

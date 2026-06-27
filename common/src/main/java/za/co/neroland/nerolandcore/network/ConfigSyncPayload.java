@@ -19,6 +19,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
  * <p><b>Privacy (POPIA/GDPR):</b> carries only config keys and their values — never
  * any player identity or world data.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public record ConfigSyncPayload(Map<String, String> values) implements CustomPacketPayload {
 
     public static final Type<ConfigSyncPayload> TYPE =

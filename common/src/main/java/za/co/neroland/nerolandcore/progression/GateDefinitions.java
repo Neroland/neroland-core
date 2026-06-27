@@ -28,6 +28,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
  * <p>Loaded lazily per running server and cached; re-reading after a
  * {@code /reload} can be added when a reload-listener seam lands.
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class GateDefinitions {
 
     private static final String DIRECTORY = "neroland_gates";

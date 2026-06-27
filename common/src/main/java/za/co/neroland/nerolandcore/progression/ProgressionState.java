@@ -28,6 +28,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
  * gate ids — no names, IPs, chat or location. Use
  * {@link #forgetPlayer(UUID)} to purge a player (the shared erasure hook).
  */
+@org.jetbrains.annotations.ApiStatus.Internal
 public final class ProgressionState extends SavedData {
 
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "progression");
