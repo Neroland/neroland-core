@@ -28,5 +28,10 @@
   "item.nerolandcore.void_crystal_shard": "Void Crystal Shard",
   "item.nerolandcore.void_crystal_dust": "Void Crystal Dust",
 
-  "item.nerolandcore.plasma_glass": "Plasma Glass Shard"
+  "item.nerolandcore.plasma_glass": "Plasma Glass Shard",
+
+  "block.nerolandcore.sentry_test": "Sentry Test Block",
+  "item.nerolandcore.sentry_test": "Sentry Test Block",
+  "message.nerolandcore.sentry_test.sent": "Sentry test event dispatched — check your Sentry dashboard.",
+  "message.nerolandcore.sentry_test.disabled": "Telemetry is disabled (telemetryEnabled=false) — nothing sent."
 }

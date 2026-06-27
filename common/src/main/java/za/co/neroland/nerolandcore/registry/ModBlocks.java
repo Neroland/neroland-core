@@ -47,6 +47,12 @@ public final class ModBlocks {
                     .setId(key).mapColor(MapColor.COLOR_CYAN).strength(0.3F)
                     .sound(SoundType.GLASS).lightLevel(s -> 4).noOcclusion()));
 
+    // --- Hidden Sentry diagnostic block (give-only: /give @s nerolandcore:sentry_test) ---
+    public static final RegistryEntry<za.co.neroland.nerolandcore.telemetry.SentryTestBlock> SENTRY_TEST =
+            BLOCKS.register("sentry_test",
+                    key -> new za.co.neroland.nerolandcore.telemetry.SentryTestBlock(BlockBehaviour.Properties.of()
+                            .setId(key).mapColor(MapColor.COLOR_ORANGE).strength(1.0F, 1.0F).sound(SoundType.METAL)));
+
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
         return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));
     }

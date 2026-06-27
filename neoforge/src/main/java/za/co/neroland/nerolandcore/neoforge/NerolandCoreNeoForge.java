@@ -12,6 +12,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.registry.NeoForgeRegistrationFactory;
+import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
 
 /**
  * NeoForge entry point. Runs shared init (building the DeferredRegisters via the
@@ -25,6 +26,8 @@ public final class NerolandCoreNeoForge {
     public NerolandCoreNeoForge(IEventBus modEventBus, ModContainer modContainer) {
         NerolandCoreCommon.LOGGER.info("[Neroland Core] NeoForge bootstrap");
         NerolandCoreCommon.init();
+        // Anonymous, Neroland-Core-only crash reporting (opt-out via config; off-tagged in dev).
+        NerolandCoreTelemetry.init();
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeNetwork.register(modEventBus);
 

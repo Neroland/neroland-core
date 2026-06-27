@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nerolandcore:block/sentry_test"
+    }
+  }
+}

@@ -30,6 +30,9 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> PLASMA_GLASS_BLOCK_ITEM = blockItem("plasma_glass_block", ModBlocks.PLASMA_GLASS_BLOCK);
     public static final RegistryEntry<BlockItem> PLASMA_GLASS_PANE_ITEM = blockItem("plasma_glass_pane", ModBlocks.PLASMA_GLASS_PANE);
 
+    /** Give-only Sentry diagnostic block item — intentionally NOT added to the creative tab (obtain via /give). */
+    public static final RegistryEntry<BlockItem> SENTRY_TEST_ITEM = blockItem("sentry_test", ModBlocks.SENTRY_TEST);
+
     // --- Nero Alloy (industrial metal) -------------------------------------
     public static final RegistryEntry<Item> NERO_ALLOY_NUGGET = item("nero_alloy_nugget");
     public static final RegistryEntry<Item> NERO_ALLOY_INGOT = item("nero_alloy_ingot");

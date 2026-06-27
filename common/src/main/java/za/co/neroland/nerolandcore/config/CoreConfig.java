@@ -47,7 +47,7 @@ public final class CoreConfig {
             "Verbose Neroland Core debug logging (local only).");
     public static final ConfigValue<Boolean> TELEMETRY_ENABLED = SCHEMA.bool(
             "telemetryEnabled", true, false,
-            "Reserved opt-out for anonymous, public-version-string-only diagnostics; set false to opt out (POPIA/GDPR). No data is collected until a telemetry system ships.");
+            "Send anonymous, Neroland-Core-only crash reports (Sentry, EU servers): stack trace, mod/MC/loader/OS/Java versions, your other installed mods, this mod's config, and anonymous stability/timing data; no IP, username, UUID, world data or chat; file paths are scrubbed of your account name. Set false to opt out. See PRIVACY.md.");
 
     private CoreConfig() {
     }

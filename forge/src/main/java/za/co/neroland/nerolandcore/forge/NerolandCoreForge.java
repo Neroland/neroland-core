@@ -11,6 +11,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.registry.ForgeRegistrationFactory;
+import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
 
 /**
  * MinecraftForge entry point. Runs shared init (building the DeferredRegisters
@@ -25,6 +26,8 @@ public final class NerolandCoreForge {
         NerolandCoreCommon.LOGGER.info("[Neroland Core] Forge bootstrap");
         BusGroup modBusGroup = context.getModBusGroup();
         NerolandCoreCommon.init();
+        // Anonymous, Neroland-Core-only crash reporting (opt-out via config; off-tagged in dev).
+        NerolandCoreTelemetry.init();
         ForgeRegistrationFactory.registerAll(modBusGroup);
         ForgeNetwork.register();
 
