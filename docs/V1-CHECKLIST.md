@@ -16,7 +16,7 @@
 - [x] Define the ServiceLoader platform-seam pattern and a `Services` loader helper in `common/` **(seam)** — `platform/Services.java` + `platform/IPlatformHelper.java`, with `Fabric/Forge/NeoForgePlatformHelper` impls + service files
 - [x] Cross-loader registration helper (register blocks/items/block-entities/creative tabs) **(seam)** — `registry/RegistrationProvider.java` + `Fabric/Forge/NeoForgeRegistrationFactory`
 - [x] Creative-tab registration helper so downstream mods append into shared tabs **(api)** — `registry/CoreCreativeTab.java` (shared "Neroland" tab + `add(Supplier)` API)
-- [ ] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)** — deferred: built in Phase 3 with the first concrete sync payload (config), then reused by gates + currency/reputation
+- [x] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)** — delivered in Phase 3: `NetworkPlatform` + `CoreNetwork` payload registry + 3 loader impls; reused by gates + currency/reputation later
 - [ ] Event-bus seam for economic/reputation/progression change events **(seam)** — deferred: built in Phase 4/5 alongside the first change events it carries
 - [x] Wire each loader entry point (`NerolandCoreFabric/Forge/NeoForge`) through `NerolandCoreCommon.init()` — NeoForge/Forge also attach the DeferredRegisters via `registerAll(...)`
 - [x] Keep `common/` free of `net.neoforged.*` / `net.fabricmc.*` / `net.minecraftforge.*` imports (verify) — grep clean (only javadoc references)
@@ -38,13 +38,13 @@
 
 ## Phase 3 — Config framework
 
-- [ ] Config service: typed schema registration with defaults + validation **(api)**
-- [ ] Shared on-disk file format + per-mod config files
-- [ ] `/neroland config reload` command with hot-reload
-- [ ] Server-authoritative values sync to clients **(seam)**
-- [ ] Config surfaces for: material stat baselines, upgrade-module modifier curve + caps, energy ratios
-- [ ] Datapack-level tuning hooks pair cleanly with config
-- [ ] Document how a downstream mod registers a schema
+- [x] Config service: typed schema registration with defaults + validation **(api)** — `ConfigManager` / `ConfigSchema` / `ConfigValue`
+- [x] Shared on-disk file format + per-mod config files — `<modId>.properties`, defaults on first run, in-place key migration
+- [x] `/neroland config reload` command with hot-reload — + `/neroland config list`; op level 2 (`LEVEL_GAMEMASTERS`)
+- [x] Server-authoritative values sync to clients **(seam)** — `NetworkPlatform` seam + 3 loader impls; `CoreNetwork` + `ConfigSyncPayload`; sent on join + after reload
+- [x] Config surfaces for: material stat baselines, upgrade-module slot cap + stacking diminish, energy ratio — `CoreConfig`
+- [x] Datapack-level tuning hooks pair cleanly with config — documented in `docs/TAGS-AND-DATAPACKS.md` + `docs/CONFIG.md`
+- [x] Document how a downstream mod registers a schema — `docs/CONFIG.md`
 
 ## Phase 4 — Progression-gate API
 

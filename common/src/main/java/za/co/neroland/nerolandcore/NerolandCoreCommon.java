@@ -3,6 +3,8 @@ package za.co.neroland.nerolandcore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import za.co.neroland.nerolandcore.config.CoreConfig;
+import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.platform.Services;
 import za.co.neroland.nerolandcore.registry.CoreRegistries;
 
@@ -27,9 +29,15 @@ public final class NerolandCoreCommon {
                 Services.PLATFORM.getPlatformName(),
                 Services.PLATFORM.isDevelopmentEnvironment());
 
+        // Config first: register + load Core's schema so later systems can read it.
+        CoreConfig.init();
+
         // Shared content registration via the RegistrationProvider seam. On
         // NeoForge / Forge this builds DeferredRegisters (the loader entry point
         // then attaches them to the mod bus); on Fabric it registers eagerly.
         CoreRegistries.init();
+
+        // Populate the payload registry before each loader wires it to its network API.
+        CoreNetwork.init();
     }
 }
