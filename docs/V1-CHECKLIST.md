@@ -17,7 +17,7 @@
 - [x] Cross-loader registration helper (register blocks/items/block-entities/creative tabs) **(seam)** — `registry/RegistrationProvider.java` + `Fabric/Forge/NeoForgeRegistrationFactory`
 - [x] Creative-tab registration helper so downstream mods append into shared tabs **(api)** — `registry/CoreCreativeTab.java` (shared "Neroland" tab + `add(Supplier)` API)
 - [x] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)** — delivered in Phase 3: `NetworkPlatform` + `CoreNetwork` payload registry + 3 loader impls; reused by gates + currency/reputation later
-- [ ] Event-bus seam for economic/reputation/progression change events **(seam)** — deferred: built in Phase 4/5 alongside the first change events it carries
+- [x] Event-bus seam for economic/reputation/progression change events **(seam)** — `event/CoreEvents` (one entry point) over `GateEvents` + `CurrencyEvents` + `ReputationEvents`
 - [x] Wire each loader entry point (`NerolandCoreFabric/Forge/NeoForge`) through `NerolandCoreCommon.init()` — NeoForge/Forge also attach the DeferredRegisters via `registerAll(...)`
 - [x] Keep `common/` free of `net.neoforged.*` / `net.fabricmc.*` / `net.minecraftforge.*` imports (verify) — grep clean (only javadoc references)
 
