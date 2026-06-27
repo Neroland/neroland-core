@@ -55,9 +55,9 @@ jobs:
           # License" — this is the field AutoMod's "Missing License" check reads.
           jq -Rs '{
             body: .,
-            title: "NerolandCore",
-            description: "Mine alien ore, power up your machines, build rockets — then terraform a dead world until it rains.",
-            categories: ["technology", "worldgen", "adventure"],
+            title: "Neroland Core",
+            description: "The shared foundation library for the Neroland sci-fi mod ecosystem — required by Nerospace and every other Nero mod.",
+            categories: ["library"],
             client_side: "required",
             server_side: "required",
             issues_url: "https://github.com/Neroland/nerolandcore/issues",
