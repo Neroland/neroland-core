@@ -60,12 +60,13 @@
 
 ## Phase 5 — Currency & reputation APIs
 
-- [ ] Currency API: read/modify player balance, **named-currency** support from day one **(api)**
-- [ ] Reputation API: query/adjust player↔faction reputation **(api)**
-- [ ] Change events for both, subscribable by any mod **(api)**
-- [ ] Confirm Core **stores nothing** — contracts only (NeroEconomy/NeroFactions implement storage)
-- [ ] Reference no-op / in-memory impl for testing without downstream mods
-- [ ] Document the provider contract for NeroEconomy and NeroFactions
+- [x] Currency API: read/modify player balance, **named-currency** support from day one **(api)** — `CurrencyApi` + `Currency` + `CoreCurrencies.CREDITS`
+- [x] Reputation API: query/adjust player↔faction reputation **(api)** — `ReputationApi`
+- [x] Change events for both, subscribable by any mod **(api)** — `CurrencyEvents` / `ReputationEvents`
+- [x] Confirm Core **stores nothing** — contracts only (NeroEconomy/NeroFactions implement storage); facades only delegate
+- [x] Reference no-op / in-memory impl for testing without downstream mods — `InMemoryCurrencyProvider` / `InMemoryReputationProvider` (replaced on `setProvider`)
+- [x] Document the provider contract for NeroEconomy and NeroFactions — `docs/ECONOMY-REPUTATION.md`
+- [x] POPIA/GDPR per-player erasure hook on both providers — `forgetPlayer(UUID)`
 
 ## Phase 6 — Machine / power / upgrade framework
 
