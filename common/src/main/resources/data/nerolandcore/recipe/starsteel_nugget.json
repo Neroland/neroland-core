@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerolandcore:starsteel_ingot"
+  ],
+  "result": {
+    "id": "nerolandcore:starsteel_nugget",
+    "count": 9
+  }
+}

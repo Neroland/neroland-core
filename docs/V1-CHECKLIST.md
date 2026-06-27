@@ -23,17 +23,18 @@
 
 ## Phase 2 — Materials, tags & datapack hooks
 
-- [ ] Register **Nero Alloy**: ingot, nugget, dust, plate, block
-- [ ] Register **Starsteel**: ingot, nugget, dust, plate, block
-- [ ] Register **Void Crystal**: gem/shard, dust, block (+ derived forms as designed)
-- [ ] Register **Plasma Glass**: ingot/pane base, transparent block, pane
-- [ ] Hand-author all item/block JSON (models, blockstates, lang) in `common/src/main/resources`
-- [ ] Validate every JSON file after editing (no datagen in this multiloader)
-- [ ] Common-namespace tags for each form (`c:ingots/*`, `c:plates/*`, `c:dusts/*`, `c:storage_blocks/*`)
-- [ ] `neroland:` material tags (`neroland:materials/starsteel`, …) **(api)**
-- [ ] Place items into the correct shared creative tabs
-- [ ] Datapack hooks so packs can retune recipes without code
-- [ ] Document the `c:` vs `neroland:` namespace policy
+- [x] Register **Nero Alloy**: nugget, ingot, dust, plate, block — `ModBlocks` + `ModItems`
+- [x] Register **Starsteel**: nugget, ingot, dust, plate, block
+- [x] Register **Void Crystal**: shard, gem (`void_crystal`), dust, block (faint glow) — no plate (crystal)
+- [x] Register **Plasma Glass**: shard item, transparent block, pane (`IronBarsBlock`)
+- [x] Hand-author all item/block JSON (models, blockstates, lang) in `common/src/main/resources` — incl. loot tables + compaction recipes; procedural placeholder 16×16 textures (re-skin later)
+- [x] Validate every JSON file after editing (no datagen in this multiloader) — 98 JSON files, all parse
+- [x] Common-namespace tags for each form (`c:ingots/*`, `c:plates/*`, `c:dusts/*`, `c:gems/*`, `c:storage_blocks/*`, `c:glass_blocks`, `c:glass_panes`) + aggregates
+- [x] `neroland:` material tags (`neroland:materials/<material>`, …) **(api)**
+- [x] Place items into the shared Neroland creative tab (`ModItems.addToCreativeTab()`); tab icon = Nero Alloy ingot
+- [x] Datapack hooks so packs can retune recipes/loot/tags without code — see `docs/TAGS-AND-DATAPACKS.md`
+- [x] Document the `c:` vs `neroland:` namespace policy — `docs/TAGS-AND-DATAPACKS.md`
+- [x] Mining tags (`minecraft:mineable/pickaxe`, `needs_iron_tool`) so solid blocks drop correctly
 
 ## Phase 3 — Config framework
 
