@@ -31,7 +31,7 @@ public final class NerolandCoreForge {
         RegisterCommandsEvent.BUS.addListener(event -> CoreCommands.register(event.getDispatcher()));
         PlayerEvent.PlayerLoggedInEvent.BUS.addListener(event -> {
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-                CoreNetwork.sendConfigTo(serverPlayer);
+                CoreNetwork.onPlayerJoin(serverPlayer);
             }
         });
     }

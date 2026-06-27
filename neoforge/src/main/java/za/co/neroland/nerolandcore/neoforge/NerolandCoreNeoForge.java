@@ -32,7 +32,7 @@ public final class NerolandCoreNeoForge {
                 CoreCommands.register(event.getDispatcher()));
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-                CoreNetwork.sendConfigTo(serverPlayer);
+                CoreNetwork.onPlayerJoin(serverPlayer);
             }
         });
     }

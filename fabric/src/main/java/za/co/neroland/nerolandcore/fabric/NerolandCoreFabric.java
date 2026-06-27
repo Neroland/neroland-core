@@ -20,8 +20,8 @@ public final class NerolandCoreFabric implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 CoreCommands.register(dispatcher));
 
-        // Push server-authoritative config to each player as they join.
+        // Push server-authoritative config + the player's open gates as they join.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-                CoreNetwork.sendConfigTo(handler.player));
+                CoreNetwork.onPlayerJoin(handler.player));
     }
 }
