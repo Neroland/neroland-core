@@ -12,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import za.co.neroland.nerolandcore.config.ConfigManager;
+import za.co.neroland.nerolandcore.data.PlayerActivity;
 import za.co.neroland.nerolandcore.platform.Services;
 import za.co.neroland.nerolandcore.progression.ClientGates;
 import za.co.neroland.nerolandcore.progression.ProgressionGates;
@@ -80,6 +81,9 @@ public final class CoreNetwork {
     public static void onPlayerJoin(ServerPlayer player) {
         sendConfigTo(player);
         ProgressionGates.syncTo(player);
+        if (player.level().getServer() != null) {
+            PlayerActivity.get(player.level().getServer()).touch(player.getUUID());
+        }
     }
 
     /** Push the current server-authoritative config snapshot to one player. */
