@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import za.co.neroland.nerolandcore.config.CoreConfig;
+import za.co.neroland.nerolandcore.data.CoreData;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.platform.Services;
 import za.co.neroland.nerolandcore.registry.CoreRegistries;
@@ -31,6 +32,9 @@ public final class NerolandCoreCommon {
 
         // Config first: register + load Core's schema so later systems can read it.
         CoreConfig.init();
+
+        // Register Core's systems with the shared per-player erasure hook (POPIA/GDPR).
+        CoreData.init();
 
         // Shared content registration via the RegistrationProvider seam. On
         // NeoForge / Forge this builds DeferredRegisters (the loader entry point

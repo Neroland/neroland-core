@@ -12,9 +12,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import java.util.UUID;
+
+import net.minecraft.server.MinecraftServer;
+
 import za.co.neroland.nerolandcore.config.ConfigManager;
 import za.co.neroland.nerolandcore.config.ConfigSchema;
 import za.co.neroland.nerolandcore.config.ConfigValue;
+import za.co.neroland.nerolandcore.data.PlayerDataErasure;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.progression.Gate;
 import za.co.neroland.nerolandcore.progression.GateDefinitions;
@@ -70,7 +75,17 @@ public final class CoreCommands {
                         .then(Commands.literal("close")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .then(Commands.argument("gate", StringArgumentType.string())
-                                        .executes(ctx -> setGate(ctx, false))))));
+                                        .executes(ctx -> setGate(ctx, false)))))
+                .then(Commands.literal("data")
+                        .then(Commands.literal("eraseme")
+                                .executes(ctx -> eraseSelf(ctx)))
+                        .then(Commands.literal("erase")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .then(Commands.argument("uuid", StringArgumentType.string())
+                                        .executes(ctx -> eraseByUuid(ctx))))
+                        .then(Commands.literal("purge-inactive")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .executes(ctx -> purgeInactive(ctx)))));
     }
 
     private static void listConfig(CommandSourceStack source) {
@@ -115,5 +130,41 @@ public final class CoreCommands {
             return Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, raw);
         }
         return Identifier.parse(raw);
+    }
+
+    private static int eraseSelf(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            ctx.getSource().sendFailure(Component.literal("Run this as a player."));
+            return 0;
+        }
+        MinecraftServer server = player.level().getServer();
+        if (server != null) {
+            PlayerDataErasure.erase(server, player.getUUID());
+        }
+        ctx.getSource().sendSuccess(
+                () -> Component.literal("[Neroland] Your stored Neroland data has been erased."), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int eraseByUuid(CommandContext<CommandSourceStack> ctx) {
+        MinecraftServer server = ctx.getSource().getServer();
+        UUID player;
+        try {
+            player = UUID.fromString(StringArgumentType.getString(ctx, "uuid"));
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendFailure(Component.literal("Not a valid UUID."));
+            return 0;
+        }
+        PlayerDataErasure.erase(server, player);
+        ctx.getSource().sendSuccess(() -> Component.literal("[Neroland] Erased stored data for that player."), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int purgeInactive(CommandContext<CommandSourceStack> ctx) {
+        int purged = PlayerDataErasure.purgeInactive(ctx.getSource().getServer());
+        ctx.getSource().sendSuccess(
+                () -> Component.literal("[Neroland] Retention sweep purged " + purged + " inactive record(s)."), true);
+        return Command.SINGLE_SUCCESS;
     }
 }
