@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "Neroland Core - multiloader build (Fabric).",
+  "authors": ["${mod_authors}"],
+  "license": "${mod_license}",
+  "accessWidener": "nerolandcore.accesswidener",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["za.co.neroland.nerolandcore.fabric.NerolandCoreFabric"],
+    "client": ["za.co.neroland.nerolandcore.fabric.NerolandCoreFabricClient"]
+  },
+  "mixins": [
+    "nerolandcore-common.mixins.json",
+    "nerolandcore.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
