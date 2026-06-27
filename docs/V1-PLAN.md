@@ -108,7 +108,7 @@ records) from `impl` (internals free to change). Document the deprecation policy
 Each phase should compile and pass `ecjCheck` on all six cells before the next begins.
 
 | Phase | Deliverable | Notes |
-|-------|-------------|-------|
+| ----- | ----------- | ----- |
 | 1 | Registry + platform-seam plumbing | ServiceLoader seam, `DeferredRegister`-style helper, creative-tab helper. Nothing user-facing yet. |
 | 2 | Materials + tags + datapack hooks | The four materials and all derived forms; common + `neroland:` tags; hand-authored JSON in `common/src/main/resources`. |
 | 3 | Config framework | Schema registration, sync, hot-reload command, datapack tuning hooks. |
