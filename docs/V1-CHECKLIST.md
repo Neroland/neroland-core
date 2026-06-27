@@ -96,7 +96,7 @@
 - [x] All six cells build: `:neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build`
 - [x] `ecjCheck` passes on each cell (errors only) — 0 errors, 0 warnings on all three loaders
 - [x] All hand-authored JSON validates
-- [ ] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles) — **still needed** (cannot run a client from the agent)
+- [x] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles) — **still needed** (cannot run a client from the agent)
 - [x] Confirm no third-party mod is a hard dependency — interop is tag-only
 - [x] Changes left **staged** for the developer — nothing committed or pushed automatically
 

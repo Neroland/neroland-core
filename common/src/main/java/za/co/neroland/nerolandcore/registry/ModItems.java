@@ -60,25 +60,29 @@ public final class ModItems {
         return ITEMS.register(name, key -> new BlockItem(block.get(), new Item.Properties().setId(key)));
     }
 
-    /** Every Core item, in display order, for the shared {@link CoreCreativeTab}. */
-    public static List<ItemLike> creativeContents() {
-        return List.<ItemLike>of(
+    /** Every Core item entry, in display order, for the shared {@link CoreCreativeTab}. */
+    private static List<RegistryEntry<? extends ItemLike>> creativeOrder() {
+        return List.<RegistryEntry<? extends ItemLike>>of(
                 // blocks
-                NERO_ALLOY_BLOCK_ITEM.get(), STARSTEEL_BLOCK_ITEM.get(), VOID_CRYSTAL_BLOCK_ITEM.get(),
-                PLASMA_GLASS_BLOCK_ITEM.get(), PLASMA_GLASS_PANE_ITEM.get(),
+                NERO_ALLOY_BLOCK_ITEM, STARSTEEL_BLOCK_ITEM, VOID_CRYSTAL_BLOCK_ITEM,
+                PLASMA_GLASS_BLOCK_ITEM, PLASMA_GLASS_PANE_ITEM,
                 // Nero Alloy
-                NERO_ALLOY_NUGGET.get(), NERO_ALLOY_INGOT.get(), NERO_ALLOY_DUST.get(), NERO_ALLOY_PLATE.get(),
+                NERO_ALLOY_NUGGET, NERO_ALLOY_INGOT, NERO_ALLOY_DUST, NERO_ALLOY_PLATE,
                 // Starsteel
-                STARSTEEL_NUGGET.get(), STARSTEEL_INGOT.get(), STARSTEEL_DUST.get(), STARSTEEL_PLATE.get(),
+                STARSTEEL_NUGGET, STARSTEEL_INGOT, STARSTEEL_DUST, STARSTEEL_PLATE,
                 // Void Crystal
-                VOID_CRYSTAL_SHARD.get(), VOID_CRYSTAL.get(), VOID_CRYSTAL_DUST.get(),
+                VOID_CRYSTAL_SHARD, VOID_CRYSTAL, VOID_CRYSTAL_DUST,
                 // Plasma Glass ingredient
-                PLASMA_GLASS.get());
+                PLASMA_GLASS);
     }
 
-    /** Adds every Core item to the shared Neroland creative tab. Called from {@link CoreRegistries#init()}. */
+    /**
+     * Adds every Core item to the shared Neroland creative tab as <b>lazy</b> suppliers: they resolve at
+     * tab-build time (after registration), so this is safe to call during init on the deferred-registration
+     * (NeoForge / Forge) loaders. Called from {@link CoreRegistries#init()}.
+     */
     public static void addToCreativeTab() {
-        creativeContents().forEach(item -> CoreCreativeTab.add(() -> item));
+        creativeOrder().forEach(entry -> CoreCreativeTab.add(entry::get));
     }
 
     private ModItems() {
