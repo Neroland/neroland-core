@@ -48,13 +48,15 @@
 
 ## Phase 4 — Progression-gate API
 
-- [ ] Named progression flags stored per player / team / server **(api)**
-- [ ] Gate query API (`isGateOpen("reached_orbit")`) **(api)**
-- [ ] Server-authoritative storage + client sync; clients never mutate **(seam)**
-- [ ] Team/party-aware gate state for co-op servers
-- [ ] Datapack-overridable gate definitions (`industrial_power`, `reached_orbit`, `first_colony`, …)
-- [ ] Change events so mods (e.g. NeroEvents) can react to gate flips
-- [ ] Document how NeroQuests drives gates and others read them
+- [x] Named progression flags stored per player / team / server **(api)** — `ProgressionState` (SavedData on the overworld)
+- [x] Gate query API (`isOpen(player, gate)`, resolves by scope) **(api)** — `ProgressionGates` + `CoreGates` ids; `tryOpen` honours requires
+- [x] Server-authoritative storage + client sync; clients never mutate **(seam)** — `GateSyncPayload` → `ClientGates`, sent on join + change
+- [x] Team/party-aware gate state for co-op servers — TEAM scope keyed by scoreboard team, per-player fallback
+- [x] Datapack-overridable gate definitions (`industrial_power`, `reached_orbit`, `first_colony`, `deep_space`) — `data/<ns>/neroland_gates/*.json` via the resource manager, built-in fallback
+- [x] Change events so mods (e.g. NeroEvents) can react to gate flips — `GateEvents.onChange(...)`
+- [x] Document how NeroQuests drives gates and others read them — `docs/PROGRESSION.md`
+- [x] POPIA/GDPR per-player erasure hook for gate state — `ProgressionState.forgetPlayer(uuid)`
+- [x] `/neroland gate list|open|close` for testing
 
 ## Phase 5 — Currency & reputation APIs
 

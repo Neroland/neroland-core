@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 import za.co.neroland.nerolandcore.config.ConfigManager;
 import za.co.neroland.nerolandcore.platform.Services;
+import za.co.neroland.nerolandcore.progression.ClientGates;
+import za.co.neroland.nerolandcore.progression.ProgressionGates;
 
 /**
  * Cross-loader networking registry. Subsystems declare their payloads here once
@@ -70,9 +72,17 @@ public final class CoreNetwork {
     public static void init() {
         clientbound(ConfigSyncPayload.TYPE, ConfigSyncPayload.STREAM_CODEC,
                 payload -> ConfigManager.applyServerValues(payload.values()));
+        clientbound(GateSyncPayload.TYPE, GateSyncPayload.STREAM_CODEC,
+                payload -> ClientGates.accept(payload.gates()));
     }
 
-    /** Push the current server-authoritative config snapshot to one player (call on join). */
+    /** Everything a joining player needs pushed to them: server-authoritative config + their open gates. */
+    public static void onPlayerJoin(ServerPlayer player) {
+        sendConfigTo(player);
+        ProgressionGates.syncTo(player);
+    }
+
+    /** Push the current server-authoritative config snapshot to one player. */
     public static void sendConfigTo(ServerPlayer player) {
         Services.NETWORK.sendToPlayer(player, ConfigSyncPayload.of(ConfigManager.serverAuthoritativeSnapshot()));
     }
