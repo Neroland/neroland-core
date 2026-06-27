@@ -6,6 +6,7 @@
   "description": "Neroland Core - multiloader build (Fabric).",
   "authors": ["${mod_authors}"],
   "license": "${mod_license}",
+  "icon": "nerolandcore_logo.png",
   "accessWidener": "nerolandcore.accesswidener",
   "environment": "*",
   "entrypoints": {

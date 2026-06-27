@@ -10,5 +10,7 @@ public final class NerolandCoreFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         NerolandCoreCommon.LOGGER.info("[Neroland Core] Fabric client bootstrap");
+        // Clientbound receivers (client-only API) — registered here, off the dedicated server.
+        FabricNetwork.registerClient();
     }
 }
