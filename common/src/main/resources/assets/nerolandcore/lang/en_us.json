@@ -1,3 +1,32 @@
 {
-  "itemGroup.nerolandcore": "Neroland"
+  "itemGroup.nerolandcore": "Neroland",
+
+  "currency.nerolandcore.credits": "Credits",
+
+  "block.nerolandcore.nero_alloy_block": "Block of Nero Alloy",
+  "item.nerolandcore.nero_alloy_block": "Block of Nero Alloy",
+  "block.nerolandcore.starsteel_block": "Block of Starsteel",
+  "item.nerolandcore.starsteel_block": "Block of Starsteel",
+  "block.nerolandcore.void_crystal_block": "Block of Void Crystal",
+  "item.nerolandcore.void_crystal_block": "Block of Void Crystal",
+  "block.nerolandcore.plasma_glass_block": "Plasma Glass",
+  "item.nerolandcore.plasma_glass_block": "Plasma Glass",
+  "block.nerolandcore.plasma_glass_pane": "Plasma Glass Pane",
+  "item.nerolandcore.plasma_glass_pane": "Plasma Glass Pane",
+
+  "item.nerolandcore.nero_alloy_ingot": "Nero Alloy Ingot",
+  "item.nerolandcore.nero_alloy_nugget": "Nero Alloy Nugget",
+  "item.nerolandcore.nero_alloy_dust": "Nero Alloy Dust",
+  "item.nerolandcore.nero_alloy_plate": "Nero Alloy Plate",
+
+  "item.nerolandcore.starsteel_ingot": "Starsteel Ingot",
+  "item.nerolandcore.starsteel_nugget": "Starsteel Nugget",
+  "item.nerolandcore.starsteel_dust": "Starsteel Dust",
+  "item.nerolandcore.starsteel_plate": "Starsteel Plate",
+
+  "item.nerolandcore.void_crystal": "Void Crystal",
+  "item.nerolandcore.void_crystal_shard": "Void Crystal Shard",
+  "item.nerolandcore.void_crystal_dust": "Void Crystal Dust",
+
+  "item.nerolandcore.plasma_glass": "Plasma Glass Shard"
 }

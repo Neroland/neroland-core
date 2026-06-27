@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerolandcore:nero_alloy_ingot"
+  ],
+  "result": {
+    "id": "nerolandcore:nero_alloy_nugget",
+    "count": 9
+  }
+}

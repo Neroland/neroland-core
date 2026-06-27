@@ -8,7 +8,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
@@ -22,10 +21,9 @@ import za.co.neroland.nerolandcore.registry.RegistrationProvider.RegistryEntry;
  * {@code displayItems}, which behaves identically on Fabric, Forge and NeoForge
  * (the per-loader tab-injection events do not).
  *
- * <p>Downstream mods (and later Core phases) contribute via {@link #add(Supplier)}
- * during their {@code init()}, before the tab is built. Until Core ships its own
- * materials (Phase 2), the icon is a vanilla placeholder — swap it to the Nero
- * Alloy ingot when materials land.
+ * <p>Downstream mods (and Core itself, via {@link ModItems#addToCreativeTab()})
+ * contribute through {@link #add(Supplier)} during {@code init()}, before the tab
+ * is built. The icon is the Nero Alloy ingot — Core's first backbone material.
  */
 public final class CoreCreativeTab {
 
@@ -40,7 +38,7 @@ public final class CoreCreativeTab {
     public static final RegistryEntry<CreativeModeTab> NEROLAND = TABS.register("neroland",
             key -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
                     .title(Component.translatable("itemGroup.nerolandcore"))
-                    .icon(() -> new ItemStack(Items.NETHER_STAR))
+                    .icon(() -> new ItemStack(ModItems.NERO_ALLOY_INGOT.get()))
                     .displayItems((params, output) -> CONTENTS.forEach(s -> output.accept(s.get())))
                     .build());
 

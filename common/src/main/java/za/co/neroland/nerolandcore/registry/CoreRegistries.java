@@ -16,8 +16,11 @@ public final class CoreRegistries {
     }
 
     public static void init() {
-        // Phase 1: the shared creative tab. Materials, blocks, items, block-entities
-        // and menus are added here as later phases land.
+        // Order matters on the eager (Fabric) loader: blocks before items (block
+        // items reference their block), then the creative tab, then its contents.
+        ModBlocks.init();
+        ModItems.init();
         CoreCreativeTab.init();
+        ModItems.addToCreativeTab();
     }
 }

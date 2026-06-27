@@ -2,7 +2,11 @@
 
 > Part of the [Neroland](../neroland-mc-ecosystem) sci-fi Minecraft mod ecosystem, built on **Neroland Core**.
 
-**Status:** barebones multiloader skeleton — version `0.0.1-alpha.1`. No gameplay content yet.
+**Status:** V1 foundation complete — version `1.0.0`. The full Core API surface is in
+place (materials, config, progression gates, currency/reputation contracts, and the
+machine/power/upgrade framework) on the platform, registration and networking seams.
+Core is a **library**, not a content mod. All six cells build; runtime client/server
+testing is the recommended next step before tagging a release.
 
 ## Build targets
 
@@ -31,6 +35,18 @@ The build is the repo root, with a flattened cross-loader structure driven by St
 ```
 
 See [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) for agent and contributor context.
+
+## Documentation
+
+- [docs/V1-PLAN.md](docs/V1-PLAN.md) · [docs/V1-CHECKLIST.md](docs/V1-CHECKLIST.md) — the V1 plan and progress
+- [docs/USING-CORE.md](docs/USING-CORE.md) — how to depend on Core and use each system
+- [docs/API-STABILITY.md](docs/API-STABILITY.md) — public API surface + versioning policy
+- [docs/TAGS-AND-DATAPACKS.md](docs/TAGS-AND-DATAPACKS.md) — materials, `c:`/`neroland:` tags, datapack hooks
+- [docs/CONFIG.md](docs/CONFIG.md) — the config framework
+- [docs/PROGRESSION.md](docs/PROGRESSION.md) — progression gates
+- [docs/ECONOMY-REPUTATION.md](docs/ECONOMY-REPUTATION.md) — currency & reputation APIs
+- [docs/MACHINES-POWER-UPGRADES.md](docs/MACHINES-POWER-UPGRADES.md) — machine / power / upgrade framework
+- [docs/COMPLIANCE.md](docs/COMPLIANCE.md) — POPIA/GDPR: erasure, retention, logging
 
 ## Planning docs
 

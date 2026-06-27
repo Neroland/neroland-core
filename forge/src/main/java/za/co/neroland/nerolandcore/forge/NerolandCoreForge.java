@@ -1,15 +1,22 @@
 package za.co.neroland.nerolandcore.forge;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.command.CoreCommands;
+import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.registry.ForgeRegistrationFactory;
 
 /**
  * MinecraftForge entry point. Runs shared init (building the DeferredRegisters
- * via the RegistrationProvider seam), then attaches them to the mod bus group.
+ * via the RegistrationProvider seam), attaches them to the mod bus group,
+ * registers the networking channel, and wires the shared {@code /neroland}
+ * command + config sync-on-join on the game bus.
  */
 @Mod(NerolandCoreCommon.MOD_ID)
 public final class NerolandCoreForge {
@@ -19,5 +26,13 @@ public final class NerolandCoreForge {
         BusGroup modBusGroup = context.getModBusGroup();
         NerolandCoreCommon.init();
         ForgeRegistrationFactory.registerAll(modBusGroup);
+        ForgeNetwork.register();
+
+        RegisterCommandsEvent.BUS.addListener(event -> CoreCommands.register(event.getDispatcher()));
+        PlayerEvent.PlayerLoggedInEvent.BUS.addListener(event -> {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                CoreNetwork.onPlayerJoin(serverPlayer);
+            }
+        });
     }
 }
