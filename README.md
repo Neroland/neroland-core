@@ -38,6 +38,7 @@ See [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) for agent and contributo
 
 ## Documentation
 
+- [wiki/Home.md](wiki/Home.md) — player- and pack-maker-facing wiki (materials, recipes, commands, FAQ)
 - [docs/V1-PLAN.md](docs/V1-PLAN.md) · [docs/V1-CHECKLIST.md](docs/V1-CHECKLIST.md) — the V1 plan and progress
 - [docs/USING-CORE.md](docs/USING-CORE.md) — how to depend on Core and use each system
 - [docs/API-STABILITY.md](docs/API-STABILITY.md) — public API surface + versioning policy

@@ -25,8 +25,8 @@ Each gate declares a `GateScope`:
 ## Defining gates (datapack-overridable)
 
 Gates are data: one JSON per gate under
-`data/<namespace>/neroland_gates/<path>.json`, where the id is the file's namespace
-+ path:
+`data/<namespace>/neroland_gates/<path>.json`, where the id is the file's
+namespace + path:
 
 ```json
 {

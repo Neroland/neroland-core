@@ -4,14 +4,39 @@
 
 ## The mod
 
-- **Neroland Core** — part of the Neroland sci-fi Minecraft mod ecosystem, built on **Neroland Core**.
-  This repository is currently a **barebones multiloader skeleton** (no gameplay content yet); add
-  shared content under `common/` and wire it through each loader entry point.
+- **Neroland Core** — the foundation **library** for the Neroland sci-fi Minecraft mod ecosystem.
+  Core ships APIs, registries, materials, tags, and base implementations — **not gameplay content**.
+  Downstream mods (Nerospace, Nerotech, NeroPower, NeroEconomy, NeroFactions, NeroQuests, NeroEvents)
+  build on it. Add shared content under `common/` and wire it through each loader entry point.
 - Mod id: **`nerolandcore`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerolandcore`. Author: **Neroland**.
-- Version: **0.0.1-alpha.1**.
+- Version: **1.0.0** — the V1 foundation is complete (the full Core API surface is in place). Treat the
+  public API as **frozen between majors**; see [`docs/API-STABILITY.md`](docs/API-STABILITY.md).
 - Targets **MC 26.1.2 AND 26.2** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"6 cells"**.
   **Java 25.** Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).
+
+## Core systems (V1 — all shipped)
+
+Six public systems, each a contract downstream mods code against. Reach every one through a small
+facade; per-loader wiring is Core's job. Deep developer docs live in [`docs/`](docs/); player- and
+pack-maker-facing pages live in [`wiki/`](wiki/Home.md).
+
+- **Materials & tags** — Nero Alloy, Starsteel, Void Crystal, Plasma Glass and their forms, exposed via
+  `c:` (interop) and `neroland:` (ecosystem) tags. `registry/` + `data/`; [`docs/TAGS-AND-DATAPACKS.md`](docs/TAGS-AND-DATAPACKS.md).
+- **Config** — typed schema registration, validation, hot-reload, server→client sync. `config/`
+  (`ConfigManager`/`ConfigSchema`/`ConfigValue`/`CoreConfig`); [`docs/CONFIG.md`](docs/CONFIG.md).
+- **Progression gates** — server-authoritative, datapack-overridable milestones. `progression/`
+  (`ProgressionGates`/`CoreGates`); [`docs/PROGRESSION.md`](docs/PROGRESSION.md).
+- **Currency & reputation** — contracts only; Core stores nothing (NeroEconomy / NeroFactions implement).
+  `economy/` + `reputation/`; [`docs/ECONOMY-REPUTATION.md`](docs/ECONOMY-REPUTATION.md).
+- **Machine / power / upgrade framework** — Nero energy, `AbstractMachineBlockEntity`, upgrade modules.
+  `energy/` + `machine/` + `upgrade/` + `platform/EnergyLookup`; [`docs/MACHINES-POWER-UPGRADES.md`](docs/MACHINES-POWER-UPGRADES.md).
+- **Data & compliance** — shared per-player erasure, retention, opt-out. `data/`
+  (`PlayerDataErasure`); [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md).
+
+Cross-cutting: ServiceLoader platform seams (`platform/`, `network/`), a unified `event/CoreEvents`
+bus facade, and Sentry telemetry (`telemetry/`, opt-out via `telemetryEnabled`). Commands live under
+`/neroland …` (`command/CoreCommands`).
 
 ## Working rules
 

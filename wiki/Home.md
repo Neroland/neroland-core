@@ -1,16 +1,36 @@
 # Neroland Core Wiki
 
 Player- and contributor-facing documentation for **Neroland Core**, part of the
-[Neroland ecosystem](../../neroland-mc-ecosystem/README.md). Built on **Neroland Core**.
+[Neroland ecosystem](../../neroland-mc-ecosystem/README.md).
 
-> **Status:** barebones — this mod is scaffolded (version `0.0.1-alpha.1`) but has no gameplay
-> content yet. Pages will grow as features land. Keep this wiki updated alongside code changes
-> (see [`../AGENTS.md`](../AGENTS.md) / [`../CLAUDE.md`](../CLAUDE.md)).
+> **Status:** V1 foundation complete — version `1.0.0`. Core is a **library, not a content mod**:
+> it ships materials, tags, and a stack of APIs that other Neroland mods (Nerospace, Nerotech,
+> NeroPower, NeroEconomy, NeroFactions, NeroQuests, NeroEvents) build on. On its own it adds a few
+> crafting materials and a creative tab; the gameplay lives in the mods that depend on it.
 
-## Contents
+Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 
-_No feature pages yet._ Add one page per block, item, machine, or system as it is built, and link it
-here. Keep this page as the index.
+## Start here
+
+- [Getting Started](Getting-Started.md) — what Core is, who it's for, and how to install it.
+- [Commands](Commands.md) — every `/neroland …` command in one place.
+- [FAQ](FAQ.md) — quick answers.
+
+## Content & systems
+
+- [Materials](Materials.md) — Nero Alloy, Starsteel, Void Crystal, Plasma Glass and their forms.
+- [Recipes](Recipes.md) — the compaction recipes Core ships.
+- [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) — the Nero energy + machine framework.
+- [Progression Gates](Progression-Gates.md) — the shared milestone system.
+- [Economy & Reputation](Economy-and-Reputation.md) — currency and faction-standing contracts.
+- [Configuration](Configuration.md) — the config file and reload command.
+- [Tags & Datapacks](Tags-and-Datapacks.md) — `c:`/`neroland:` tags and pack retuning.
+- [Privacy & Data](Privacy-and-Data.md) — POPIA/GDPR, erasure, and retention.
+
+## For developers
+
+- [For Developers](For-Developers.md) — how to depend on Core and use each system.
+- Deeper API docs live in [`../docs/`](../docs/USING-CORE.md).
 
 ## See also
 
