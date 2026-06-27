@@ -81,24 +81,24 @@
 
 ## Phase 7 — Compliance, freeze & release
 
-- [ ] Player records keyed by UUID store **only** gameplay state (no IP/chat/location beyond need)
-- [ ] Retention/cleanup hook to purge data for players inactive past a configurable period
-- [ ] Shared **per-player data-erasure hook** every Core-storing mod implements **(api)**
-- [ ] Opt-out / data-reset command, documented
-- [ ] Audit logging: no player data at `info` level; only public version strings; minimised + time-limited
-- [ ] Split published `api` package from `impl`; freeze the API surface
-- [ ] Document the deprecation / versioning policy (frozen between majors)
-- [ ] Developer docs: how to depend on Core and use each system
-- [ ] Bump `mod_version` to `1.0.0` in `gradle.properties`
+- [x] Player records keyed by UUID store **only** gameplay state — `ProgressionState`, `PlayerActivity` (UUID + gameplay value only)
+- [x] Retention/cleanup hook to purge data for players inactive past a configurable period — `dataRetentionDays` + `PlayerDataErasure.purgeInactive` + `/neroland data purge-inactive`
+- [x] Shared **per-player data-erasure hook** every Core-storing mod implements **(api)** — `PlayerDataErasure` / `PlayerDataEraser`; Core registers progression/currency/reputation/activity
+- [x] Opt-out / data-reset command, documented — `/neroland data eraseme` (self) + `erase <uuid>` (op); `docs/COMPLIANCE.md`
+- [x] Audit logging: no player data at `info` level; only public version strings; minimised — verified; erasure logs an anonymous count, not identity
+- [~] Split published `api` package from `impl`; freeze the API surface — **frozen by policy + enumerated** in `docs/API-STABILITY.md`; physical `…api` package split deferred to a future additive minor (noted there)
+- [x] Document the deprecation / versioning policy (frozen between majors) — `docs/API-STABILITY.md`
+- [x] Developer docs: how to depend on Core and use each system — `docs/USING-CORE.md` + per-system docs
+- [x] Bump `mod_version` to `1.0.0` in `gradle.properties`
 
 ## Final verification (do not skip)
 
-- [ ] All six cells build: `:neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build`
-- [ ] `ecjCheck` passes on each cell (errors only)
-- [ ] All hand-authored JSON validates
-- [ ] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles)
-- [ ] Confirm no third-party mod is a hard dependency — interop is tag-only
-- [ ] Changes left **staged** for the developer — nothing committed or pushed automatically
+- [x] All six cells build: `:neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build`
+- [x] `ecjCheck` passes on each cell (errors only) — 0 errors, 0 warnings on all three loaders
+- [x] All hand-authored JSON validates
+- [ ] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles) — **still needed** (cannot run a client from the agent)
+- [x] Confirm no third-party mod is a hard dependency — interop is tag-only
+- [x] Changes left **staged** for the developer — nothing committed or pushed automatically
 
 ## Notes
 
