@@ -1,0 +1,106 @@
+# Neroland Core — V1 (1.0.0) Checklist
+
+> Public, line-by-line checklist for shipping Neroland Core 1.0.0. Rationale and phasing live in
+> [`V1-PLAN.md`](V1-PLAN.md). Scope = the **full Core API surface**. Core is a library, not a content
+> mod. Tick items as they land; each must build and pass `ecjCheck` on **all six cells**
+> (`fabric / forge / neoforge` × MC `26.1.2 / 26.2`) before it counts as done.
+
+## Legend
+
+- `[ ]` not started · `[~]` in progress · `[x]` done
+- **(seam)** = needs a `common/` interface + three loader impls + `META-INF/services` entries
+- **(api)** = part of the frozen public `api` package — design carefully, it can't break between majors
+
+## Phase 1 — Registry & platform-seam plumbing
+
+- [ ] Define the ServiceLoader platform-seam pattern and a `Services` loader helper in `common/` **(seam)**
+- [ ] Cross-loader registration helper (register blocks/items/block-entities/creative tabs) **(seam)**
+- [ ] Creative-tab registration helper so downstream mods append into shared tabs **(api)**
+- [ ] Networking seam for server→client sync (config, gates, currency/reputation events) **(seam)**
+- [ ] Event-bus seam for economic/reputation/progression change events **(seam)**
+- [ ] Wire each loader entry point (`NerolandCoreFabric/Forge/NeoForge`) through `NerolandCoreCommon.init()`
+- [ ] Keep `common/` free of `net.neoforged.*` / `net.fabricmc.*` / `net.minecraftforge.*` imports (verify)
+
+## Phase 2 — Materials, tags & datapack hooks
+
+- [ ] Register **Nero Alloy**: ingot, nugget, dust, plate, block
+- [ ] Register **Starsteel**: ingot, nugget, dust, plate, block
+- [ ] Register **Void Crystal**: gem/shard, dust, block (+ derived forms as designed)
+- [ ] Register **Plasma Glass**: ingot/pane base, transparent block, pane
+- [ ] Hand-author all item/block JSON (models, blockstates, lang) in `common/src/main/resources`
+- [ ] Validate every JSON file after editing (no datagen in this multiloader)
+- [ ] Common-namespace tags for each form (`c:ingots/*`, `c:plates/*`, `c:dusts/*`, `c:storage_blocks/*`)
+- [ ] `neroland:` material tags (`neroland:materials/starsteel`, …) **(api)**
+- [ ] Place items into the correct shared creative tabs
+- [ ] Datapack hooks so packs can retune recipes without code
+- [ ] Document the `c:` vs `neroland:` namespace policy
+
+## Phase 3 — Config framework
+
+- [ ] Config service: typed schema registration with defaults + validation **(api)**
+- [ ] Shared on-disk file format + per-mod config files
+- [ ] `/neroland config reload` command with hot-reload
+- [ ] Server-authoritative values sync to clients **(seam)**
+- [ ] Config surfaces for: material stat baselines, upgrade-module modifier curve + caps, energy ratios
+- [ ] Datapack-level tuning hooks pair cleanly with config
+- [ ] Document how a downstream mod registers a schema
+
+## Phase 4 — Progression-gate API
+
+- [ ] Named progression flags stored per player / team / server **(api)**
+- [ ] Gate query API (`isGateOpen("reached_orbit")`) **(api)**
+- [ ] Server-authoritative storage + client sync; clients never mutate **(seam)**
+- [ ] Team/party-aware gate state for co-op servers
+- [ ] Datapack-overridable gate definitions (`industrial_power`, `reached_orbit`, `first_colony`, …)
+- [ ] Change events so mods (e.g. NeroEvents) can react to gate flips
+- [ ] Document how NeroQuests drives gates and others read them
+
+## Phase 5 — Currency & reputation APIs
+
+- [ ] Currency API: read/modify player balance, **named-currency** support from day one **(api)**
+- [ ] Reputation API: query/adjust player↔faction reputation **(api)**
+- [ ] Change events for both, subscribable by any mod **(api)**
+- [ ] Confirm Core **stores nothing** — contracts only (NeroEconomy/NeroFactions implement storage)
+- [ ] Reference no-op / in-memory impl for testing without downstream mods
+- [ ] Document the provider contract for NeroEconomy and NeroFactions
+
+## Phase 6 — Machine / power / upgrade framework
+
+- [ ] Base machine block-entity downstream mods extend **(api)**
+- [ ] Neroland energy unit power type **(api)**
+- [ ] Bridges to common Forge/Fabric energy systems **(seam)**
+- [ ] Config-driven energy conversion ratios (rough parity with Mekanism/FE)
+- [ ] Upgrade-module system: typed slots, stackable modules, declared effects **(api)**
+- [ ] Modifier resolution math with configurable caps
+- [ ] Common upgrade-module serialization (so modules survive NeroLogistics transit later)
+- [ ] Document how Nerotech/NeroPower extend the framework
+
+## Phase 7 — Compliance, freeze & release
+
+- [ ] Player records keyed by UUID store **only** gameplay state (no IP/chat/location beyond need)
+- [ ] Retention/cleanup hook to purge data for players inactive past a configurable period
+- [ ] Shared **per-player data-erasure hook** every Core-storing mod implements **(api)**
+- [ ] Opt-out / data-reset command, documented
+- [ ] Audit logging: no player data at `info` level; only public version strings; minimised + time-limited
+- [ ] Split published `api` package from `impl`; freeze the API surface
+- [ ] Document the deprecation / versioning policy (frozen between majors)
+- [ ] Developer docs: how to depend on Core and use each system
+- [ ] Bump `mod_version` to `1.0.0` in `gradle.properties`
+
+## Final verification (do not skip)
+
+- [ ] All six cells build: `:neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build`
+- [ ] `ecjCheck` passes on each cell (errors only)
+- [ ] All hand-authored JSON validates
+- [ ] Smoke-test each loader in a dev client (materials show, tabs populate, `/neroland config reload` works, a test gate toggles)
+- [ ] Confirm no third-party mod is a hard dependency — interop is tag-only
+- [ ] Changes left **staged** for the developer — nothing committed or pushed automatically
+
+## Notes
+
+- Build order: Core is mod **#1**; nothing else in the ecosystem can be built cleanly until these
+  contracts exist. See the umbrella
+  [ROADMAP](https://github.com/dario-maselli/neroland-mc-ecosystem/blob/main/ROADMAP.md).
+- External interop (Create / AE2 / Mekanism / Ad Astra) is delivered **only** through Core's common
+  tags — never a hard or soft dependency.
+- Resources are hand-authored; this multiloader does not run datagen.
