@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nerolandcore:block/fluid_tank"
+    }
+  }
+}

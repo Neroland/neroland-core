@@ -20,6 +20,7 @@ public final class CoreRegistries {
         // Order matters on the eager (Fabric) loader: blocks before items (block
         // items reference their block), then the creative tab, then its contents.
         ModBlocks.init();
+        ModBlockEntities.init();
         ModItems.init();
         CoreCreativeTab.init();
         ModItems.addToCreativeTab();

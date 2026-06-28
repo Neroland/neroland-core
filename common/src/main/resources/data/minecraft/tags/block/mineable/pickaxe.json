@@ -2,6 +2,10 @@
   "values": [
     "nerolandcore:nero_alloy_block",
     "nerolandcore:starsteel_block",
-    "nerolandcore:void_crystal_block"
+    "nerolandcore:void_crystal_block",
+    "nerolandcore:battery",
+    "nerolandcore:fluid_tank",
+    "nerolandcore:gas_tank",
+    "nerolandcore:item_store"
   ]
 }

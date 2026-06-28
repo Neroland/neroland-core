@@ -30,6 +30,8 @@ public final class NerolandCoreNeoForge {
         NerolandCoreTelemetry.init();
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeNetwork.register(modEventBus);
+        // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
+        NeoForgeCoreCapabilities.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) ->
                 CoreCommands.register(event.getDispatcher()));
