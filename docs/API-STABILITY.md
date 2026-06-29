@@ -16,6 +16,14 @@ Neroland Core follows semantic versioning on its **public API**:
 
 Downstream mods should depend on a Core major (e.g. `[1.0,2.0)`).
 
+### 1.1.0 — additive minor
+
+`1.1.0` is an additive minor: it adds the four passive storage blocks (Battery, Fluid Tank,
+Gas Tank, Item Store, plus their Creative variants) and the generic **fluid** and **gas**
+storage APIs (`NeroFluidStorage` / `FluidBuffer` / `nerolandcore:fluid`; `NeroGasStorage` /
+`GasBuffer` / `NeroGases` / `nerolandcore:gas`), mirroring the existing energy seam. Nothing
+was removed: every existing API signature, tag, id, and capability still works unchanged.
+
 ## What is public (frozen) API
 
 These are the surfaces downstream mods are meant to use; they will not break within a
@@ -34,6 +42,9 @@ major:
 - **Machines / power / upgrades** — `NeroEnergyStorage`, `EnergyBuffer`,
   `EnergyConversions`, `AbstractMachineBlockEntity`, `UpgradeType`, `UpgradeContainer`,
   `UpgradeModifiers`.
+- **Storage (fluid / gas)** — `NeroFluidStorage`, `FluidBuffer`, `NeroGasStorage`,
+  `GasBuffer`, `NeroGases`, and the `nerolandcore:fluid` / `nerolandcore:gas` capabilities
+  (added in 1.1.0; see below).
 - **Data / compliance** — `PlayerDataErasure`, `PlayerDataEraser`.
 
 ## What is internal (may change any time)
