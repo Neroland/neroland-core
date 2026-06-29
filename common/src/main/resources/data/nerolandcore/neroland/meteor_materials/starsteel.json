@@ -1,0 +1,8 @@
+{
+  "item": "nerolandcore:starsteel_dust",
+  "tier": "rare",
+  "min_gate": "nerolandcore:reached_orbit",
+  "planet": null,
+  "weight_override": null,
+  "enabled": true
+}

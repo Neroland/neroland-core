@@ -20,6 +20,8 @@ import za.co.neroland.nerolandcore.config.ConfigManager;
 import za.co.neroland.nerolandcore.config.ConfigSchema;
 import za.co.neroland.nerolandcore.config.ConfigValue;
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
+import za.co.neroland.nerolandcore.meteor.MeteorMaterialEntry;
+import za.co.neroland.nerolandcore.meteor.MeteorMaterials;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.progression.Gate;
 import za.co.neroland.nerolandcore.progression.GateDefinitions;
@@ -85,7 +87,45 @@ public final class CoreCommands {
                                         .executes(ctx -> eraseByUuid(ctx))))
                         .then(Commands.literal("purge-inactive")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                                .executes(ctx -> purgeInactive(ctx)))));
+                                .executes(ctx -> purgeInactive(ctx))))
+                .then(Commands.literal("meteor")
+                        .then(Commands.literal("list")
+                                .executes(ctx -> {
+                                    listMeteor(ctx.getSource());
+                                    return Command.SINGLE_SUCCESS;
+                                }))
+                        .then(Commands.literal("reload")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .executes(ctx -> reloadMeteor(ctx)))));
+    }
+
+    private static void listMeteor(CommandSourceStack source) {
+        MinecraftServer server = source.getServer();
+        if (server == null) {
+            source.sendFailure(Component.literal("No server context."));
+            return;
+        }
+        for (MeteorMaterialEntry e : MeteorMaterials.all(server)) {
+            String line = "  " + e.id() + " §7[" + e.tier().name().toLowerCase() + "]§r → " + e.item()
+                    + (e.minGate() != null ? " §8gate=" + e.minGate() + "§r" : "")
+                    + (e.planet() != null ? " §8planet=" + e.planet() + "§r" : "")
+                    + (e.weightOverride() != null ? " §8w=" + e.weightOverride() + "§r" : "")
+                    + (e.enabled() ? "" : " §c(disabled)§r");
+            source.sendSuccess(() -> Component.literal(line), false);
+        }
+    }
+
+    private static int reloadMeteor(CommandContext<CommandSourceStack> ctx) {
+        MinecraftServer server = ctx.getSource().getServer();
+        if (server == null) {
+            ctx.getSource().sendFailure(Component.literal("No server context."));
+            return 0;
+        }
+        MeteorMaterials.reload(server);
+        int count = MeteorMaterials.all(server).size();
+        ctx.getSource().sendSuccess(
+                () -> Component.literal("[Neroland] Reloaded meteor materials (" + count + " registered)."), true);
+        return Command.SINGLE_SUCCESS;
     }
 
     private static void listConfig(CommandSourceStack source) {

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerolandcore:nero_alloy_dust", "required": false },
+    { "id": "nerolandcore:plasma_glass", "required": false },
+    { "id": "nerolandcore:void_crystal_dust", "required": false },
+    { "id": "nerolandcore:starsteel_dust", "required": false }
+  ]
+}
