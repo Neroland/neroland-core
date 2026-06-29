@@ -56,6 +56,15 @@ public final class CoreConfig {
             "meteorExoticChance", 0.08D, 0.0D, 1.0D, true,
             "Probability per finished grind that the separate exotic bonus pool also fires.");
 
+    // --- Machine side configuration (server-authoritative balance) ----------
+    // The shared auto-eject / auto-input rate for the universal side-config system
+    // (see docs/SIDE-CONFIG.md). Per-face throughput limits are deferred to
+    // NeroLogistics; v1 uses this single global rate. Hot-reloadable.
+    public static final ConfigValue<Integer> SIDE_CONFIG_TRANSFER_RATE = SCHEMA.intRange(
+            "sideConfigAutoTransferRate", 256, 0, 1_000_000, true,
+            "Per-tick auto-eject/auto-input transfer rate per face: NE for energy, mB for fluid/gas, "
+                    + "item count for the item channel. 0 disables auto-transfer (manual/pipe routing only).");
+
     // --- Data retention (POPIA/GDPR) ----------------------------------------
     public static final ConfigValue<Integer> DATA_RETENTION_DAYS = SCHEMA.intRange(
             "dataRetentionDays", 0, 0, 3650, false,
