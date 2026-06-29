@@ -36,6 +36,26 @@ public final class CoreConfig {
             "neroEnergyToForgeEnergyRatio", 1.0D, 0.01D, 100.0D, true,
             "Conversion ratio: 1 Nero energy unit equals N Forge Energy (rough parity by default).");
 
+    // --- Meteor Material Registry (server-authoritative; read by the grinder) ---
+    // The primary balance levers for the Meteor Material Registry resolution
+    // algorithm (see docs/METEOR-MATERIAL-REGISTRY.md). All hot-reloadable via
+    // /neroland config reload; the resolver reads them live on every roll.
+    public static final ConfigValue<Integer> METEOR_TIER_WEIGHT_COMMON = SCHEMA.intRange(
+            "meteorTierBaseWeightCommon", 60, 0, 100000, true,
+            "Base selection weight for common-tier grindable meteor materials (primary pool).");
+    public static final ConfigValue<Integer> METEOR_TIER_WEIGHT_UNCOMMON = SCHEMA.intRange(
+            "meteorTierBaseWeightUncommon", 25, 0, 100000, true,
+            "Base selection weight for uncommon-tier grindable meteor materials (primary pool).");
+    public static final ConfigValue<Integer> METEOR_TIER_WEIGHT_RARE = SCHEMA.intRange(
+            "meteorTierBaseWeightRare", 12, 0, 100000, true,
+            "Base selection weight for rare-tier grindable meteor materials (primary pool).");
+    public static final ConfigValue<Double> METEOR_PLANET_BIAS = SCHEMA.doubleRange(
+            "meteorPlanetBias", 2.0D, 0.0D, 1000.0D, true,
+            "Weight multiplier applied to a material when grinding inside its bound planet's dimension.");
+    public static final ConfigValue<Double> METEOR_EXOTIC_CHANCE = SCHEMA.doubleRange(
+            "meteorExoticChance", 0.08D, 0.0D, 1.0D, true,
+            "Probability per finished grind that the separate exotic bonus pool also fires.");
+
     // --- Data retention (POPIA/GDPR) ----------------------------------------
     public static final ConfigValue<Integer> DATA_RETENTION_DAYS = SCHEMA.intRange(
             "dataRetentionDays", 0, 0, 3650, false,

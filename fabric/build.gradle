@@ -36,6 +36,22 @@ publishing {
             artifact tasks.named('jar')
         }
     }
+    // Remote target so a fresh CI runner / clone (empty ~/.m2) can resolve Core — GitHub Packages
+    // Maven for the Core repo. `publishToMavenLocal` still works for local dev; `publish` (or
+    // publishModPublicationToGitHubPackagesRepository) pushes here. Auth: gradle props gpr.user/gpr.key,
+    // else env GITHUB_ACTOR/GITHUB_TOKEN (both present in GitHub Actions). Lazy getOrNull() means a
+    // build that doesn't touch this repo (e.g. a contributor with no token) won't fail at configuration.
+    // Privacy (POPIA/GDPR): publishes only build artifacts + version strings, no personal data.
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = 'https://maven.pkg.github.com/Neroland/neroland-core'
+            credentials {
+                username = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GITHUB_ACTOR')).getOrNull()
+                password = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GITHUB_TOKEN')).getOrNull()
+            }
+        }
+    }
 }
 
 // Pull in the shared common source + resources.

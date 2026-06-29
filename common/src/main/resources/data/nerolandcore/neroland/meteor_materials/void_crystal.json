@@ -1,0 +1,8 @@
+{
+  "item": "nerolandcore:void_crystal_dust",
+  "tier": "uncommon",
+  "min_gate": "nerolandcore:reached_orbit",
+  "planet": null,
+  "weight_override": null,
+  "enabled": true
+}
