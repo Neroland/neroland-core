@@ -3,6 +3,8 @@ package za.co.neroland.nerolandcore.platform;
 import java.nio.file.Path;
 import java.util.List;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -55,5 +57,12 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
                 .map(m -> m.getModId() + " " + m.getVersion())
                 .sorted()
                 .toList();
+    }
+
+    @Override
+    public void invalidateCapabilities(Level level, BlockPos pos) {
+        if (!level.isClientSide()) {
+            level.invalidateCapabilities(pos);
+        }
     }
 }

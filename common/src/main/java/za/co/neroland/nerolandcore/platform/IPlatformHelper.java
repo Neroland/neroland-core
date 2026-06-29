@@ -3,6 +3,9 @@ package za.co.neroland.nerolandcore.platform;
 import java.nio.file.Path;
 import java.util.List;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+
 /**
  * The loader-specific behaviour the common module is allowed to depend on.
  *
@@ -41,4 +44,13 @@ public interface IPlatformHelper {
      * triage. These are public manifest strings only — never personal data (POPIA/GDPR).
      */
     List<String> getLoadedModIds();
+
+    /**
+     * Invalidate cached block capabilities at a position after a side-config mode change so
+     * adjacent pipes/cables re-query (NeoForge {@code Level#invalidateCapabilities}). A no-op
+     * on loaders that re-resolve capabilities per query (Fabric) or via block updates (Forge);
+     * the common layer separately fires a neighbour update for connection re-evaluation.
+     */
+    default void invalidateCapabilities(Level level, BlockPos pos) {
+    }
 }

@@ -75,6 +75,8 @@ public final class CoreNetwork {
                 payload -> ConfigManager.applyServerValues(payload.values()));
         clientbound(GateSyncPayload.TYPE, GateSyncPayload.STREAM_CODEC,
                 payload -> ClientGates.accept(payload.gates()));
+        // Universal machine side configuration: serverbound intents + clientbound snapshot.
+        SideConfigNetworking.register();
     }
 
     /** Everything a joining player needs pushed to them: server-authoritative config + their open gates. */
