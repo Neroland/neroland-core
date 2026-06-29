@@ -21,7 +21,8 @@ Core is published to two places:
 - **GitHub Packages** — `https://maven.pkg.github.com/Neroland/neroland-core`. This is the
   remote that CI runners and fresh clones (which have an empty `~/.m2`) resolve from. Core's
   `publish.yml` pushes the six per-loader artifacts here whenever a new `mod_version` is
-  released (the `maven` job). CurseForge / Modrinth / GitHub Releases carry the player-facing
+  released — a publish step in the `build` job, reusing the jars that job just built (no second
+  build). CurseForge / Modrinth / GitHub Releases carry the player-facing
   jars only — they are **not** Gradle-consumable, which is why GitHub Packages exists.
 
 > Before this was wired up, Core had no remote Maven at all. Consumer CI checked Core out and
@@ -70,7 +71,7 @@ repo. Pick one:
 
 ## Required one-time setup
 
-1. **Publish-side token.** Core's `maven` job uses the workflow's own `GITHUB_TOKEN`
+1. **Publish-side token.** Core's `build` job publishes with the workflow's own `GITHUB_TOKEN`
    (`packages: write`) — no secret to create.
 2. **Read access** for consumers — choose Internal visibility or the org PAT secret above.
 3. **Backfill the versions consumers already pin.** The `maven` job only runs for a *new*
