@@ -42,6 +42,7 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> CREATIVE_FLUID_TANK_ITEM = blockItem("creative_fluid_tank", ModBlocks.CREATIVE_FLUID_TANK);
     public static final RegistryEntry<BlockItem> CREATIVE_GAS_TANK_ITEM = blockItem("creative_gas_tank", ModBlocks.CREATIVE_GAS_TANK);
     public static final RegistryEntry<BlockItem> CREATIVE_ITEM_STORE_ITEM = blockItem("creative_item_store", ModBlocks.CREATIVE_ITEM_STORE);
+    public static final RegistryEntry<BlockItem> TRASH_CAN_ITEM = blockItem("trash_can", ModBlocks.TRASH_CAN);
 
     // --- Nero Alloy (industrial metal) -------------------------------------
     public static final RegistryEntry<Item> NERO_ALLOY_NUGGET = item("nero_alloy_nugget");
@@ -90,7 +91,8 @@ public final class ModItems {
                 PLASMA_GLASS,
                 // Storage blocks + their Creative testing variants
                 BATTERY_ITEM, FLUID_TANK_ITEM, GAS_TANK_ITEM, ITEM_STORE_ITEM,
-                CREATIVE_BATTERY_ITEM, CREATIVE_FLUID_TANK_ITEM, CREATIVE_GAS_TANK_ITEM, CREATIVE_ITEM_STORE_ITEM);
+                CREATIVE_BATTERY_ITEM, CREATIVE_FLUID_TANK_ITEM, CREATIVE_GAS_TANK_ITEM, CREATIVE_ITEM_STORE_ITEM,
+                TRASH_CAN_ITEM);
     }
 
     /**

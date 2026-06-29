@@ -46,5 +46,13 @@ public final class FabricCoreCapabilities {
                 (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.ITEM_STORE.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.CREATIVE_ITEM_STORE.get());
+
+        // Trash Can — bottomless void sink for items / fluid / gas.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.TRASH_CAN.get());
+        FabricFluidLookup.FLUID.registerForBlockEntity(
+                (be, side) -> be.getFluid(), ModBlockEntities.TRASH_CAN.get());
+        FabricGasLookup.GAS.registerForBlockEntity(
+                (be, side) -> be.getGas(), ModBlockEntities.TRASH_CAN.get());
     }
 }

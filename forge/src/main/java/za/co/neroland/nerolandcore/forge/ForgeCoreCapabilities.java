@@ -33,6 +33,7 @@ import za.co.neroland.nerolandcore.storage.CreativeItemStoreBlockEntity;
 import za.co.neroland.nerolandcore.storage.FluidTankBlockEntity;
 import za.co.neroland.nerolandcore.storage.GasTankBlockEntity;
 import za.co.neroland.nerolandcore.storage.ItemStoreBlockEntity;
+import za.co.neroland.nerolandcore.storage.TrashCanBlockEntity;
 
 /**
  * Forge side of Core's capability seams: attaches the shared storage blocks'
@@ -81,9 +82,13 @@ public final class ForgeCoreCapabilities {
             gas = tank::getTank;
         } else if (be instanceof CreativeGasTankBlockEntity tank) {
             gas = tank::getTank;
+        } else if (be instanceof TrashCanBlockEntity trash) {
+            fluid = trash::getFluid;
+            gas = trash::getGas;
         }
 
-        Container container = (be instanceof ItemStoreBlockEntity || be instanceof CreativeItemStoreBlockEntity)
+        Container container = (be instanceof ItemStoreBlockEntity || be instanceof CreativeItemStoreBlockEntity
+                || be instanceof TrashCanBlockEntity)
                 ? (Container) be : null;
         if (energy == null && fluid == null && gas == null && container == null) {
             return null;

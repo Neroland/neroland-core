@@ -6,6 +6,7 @@
     "nerolandcore:battery",
     "nerolandcore:fluid_tank",
     "nerolandcore:gas_tank",
-    "nerolandcore:item_store"
+    "nerolandcore:item_store",
+    "nerolandcore:trash_can"
   ]
 }

@@ -21,6 +21,7 @@ public final class CoreRegistries {
         // items reference their block), then the creative tab, then its contents.
         ModBlocks.init();
         ModBlockEntities.init();
+        ModMenuTypes.init();
         ModItems.init();
         CoreCreativeTab.init();
         ModItems.addToCreativeTab();

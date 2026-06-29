@@ -1,9 +1,11 @@
 package za.co.neroland.nerolandcore.neoforge;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -32,6 +34,9 @@ public final class NerolandCoreNeoForge {
         NeoForgeNetwork.register(modEventBus);
         // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
         NeoForgeCoreCapabilities.register(modEventBus);
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
+            NeoForgeClientSetup.init(modEventBus);
+        }
 
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) ->
                 CoreCommands.register(event.getDispatcher()));

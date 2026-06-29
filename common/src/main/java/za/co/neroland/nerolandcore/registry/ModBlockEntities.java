@@ -15,6 +15,7 @@ import za.co.neroland.nerolandcore.storage.CreativeItemStoreBlockEntity;
 import za.co.neroland.nerolandcore.storage.FluidTankBlockEntity;
 import za.co.neroland.nerolandcore.storage.GasTankBlockEntity;
 import za.co.neroland.nerolandcore.storage.ItemStoreBlockEntity;
+import za.co.neroland.nerolandcore.storage.TrashCanBlockEntity;
 
 /**
  * Neroland Core's block-entity types, registered cross-loader through
@@ -61,6 +62,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<CreativeItemStoreBlockEntity>> CREATIVE_ITEM_STORE =
             BLOCK_ENTITIES.register("creative_item_store",
                     key -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, Set.of(ModBlocks.CREATIVE_ITEM_STORE.get())));
+
+    public static final RegistryEntry<BlockEntityType<TrashCanBlockEntity>> TRASH_CAN =
+            BLOCK_ENTITIES.register("trash_can",
+                    key -> new BlockEntityType<>(TrashCanBlockEntity::new, Set.of(ModBlocks.TRASH_CAN.get())));
 
     private ModBlockEntities() {
     }

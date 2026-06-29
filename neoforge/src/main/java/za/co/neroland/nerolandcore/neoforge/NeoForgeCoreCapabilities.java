@@ -54,5 +54,15 @@ public final class NeoForgeCoreCapabilities {
                         : VanillaContainerWrapper.of(be));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CREATIVE_ITEM_STORE.get(),
                 (be, side) -> VanillaContainerWrapper.of(be));
+
+        // Trash Can — bottomless void sink for items / fluid / gas.
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+        event.registerBlockEntity(NeoForgeFluidLookup.FLUID,
+                ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getFluid());
+        event.registerBlockEntity(NeoForgeGasLookup.GAS,
+                ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getGas());
     }
 }

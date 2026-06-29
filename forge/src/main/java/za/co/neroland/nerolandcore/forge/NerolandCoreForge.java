@@ -1,11 +1,13 @@
 package za.co.neroland.nerolandcore.forge;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
@@ -32,6 +34,9 @@ public final class NerolandCoreForge {
         ForgeNetwork.register();
         // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
         ForgeCoreCapabilities.register();
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            ForgeClientSetup.init(modBusGroup);
+        }
 
         RegisterCommandsEvent.BUS.addListener(event -> CoreCommands.register(event.getDispatcher()));
         PlayerEvent.PlayerLoggedInEvent.BUS.addListener(event -> {

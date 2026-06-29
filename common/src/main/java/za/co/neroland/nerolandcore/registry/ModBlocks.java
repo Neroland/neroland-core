@@ -20,6 +20,7 @@ import za.co.neroland.nerolandcore.storage.CreativeItemStoreBlock;
 import za.co.neroland.nerolandcore.storage.FluidTankBlock;
 import za.co.neroland.nerolandcore.storage.GasTankBlock;
 import za.co.neroland.nerolandcore.storage.ItemStoreBlock;
+import za.co.neroland.nerolandcore.storage.TrashCanBlock;
 
 /**
  * Neroland Core's shared material blocks, registered cross-loader through
@@ -85,6 +86,10 @@ public final class ModBlocks {
             BLOCKS.register("creative_gas_tank", key -> new CreativeGasTankBlock(creativeStorageProps(key)));
     public static final RegistryEntry<CreativeItemStoreBlock> CREATIVE_ITEM_STORE =
             BLOCKS.register("creative_item_store", key -> new CreativeItemStoreBlock(creativeStorageProps(key)));
+    public static final RegistryEntry<TrashCanBlock> TRASH_CAN =
+            BLOCKS.register("trash_can", key -> new TrashCanBlock(BlockBehaviour.Properties.of().setId(key)
+                    .mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     /** Properties for the regular (mineable) storage blocks. */
     private static BlockBehaviour.Properties storageProps(ResourceKey<Block> key) {
