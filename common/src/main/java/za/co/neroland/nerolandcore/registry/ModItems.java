@@ -33,6 +33,17 @@ public final class ModItems {
     /** Give-only Sentry diagnostic block item — intentionally NOT added to the creative tab (obtain via /give). */
     public static final RegistryEntry<BlockItem> SENTRY_TEST_ITEM = blockItem("sentry_test", ModBlocks.SENTRY_TEST);
 
+    // --- Storage block items (moved from Nerospace; usable by every Nero mod) ----
+    public static final RegistryEntry<BlockItem> BATTERY_ITEM = blockItem("battery", ModBlocks.BATTERY);
+    public static final RegistryEntry<BlockItem> FLUID_TANK_ITEM = blockItem("fluid_tank", ModBlocks.FLUID_TANK);
+    public static final RegistryEntry<BlockItem> GAS_TANK_ITEM = blockItem("gas_tank", ModBlocks.GAS_TANK);
+    public static final RegistryEntry<BlockItem> ITEM_STORE_ITEM = blockItem("item_store", ModBlocks.ITEM_STORE);
+    public static final RegistryEntry<BlockItem> CREATIVE_BATTERY_ITEM = blockItem("creative_battery", ModBlocks.CREATIVE_BATTERY);
+    public static final RegistryEntry<BlockItem> CREATIVE_FLUID_TANK_ITEM = blockItem("creative_fluid_tank", ModBlocks.CREATIVE_FLUID_TANK);
+    public static final RegistryEntry<BlockItem> CREATIVE_GAS_TANK_ITEM = blockItem("creative_gas_tank", ModBlocks.CREATIVE_GAS_TANK);
+    public static final RegistryEntry<BlockItem> CREATIVE_ITEM_STORE_ITEM = blockItem("creative_item_store", ModBlocks.CREATIVE_ITEM_STORE);
+    public static final RegistryEntry<BlockItem> TRASH_CAN_ITEM = blockItem("trash_can", ModBlocks.TRASH_CAN);
+
     // --- Nero Alloy (industrial metal) -------------------------------------
     public static final RegistryEntry<Item> NERO_ALLOY_NUGGET = item("nero_alloy_nugget");
     public static final RegistryEntry<Item> NERO_ALLOY_INGOT = item("nero_alloy_ingot");
@@ -77,7 +88,11 @@ public final class ModItems {
                 // Void Crystal
                 VOID_CRYSTAL_SHARD, VOID_CRYSTAL, VOID_CRYSTAL_DUST,
                 // Plasma Glass ingredient
-                PLASMA_GLASS);
+                PLASMA_GLASS,
+                // Storage blocks + their Creative testing variants
+                BATTERY_ITEM, FLUID_TANK_ITEM, GAS_TANK_ITEM, ITEM_STORE_ITEM,
+                CREATIVE_BATTERY_ITEM, CREATIVE_FLUID_TANK_ITEM, CREATIVE_GAS_TANK_ITEM, CREATIVE_ITEM_STORE_ITEM,
+                TRASH_CAN_ITEM);
     }
 
     /**

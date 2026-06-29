@@ -27,6 +27,8 @@ Every system is reached through a small facade; per-loader wiring is Core's job.
 | Adjust faction standing | `ReputationApi` | [Economy & Reputation](Economy-and-Reputation.md) | [ECONOMY-REPUTATION](../docs/ECONOMY-REPUTATION.md) |
 | Build a machine | extend `AbstractMachineBlockEntity` | [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) | [MACHINES-POWER-UPGRADES](../docs/MACHINES-POWER-UPGRADES.md) |
 | Expose/find energy | `EnergyLookup` + `*EnergyLookup.ENERGY` | [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) | [MACHINES-POWER-UPGRADES](../docs/MACHINES-POWER-UPGRADES.md) |
+| Store/expose a fluid | `NeroFluidStorage` / `FluidBuffer` + `nerolandcore:fluid` | [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) | [MACHINES-POWER-UPGRADES](../docs/MACHINES-POWER-UPGRADES.md) |
+| Store/expose a gas | `NeroGasStorage` / `GasBuffer` / `NeroGases` + `nerolandcore:gas` | [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) | [MACHINES-POWER-UPGRADES](../docs/MACHINES-POWER-UPGRADES.md) |
 | Store player data | register a `PlayerDataEraser` | [Privacy & Data](Privacy-and-Data.md) | [COMPLIANCE](../docs/COMPLIANCE.md) |
 
 ## Implementing a Core provider

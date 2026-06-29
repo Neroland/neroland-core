@@ -19,6 +19,8 @@ public final class NerolandCoreFabric implements ModInitializer {
         // Anonymous, Neroland-Core-only crash reporting (opt-out via config; off-tagged in dev).
         NerolandCoreTelemetry.init();
         FabricNetwork.registerCommon();
+        // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
+        FabricCoreCapabilities.register();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 CoreCommands.register(dispatcher));

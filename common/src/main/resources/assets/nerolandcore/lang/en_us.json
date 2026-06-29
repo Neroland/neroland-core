@@ -1,8 +1,6 @@
 {
   "itemGroup.nerolandcore": "Neroland",
-
   "currency.nerolandcore.credits": "Credits",
-
   "block.nerolandcore.nero_alloy_block": "Block of Nero Alloy",
   "item.nerolandcore.nero_alloy_block": "Block of Nero Alloy",
   "block.nerolandcore.starsteel_block": "Block of Starsteel",
@@ -13,25 +11,52 @@
   "item.nerolandcore.plasma_glass_block": "Plasma Glass",
   "block.nerolandcore.plasma_glass_pane": "Plasma Glass Pane",
   "item.nerolandcore.plasma_glass_pane": "Plasma Glass Pane",
-
   "item.nerolandcore.nero_alloy_ingot": "Nero Alloy Ingot",
   "item.nerolandcore.nero_alloy_nugget": "Nero Alloy Nugget",
   "item.nerolandcore.nero_alloy_dust": "Nero Alloy Dust",
   "item.nerolandcore.nero_alloy_plate": "Nero Alloy Plate",
-
   "item.nerolandcore.starsteel_ingot": "Starsteel Ingot",
   "item.nerolandcore.starsteel_nugget": "Starsteel Nugget",
   "item.nerolandcore.starsteel_dust": "Starsteel Dust",
   "item.nerolandcore.starsteel_plate": "Starsteel Plate",
-
   "item.nerolandcore.void_crystal": "Void Crystal",
   "item.nerolandcore.void_crystal_shard": "Void Crystal Shard",
   "item.nerolandcore.void_crystal_dust": "Void Crystal Dust",
-
   "item.nerolandcore.plasma_glass": "Plasma Glass Shard",
-
   "block.nerolandcore.sentry_test": "Sentry Test Block",
   "item.nerolandcore.sentry_test": "Sentry Test Block",
   "message.nerolandcore.sentry_test.sent": "Sentry test event dispatched — check your Sentry dashboard.",
-  "message.nerolandcore.sentry_test.disabled": "Telemetry is disabled (telemetryEnabled=false) — nothing sent."
+  "message.nerolandcore.sentry_test.disabled": "Telemetry is disabled (telemetryEnabled=false) — nothing sent.",
+  "block.nerolandcore.battery": "Battery",
+  "item.nerolandcore.battery": "Battery",
+  "block.nerolandcore.battery.readout": "Battery: %s / %s NE",
+  "block.nerolandcore.creative_battery": "Creative Battery",
+  "item.nerolandcore.creative_battery": "Creative Battery",
+  "block.nerolandcore.creative_battery.readout": "Creative Battery: endless energy",
+  "block.nerolandcore.fluid_tank": "Fluid Tank",
+  "item.nerolandcore.fluid_tank": "Fluid Tank",
+  "block.nerolandcore.creative_fluid_tank": "Creative Fluid Tank",
+  "item.nerolandcore.creative_fluid_tank": "Creative Fluid Tank",
+  "block.nerolandcore.gas_tank": "Gas Tank",
+  "item.nerolandcore.gas_tank": "Gas Tank",
+  "block.nerolandcore.creative_gas_tank": "Creative Gas Tank",
+  "item.nerolandcore.creative_gas_tank": "Creative Gas Tank",
+  "block.nerolandcore.item_store": "Item Store",
+  "item.nerolandcore.item_store": "Item Store",
+  "container.nerolandcore.item_store": "Item Store",
+  "block.nerolandcore.creative_item_store": "Creative Item Store",
+  "item.nerolandcore.creative_item_store": "Creative Item Store",
+  "block.nerolandcore.trash_can": "Trash Can",
+  "item.nerolandcore.trash_can": "Trash Can",
+  "container.nerolandcore.trash_can": "Trash Can",
+  "block.nerolandcore.tank.empty": "Tank: empty",
+  "block.nerolandcore.tank.readout": "Tank: %s / %s mB of %s",
+  "block.nerolandcore.creative_tank.cleared": "Endless source cleared",
+  "block.nerolandcore.creative_tank.readout": "Endless source: %s",
+  "block.nerolandcore.creative_tank.set": "Endless source set: %s",
+  "block.nerolandcore.creative_tank.unset": "Right-click with a filled bucket to set the endless fluid",
+  "block.nerolandcore.creative_gas.unset": "Pipe in a gas to set the endless source",
+  "block.nerolandcore.creative_item_store.set": "Source set: %s",
+  "block.nerolandcore.creative_item_store.cleared": "Source cleared",
+  "gas.nerolandcore.empty": "Empty"
 }
