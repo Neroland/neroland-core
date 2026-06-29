@@ -67,9 +67,9 @@ each loader, exactly like `nerolandcore:energy`.
 
 ## Storage blocks Core ships
 
-Core ships four **passive storage endpoints** (its first block-entities), plus a
-Creative variant of each. They hold a resource and offer it to pipes and hoppers,
-but do no work — they are not machines:
+Core ships five **passive storage endpoints** (its first block-entities); the first
+four also have a Creative variant. They hold (or void) a resource and offer it to
+pipes and hoppers, but do no work — they are not machines:
 
 | Block | Holds | Page |
 | --- | --- | --- |
@@ -77,13 +77,16 @@ but do no work — they are not machines:
 | **Fluid Tank** | one fluid | [Fluid Tank](Fluid-Tank.md) |
 | **Gas Tank** | one gas | [Gas Tank](Gas-Tank.md) |
 | **Item Store** | items (vanilla container) | [Item Store](Item-Store.md) |
+| **Trash Can** | nothing — voids items, fluid, and gas | [Trash Can](Trash-Can.md) |
 
 The Battery exposes `nerolandcore:energy`, the Fluid Tank `nerolandcore:fluid`, the
 Gas Tank `nerolandcore:gas`, and the Item Store the standard vanilla item handler
-(it opens the vanilla chest GUI). All four are pickaxe / iron-tier mineable and ship
-crafting recipes (see [Recipes](Recipes.md)). The
-[Creative Source Blocks](Creative-Source-Blocks.md) are endless source/sink variants
-for testing.
+(it opens the vanilla chest GUI). The **Trash Can** accepts all three of `nerolandcore:fluid`,
+`nerolandcore:gas`, and the item handler on every side and discards whatever is inserted; it
+opens a vanilla chest-style GUI with a single drop slot (Core's first menu type + client
+screen). All five are pickaxe / iron-tier mineable and ship crafting recipes (see
+[Recipes](Recipes.md)). The [Creative Source Blocks](Creative-Source-Blocks.md) are endless
+source/sink variants of the first four for testing.
 
 ## Cross-loader energy interop
 

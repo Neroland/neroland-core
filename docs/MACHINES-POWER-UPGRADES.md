@@ -130,10 +130,10 @@ Core owns the shared `nerolandcore:gas` capability/lookup on each loader.
 
 ## Storage blocks Core ships
 
-Core ships four **passive storage endpoints** — the foundation library's first
-block-entities — plus a Creative variant of each. They hold a resource and expose it on a
-capability for pipes/hoppers; they are not *machines* (no processing, no generation, no
-upgrade slots):
+Core ships five **passive storage endpoints** — the foundation library's first
+block-entities — plus a Creative variant of the first four. They hold (or void) a resource and
+expose it on a capability for pipes/hoppers; they are not *machines* (no processing, no
+generation, no upgrade slots):
 
 | Block | Holds | Capability exposed |
 | --- | --- | --- |
@@ -141,13 +141,17 @@ upgrade slots):
 | **Fluid Tank** (`nerolandcore:fluid_tank`) | one fluid | `nerolandcore:fluid` |
 | **Gas Tank** (`nerolandcore:gas_tank`) | one gas | `nerolandcore:gas` |
 | **Item Store** (`nerolandcore:item_store`) | items (vanilla `Container`) | the standard item handler |
+| **Trash Can** (`nerolandcore:trash_can`) | nothing — voids what is inserted | `nerolandcore:fluid`, `nerolandcore:gas`, and the item handler (input-only) |
 
 The Battery rides Core's energy API (`EnergyBuffer`); the Fluid Tank and Gas Tank ride the
 new `FluidBuffer` / `GasBuffer`. The Item Store is a plain vanilla `Container` — it opens the
 vanilla chest GUI and interoperates with hoppers and pipes through the standard item
-capability, so Core registers nothing extra for it. All four are pickaxe / iron-tier
-mineable, drop themselves, and ship crafting recipes that reference the existing `#c:`
-material tags.
+capability, so Core registers nothing extra for it. The **Trash Can** is a bottomless void
+sink: it accepts items, fluid, and gas on every side and discards them (input-only, no
+extraction), and it opens a vanilla chest-style GUI with a single drop slot that voids on the
+next insert. It brought Core's **first `MenuType` plus the client screen registration
+infrastructure**. All five are pickaxe / iron-tier mineable, drop themselves, and ship crafting
+recipes that reference the existing `#c:` material tags (the Trash Can is cactus + `#c:ingots/iron`).
 
 The Creative variants (`nerolandcore:creative_*`, creative-tab only, unbreakable, no recipe)
 are endless sources and sinks for testing networks. Because Core is generic, two of them are

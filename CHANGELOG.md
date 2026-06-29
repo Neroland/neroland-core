@@ -15,12 +15,19 @@ tag, id, and capability is unchanged.
 
 **Storage blocks (moved in from Nerospace)**
 
-- **Battery**, **Fluid Tank**, **Gas Tank**, and **Item Store** — four passive storage
-  endpoints, plus a **Creative** variant of each (`nerolandcore:creative_*`). These are
-  Core's first block-entities. New ids: `nerolandcore:battery`, `nerolandcore:fluid_tank`,
-  `nerolandcore:gas_tank`, `nerolandcore:item_store`.
-- All four are pickaxe / iron-tier mineable, drop themselves, and ship crafting recipes
-  whose ingredients reference the existing `#c:` material tags.
+- **Battery**, **Fluid Tank**, **Gas Tank**, **Item Store**, and the **Trash Can** — passive
+  storage endpoints, plus a **Creative** variant of the first four (`nerolandcore:creative_*`).
+  These are Core's first block-entities. New ids: `nerolandcore:battery`,
+  `nerolandcore:fluid_tank`, `nerolandcore:gas_tank`, `nerolandcore:item_store`,
+  `nerolandcore:trash_can`.
+- The **Trash Can** is a bottomless void sink: pipe or hopper items, fluid, or gas into it
+  and they are discarded (input-only, no extraction). It opens a vanilla chest-style GUI with
+  a single drop slot that voids on the next insert, and brought Core's **first menu type plus
+  the client screen infrastructure** (a `MenuType` registration seam and a per-loader client
+  screen registration hook).
+- All are pickaxe / iron-tier mineable, drop themselves, and ship crafting recipes whose
+  ingredients reference the existing `#c:` material tags (the Trash Can is cactus + iron
+  ingots).
 - Behaviour is unchanged from Nerospace except, because Core ships no specific fluids or
   gases, two generic defaults: the **Creative Fluid Tank** now starts **empty** (right-click
   a filled bucket to set its endless fluid) and the **Creative Gas Tank** now **learns its

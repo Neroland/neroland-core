@@ -19,11 +19,11 @@ Void Crystal compacts along the chain block <-> gem <-> shard.
 
 ## Storage blocks
 
-Core ships crafting recipes for its four passive [storage blocks](Machines-Power-and-Upgrades.md)
-— Battery, Fluid Tank, Gas Tank, and Item Store. These are the same recipes the blocks shipped
-with previously; like every Core recipe they reference the `#c:` material tags rather than item
-ids, so a pack can substitute the metal or retune the cost. (The Creative variants have no
-recipe — they are creative-tab only.)
+Core ships crafting recipes for its passive [storage blocks](Machines-Power-and-Upgrades.md)
+— Battery, Fluid Tank, Gas Tank, Item Store, and the Trash Can. These are the same recipes the
+blocks shipped with previously; like every Core recipe they reference the `#c:` material tags
+rather than item ids, so a pack can substitute the metal or retune the cost. (The Creative
+variants have no recipe — they are creative-tab only.)
 
 | Block | Shape | Ingredients |
 | --- | --- | --- |
@@ -31,6 +31,7 @@ recipe — they are creative-tab only.)
 | **Fluid Tank** | metal shell with glass windows | `#c:ingots/*` metal + Glass |
 | **Gas Tank** | a Fluid Tank sealed in metal | `#c:ingots/*` metal + a Fluid Tank |
 | **Item Store** | metal frame around a Chest | `#c:ingots/*` metal + a Chest |
+| **Trash Can** | a ring of iron around a cactus | `#c:ingots/iron` + Cactus |
 
 Because the ingredients are tag-based, the exact metal is whatever a pack maps into the `#c:`
 ingot tags; reference the tag, never a specific item id.
