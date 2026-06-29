@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -21,31 +24,35 @@ import za.co.neroland.nerolandcore.sideconfig.SideMode;
 import za.co.neroland.nerolandcore.sideconfig.SideModeColors;
 
 /**
- * The reusable Side Config tab: a flattened cube/net of the six relative faces a
- * player clicks to route each channel, plus per-channel sub-tabs, auto-eject /
- * auto-input toggles, and reset / copy / paste controls. Colour-coded by
- * {@link SideModeColors} so state reads at a glance.
+ * The reusable Side Config tab: a labelled, flattened cube/net of the six relative
+ * faces a player clicks to route each channel, with per-channel sub-tabs, a mode
+ * legend (which doubles as the mode palette), and word-labelled auto-eject /
+ * auto-input / reset / copy / paste controls. Colour-coded by {@link SideModeColors}.
  *
  * <p>Self-contained and composable: a downstream {@code AbstractContainerScreen}
- * constructs one (it sends a snapshot request on open), forwards
- * {@link #render} from its draw pass and {@link #mouseClicked} from its handler.
- * Server-authoritative: clicks send {@link SideConfigIntentPayload} intents; the
- * authoritative snapshot streams back via {@link ClientSideConfig} and is applied
- * here. Built so its primitives can seed the shared GUI toolkit.
+ * constructs one (it sends a snapshot request on open), forwards {@link #render}
+ * from its draw pass and {@link #mouseClicked} from its handler. Server-authoritative:
+ * clicks send {@link SideConfigIntentPayload} intents; the authoritative snapshot
+ * streams back via {@link ClientSideConfig} and is applied here.
  *
- * <p>Interaction: left-click a face cycles its mode forward; right-click disables
- * it; middle-click opens a palette of the modes that face permits.
+ * <p>Interaction on a face: left-click cycles its mode, right-click disables it,
+ * middle-click opens a mode palette (shown in the legend column).
  */
 public final class SideConfigWidget {
 
-    private static final int CELL = 18;
-    private static final int STEP = 20;
-    private static final int PANEL = 0xF0202024;
+    private static final int CELL = 16;
+    private static final int STEP = 18;
+    private static final int HEADER_H = 14;
+    private static final int PANEL_W = 142;
+
+    private static final int PANEL = 0xF018181E;
+    private static final int HEADER = 0xFF2C2C36;
     private static final int BORDER = 0xFF000000;
-    private static final int LABEL = 0xFFB0B0C0;
-    private static final int ACTIVE = 0xFFFFFFFF;
+    private static final int OUTLINE = 0xFF54545E;
+    private static final int TEXT = 0xFFE6E6F0;
+    private static final int SUBTLE = 0xFF9090A0;
     private static final int TAB_CLOSED = 0xFF3CB043;
-    private static final int BTN = 0xFF454552;
+    private static final int BTN = 0xFF3A3A46;
     private static final int BTN_ON = 0xFF3CB043;
 
     private final BlockPos pos;
@@ -68,7 +75,6 @@ public final class SideConfigWidget {
         this.activeChannel = config.channels().keySet().iterator().hasNext()
                 ? config.channels().keySet().iterator().next()
                 : Channel.ENERGY;
-        // Ask the server for the authoritative state of this machine's faces.
         Services.NETWORK.sendToServer(SideConfigIntentPayload.request(this.pos));
     }
 
@@ -79,93 +85,132 @@ public final class SideConfigWidget {
         }
     }
 
+    public boolean isOpen() {
+        return open;
+    }
+
+    // --- layout (shared by render + click so they never drift) --------------
+
+    private Layout layout(int guiLeft, int guiTop) {
+        Layout l = new Layout();
+        l.px = guiLeft + anchorX;
+        l.py = guiTop + anchorY;
+        l.channels = new ArrayList<>(config.channels().keySet());
+        if (!open) {
+            return l;
+        }
+        int contentTop = l.py + HEADER_H + 3;
+        l.tabsY = contentTop;
+        boolean multi = config.isMultiChannel();
+        l.netX = l.px + 6;
+        l.netY = (multi ? contentTop + 14 + 3 : contentTop) + 2;
+        l.colX = l.netX + 4 * STEP + 8;
+        int netBottom = l.netY + 3 * STEP;
+        l.ctrlY1 = netBottom + 5;
+        l.ctrlY2 = l.ctrlY1 + 16;
+        l.hintY = l.ctrlY2 + 16;
+        l.panelBottom = l.hintY + 11;
+        return l;
+    }
+
+    private static final class Layout {
+        int px;
+        int py;
+        List<Channel> channels;
+        int tabsY;
+        int netX;
+        int netY;
+        int colX;
+        int ctrlY1;
+        int ctrlY2;
+        int hintY;
+        int panelBottom;
+    }
+
     // --- rendering ----------------------------------------------------------
 
     public void render(GuiGraphicsExtractor g, int guiLeft, int guiTop, int mouseX, int mouseY) {
         applyPending();
-        int px = guiLeft + anchorX;
-        int py = guiTop + anchorY;
+        Font font = Minecraft.getInstance().font;
+        Layout l = layout(guiLeft, guiTop);
 
-        // Tab toggle.
-        box(g, px, py, CELL, CELL, open ? BTN_ON : TAB_CLOSED);
         if (!open) {
+            button(g, l.px, l.py, CELL, CELL, TAB_CLOSED);
+            center(g, font, "Cfg", l.px + CELL / 2, l.py + 4, 0xFF0A0A0A);
             return;
         }
 
-        int contentTop = py + STEP;
-        int width = 4 * STEP + 8;
+        // Panel + header.
+        g.fill(l.px, l.py, l.px + PANEL_W, l.panelBottom, PANEL);
+        outline(g, l.px, l.py, PANEL_W, l.panelBottom - l.py, OUTLINE);
+        g.fill(l.px, l.py, l.px + PANEL_W, l.py + HEADER_H, HEADER);
+        g.text(font, Component.literal("Side Config"), l.px + 5, l.py + 3, TEXT, false);
+        String chName = channelLabel(activeChannel);
+        g.text(font, Component.literal(chName), l.px + PANEL_W - font.width(chName) - 5, l.py + 3, channelColor(activeChannel), false);
 
-        // Channel sub-tabs (skipped for single-channel machines).
-        int netTop = contentTop;
-        List<Channel> channels = new ArrayList<>(config.channels().keySet());
+        // Channel sub-tabs.
         if (config.isMultiChannel()) {
-            int tx = px + 4;
-            for (Channel channel : channels) {
-                box(g, tx, contentTop, CELL, CELL, channel == activeChannel ? ACTIVE : BTN);
-                inner(g, tx, contentTop, channelColor(channel));
-                tx += STEP;
+            int tx = l.px + 5;
+            for (Channel channel : l.channels) {
+                int w = 32;
+                button(g, tx, l.tabsY, w, 13, channel == activeChannel ? BTN_ON : BTN);
+                center(g, font, channelLabel(channel), tx + w / 2, l.tabsY + 3, channel == activeChannel ? 0xFF0A0A0A : TEXT);
+                tx += w + 2;
             }
-            netTop = contentTop + STEP;
         }
 
-        // Panel background behind the net + controls.
-        int netOriginX = px + 4;
-        int netOriginY = netTop + 2;
-        int controlsY = netOriginY + 3 * STEP + 4;
-        int panelBottom = controlsY + CELL + 4;
-        panel(g, px, netTop, width, panelBottom - netTop);
-
-        // The flattened cube net.
+        // The flattened cube net with face letters.
         ChannelConfig cfg = config.get(activeChannel);
         for (RelativeFace face : RelativeFace.VALUES) {
-            int[] xy = faceCell(netOriginX, netOriginY, face);
+            int[] xy = faceCell(l.netX, l.netY, face);
             SideMode mode = cfg == null ? SideMode.DISABLED : cfg.mode(face);
-            box(g, xy[0], xy[1], CELL, CELL, BORDER);
-            inner(g, xy[0], xy[1], SideModeColors.of(mode));
+            button(g, xy[0], xy[1], CELL, CELL, BORDER);
+            g.fill(xy[0] + 1, xy[1] + 1, xy[0] + CELL - 1, xy[1] + CELL - 1, SideModeColors.of(mode));
+            center(g, font, faceLabel(face), xy[0] + CELL / 2, xy[1] + 4, 0xFF0A0A0A);
         }
 
-        // Controls row: auto-eject, auto-input, reset, copy, paste.
-        int cx = netOriginX;
-        boolean autoEject = cfg != null && cfg.autoEject();
-        boolean autoInput = cfg != null && cfg.autoInput();
-        box(g, cx, controlsY, CELL, CELL, autoEject ? BTN_ON : BTN);
-        inner(g, cx, controlsY, SideModeColors.OUTPUT);
-        cx += STEP;
-        box(g, cx, controlsY, CELL, CELL, autoInput ? BTN_ON : BTN);
-        inner(g, cx, controlsY, SideModeColors.INPUT);
-        cx += STEP;
-        box(g, cx, controlsY, CELL, CELL, BTN);
-        inner(g, cx, controlsY, LABEL);
-        cx += STEP;
-        box(g, cx, controlsY, CELL, CELL, BTN);
-        inner(g, cx, controlsY, 0xFF60C0FF);
-        cx += STEP;
-        box(g, cx, controlsY, CELL, CELL, SideConfigClipboard.hasFor(typeKey) ? BTN_ON : BTN);
-        inner(g, cx, controlsY, 0xFFC0FF60);
-
-        // Mode palette (shift-clicked a face).
+        // Right column: mode palette while a face is selected, otherwise the legend.
         if (paletteFace != null && cfg != null) {
-            int swx = netOriginX + 4 * STEP + 2;
-            int swy = netOriginY;
+            g.text(font, Component.literal("Set " + faceLabel(paletteFace) + ":"), l.colX, l.netY - 1, SUBTLE, false);
+            int sy = l.netY + 10;
             for (SideMode mode : SideMode.VALUES) {
                 if (!cfg.isAllowed(mode)) {
                     continue;
                 }
-                box(g, swx, swy, CELL, CELL, BORDER);
-                inner(g, swx, swy, SideModeColors.of(mode));
-                swy += STEP;
+                swatch(g, font, l.colX, sy, mode);
+                sy += 11;
+            }
+        } else {
+            int sy = l.netY;
+            for (SideMode mode : SideMode.VALUES) {
+                if (cfg != null && !cfg.isAllowed(mode)) {
+                    continue;
+                }
+                swatch(g, font, l.colX, sy, mode);
+                sy += 11;
             }
         }
+
+        // Controls — auto-eject / auto-input toggles, then reset / copy / paste.
+        boolean autoEject = cfg != null && cfg.autoEject();
+        boolean autoInput = cfg != null && cfg.autoInput();
+        labelledButton(g, font, l.px + 5, l.ctrlY1, 64, "Auto-Eject", autoEject ? BTN_ON : BTN, autoEject ? 0xFF0A0A0A : TEXT);
+        labelledButton(g, font, l.px + 73, l.ctrlY1, 64, "Auto-Input", autoInput ? BTN_ON : BTN, autoInput ? 0xFF0A0A0A : TEXT);
+        labelledButton(g, font, l.px + 5, l.ctrlY2, 42, "Reset", BTN, TEXT);
+        labelledButton(g, font, l.px + 49, l.ctrlY2, 42, "Copy", BTN, TEXT);
+        labelledButton(g, font, l.px + 93, l.ctrlY2, 44,
+                SideConfigClipboard.hasFor(typeKey) ? "Paste" : "Paste", SideConfigClipboard.hasFor(typeKey) ? BTN_ON : BTN,
+                SideConfigClipboard.hasFor(typeKey) ? 0xFF0A0A0A : SUBTLE);
+
+        g.text(font, Component.literal("L cycle  ·  R off  ·  M menu"), l.px + 5, l.hintY, SUBTLE, false);
     }
 
     // --- input --------------------------------------------------------------
 
     public boolean mouseClicked(double mx, double my, int button, int guiLeft, int guiTop) {
-        int px = guiLeft + anchorX;
-        int py = guiTop + anchorY;
+        Layout l = layout(guiLeft, guiTop);
 
-        // Tab toggle.
-        if (in(mx, my, px, py, CELL, CELL)) {
+        if (in(mx, my, l.px, l.py, open ? PANEL_W : CELL, HEADER_H)) {
             open = !open;
             paletteFace = null;
             return true;
@@ -174,50 +219,42 @@ public final class SideConfigWidget {
             return false;
         }
 
-        int contentTop = py + STEP;
-        int netTop = contentTop;
-        List<Channel> channels = new ArrayList<>(config.channels().keySet());
+        // Channel tabs.
         if (config.isMultiChannel()) {
-            int tx = px + 4;
-            for (Channel channel : channels) {
-                if (in(mx, my, tx, contentTop, CELL, CELL)) {
+            int tx = l.px + 5;
+            for (Channel channel : l.channels) {
+                if (in(mx, my, tx, l.tabsY, 32, 13)) {
                     activeChannel = channel;
                     paletteFace = null;
                     return true;
                 }
-                tx += STEP;
+                tx += 34;
             }
-            netTop = contentTop + STEP;
         }
 
-        int netOriginX = px + 4;
-        int netOriginY = netTop + 2;
         ChannelConfig cfg = config.get(activeChannel);
 
-        // Palette swatches take priority while open.
+        // Palette swatches (only while a face is selected).
         if (paletteFace != null && cfg != null) {
-            int swx = netOriginX + 4 * STEP + 2;
-            int swy = netOriginY;
+            int sy = l.netY + 10;
             for (SideMode mode : SideMode.VALUES) {
                 if (!cfg.isAllowed(mode)) {
                     continue;
                 }
-                if (in(mx, my, swx, swy, CELL, CELL)) {
+                if (in(mx, my, l.colX, sy, 60, 9)) {
                     send(SideConfigIntentPayload.setMode(pos, activeChannel.ordinal(), paletteFace.index(), mode.ordinal()));
-                    if (cfg.setMode(paletteFace, mode)) {
-                        // optimistic; server re-syncs authoritative state
-                    }
+                    cfg.setMode(paletteFace, mode);
                     paletteFace = null;
                     return true;
                 }
-                swy += STEP;
+                sy += 11;
             }
             paletteFace = null;
         }
 
         // Faces.
         for (RelativeFace face : RelativeFace.VALUES) {
-            int[] xy = faceCell(netOriginX, netOriginY, face);
+            int[] xy = faceCell(l.netX, l.netY, face);
             if (in(mx, my, xy[0], xy[1], CELL, CELL)) {
                 if (button == 2) {
                     paletteFace = face;
@@ -236,49 +273,44 @@ public final class SideConfigWidget {
             }
         }
 
-        // Controls row.
-        int controlsY = netOriginY + 3 * STEP + 4;
-        int cx = netOriginX;
-        if (in(mx, my, cx, controlsY, CELL, CELL)) {
-            boolean on = cfg != null && cfg.autoEject();
-            send(SideConfigIntentPayload.autoEject(pos, activeChannel.ordinal(), !on));
+        // Controls.
+        if (in(mx, my, l.px + 5, l.ctrlY1, 64, 14)) {
+            send(SideConfigIntentPayload.autoEject(pos, activeChannel.ordinal(), !(cfg != null && cfg.autoEject())));
             return true;
         }
-        cx += STEP;
-        if (in(mx, my, cx, controlsY, CELL, CELL)) {
-            boolean on = cfg != null && cfg.autoInput();
-            send(SideConfigIntentPayload.autoInput(pos, activeChannel.ordinal(), !on));
+        if (in(mx, my, l.px + 73, l.ctrlY1, 64, 14)) {
+            send(SideConfigIntentPayload.autoInput(pos, activeChannel.ordinal(), !(cfg != null && cfg.autoInput())));
             return true;
         }
-        cx += STEP;
-        if (in(mx, my, cx, controlsY, CELL, CELL)) {
+        if (in(mx, my, l.px + 5, l.ctrlY2, 42, 14)) {
             send(SideConfigIntentPayload.reset(pos));
             return true;
         }
-        cx += STEP;
-        if (in(mx, my, cx, controlsY, CELL, CELL)) {
+        if (in(mx, my, l.px + 49, l.ctrlY2, 42, 14)) {
             SideConfigClipboard.copy(typeKey, config.packAll());
             return true;
         }
-        cx += STEP;
-        if (in(mx, my, cx, controlsY, CELL, CELL)) {
+        if (in(mx, my, l.px + 93, l.ctrlY2, 44, 14)) {
             if (SideConfigClipboard.hasFor(typeKey)) {
                 send(SideConfigIntentPayload.paste(pos, SideConfigClipboard.packed()));
             }
             return true;
         }
 
-        // Click anywhere else in the open panel is still consumed so it does not fall through to slots.
-        int width = 4 * STEP + 8;
-        return in(mx, my, px, netTop, width, controlsY + CELL + 4 - netTop);
+        // Swallow any other click inside the open panel so it doesn't reach the slots behind it.
+        return in(mx, my, l.px, l.py, PANEL_W, l.panelBottom - l.py);
     }
 
-    public boolean isOpen() {
-        return open;
-    }
+    // --- helpers ------------------------------------------------------------
 
     private static void send(SideConfigIntentPayload payload) {
         Services.NETWORK.sendToServer(payload);
+    }
+
+    private void swatch(GuiGraphicsExtractor g, Font font, int x, int y, SideMode mode) {
+        g.fill(x, y, x + 8, y + 8, BORDER);
+        g.fill(x + 1, y + 1, x + 7, y + 7, SideModeColors.of(mode));
+        g.text(font, Component.literal(modeLabel(mode)), x + 11, y, TEXT, false);
     }
 
     private static int[] faceCell(int ox, int oy, RelativeFace face) {
@@ -313,6 +345,36 @@ public final class SideConfigWidget {
         return new int[] { ox + col * STEP, oy + row * STEP };
     }
 
+    private static String faceLabel(RelativeFace face) {
+        return switch (face) {
+            case FRONT -> "Ft";
+            case BACK -> "Bk";
+            case LEFT -> "Lf";
+            case RIGHT -> "Rt";
+            case TOP -> "Tp";
+            case BOTTOM -> "Bm";
+        };
+    }
+
+    private static String modeLabel(SideMode mode) {
+        return switch (mode) {
+            case DISABLED -> "Off";
+            case INPUT -> "Input";
+            case OUTPUT -> "Output";
+            case IO -> "In/Out";
+            case PUSH -> "Push";
+        };
+    }
+
+    private static String channelLabel(Channel channel) {
+        return switch (channel) {
+            case ITEM -> "Items";
+            case FLUID -> "Fluid";
+            case GAS -> "Gas";
+            case ENERGY -> "Power";
+        };
+    }
+
     private static int channelColor(Channel channel) {
         return switch (channel) {
             case ITEM -> 0xFFE8E8F4;
@@ -326,15 +388,24 @@ public final class SideConfigWidget {
         return mx >= x && mx < x + w && my >= y && my < y + h;
     }
 
-    private static void box(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
+    private static void button(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
         g.fill(x, y, x + w, y + h, color);
     }
 
-    private static void inner(GuiGraphicsExtractor g, int x, int y, int color) {
-        g.fill(x + 3, y + 3, x + CELL - 3, y + CELL - 3, color);
+    private static void labelledButton(GuiGraphicsExtractor g, Font font, int x, int y, int w, String label, int bg, int fg) {
+        g.fill(x, y, x + w, y + 14, bg);
+        outline(g, x, y, w, 14, BORDER);
+        center(g, font, label, x + w / 2, y + 3, fg);
     }
 
-    private static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, PANEL);
+    private static void center(GuiGraphicsExtractor g, Font font, String s, int cx, int topY, int color) {
+        g.text(font, Component.literal(s), cx - font.width(s) / 2, topY, color, false);
+    }
+
+    private static void outline(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
+        g.fill(x, y, x + w, y + 1, color);
+        g.fill(x, y + h - 1, x + w, y + h, color);
+        g.fill(x, y, x + 1, y + h, color);
+        g.fill(x + w - 1, y, x + w, y + h, color);
     }
 }
