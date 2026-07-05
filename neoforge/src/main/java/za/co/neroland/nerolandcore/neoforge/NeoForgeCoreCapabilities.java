@@ -3,6 +3,7 @@ package za.co.neroland.nerolandcore.neoforge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.energy.InfiniteEnergyHandler;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
@@ -34,6 +35,12 @@ public final class NeoForgeCoreCapabilities {
                 ModBlockEntities.BATTERY.get(), (be, side) -> be.getEnergy());
         event.registerBlockEntity(NeoForgeEnergyLookup.ENERGY,
                 ModBlockEntities.CREATIVE_BATTERY.get(), (be, side) -> be.getEnergy());
+        // Also expose the Creative Battery on the STANDARD energy capability (Forge Energy) so
+        // third-party cables (e.g. Energized Power) connect to and draw from it directly. The regular
+        // Battery reaches third-party blocks the other way round — it pushes into them each tick via
+        // the EnergyLookup FE fallback (see BatteryBlockEntity#serverTick).
+        event.registerBlockEntity(Capabilities.Energy.BLOCK,
+                ModBlockEntities.CREATIVE_BATTERY.get(), (be, side) -> InfiniteEnergyHandler.INSTANCE);
 
         // Fluid — Fluid Tank + Creative Fluid Tank.
         event.registerBlockEntity(NeoForgeFluidLookup.FLUID,

@@ -16,6 +16,13 @@ import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
  * object that downstream machines register their block-entities against — so Nero
  * machines across mods interoperate on one energy surface. Resolved via
  * {@link Services}.
+ *
+ * <p>Where the loader has a standard Forge-Energy-style capability (NeoForge
+ * {@code Capabilities.Energy.BLOCK}, Forge {@code ForgeCapabilities.ENERGY}), the
+ * implementation falls back to it when no Nero energy is found, adapting FE↔NE via
+ * {@code EnergyConversions} — so cables, batteries and side-config auto-eject reach
+ * third-party FE blocks (e.g. Energized Power) too. The Fabric implementation stays
+ * Nero-only until the Team Reborn Energy API ports to 26.x.</p>
  */
 public interface EnergyLookup {
 

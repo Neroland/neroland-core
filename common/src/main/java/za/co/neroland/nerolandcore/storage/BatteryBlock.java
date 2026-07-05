@@ -11,12 +11,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
-/** Battery block — holds a {@link BatteryBlockEntity} energy buffer; right-click empty-handed to read its charge. */
+import za.co.neroland.nerolandcore.registry.ModBlockEntities;
+
+/**
+ * Battery block — holds a {@link BatteryBlockEntity} energy buffer that pushes into adjacent
+ * receivers each tick; right-click empty-handed to read its charge.
+ */
 public class BatteryBlock extends BaseEntityBlock {
 
     public static final MapCodec<BatteryBlock> CODEC = simpleCodec(BatteryBlock::new);
@@ -39,6 +46,15 @@ public class BatteryBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BatteryBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        if (level.isClientSide()) {
+            return null;
+        }
+        return createTickerHelper(type, ModBlockEntities.BATTERY.get(), BatteryBlockEntity::serverTick);
     }
 
     @Override
