@@ -6,6 +6,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.3.2]
+
+Additive patch — cross-mod energy interop and battery quality-of-life. No API removals or
+signature changes; the `EnergyLookup` contract is unchanged (the fallback widens what it finds).
+
+### Added
+
+**Batteries push power into adjacent blocks**
+
+- The **Battery** and **Creative Battery** now push stored energy directly into adjacent
+  receivers every server tick — machines, pipes, and third-party Forge-Energy blocks — so no
+  cable is needed between a battery and its consumer. Per-face rate is the Battery's existing
+  10,000 NE/t I/O bound.
+- A Battery never pushes into another Battery (two half-full batteries would slosh energy back
+  and forth forever). The Creative Battery pushes into everything, Batteries included, so
+  creative grid testing needs no cables at all.
+
+**Dust smelting recipes**
+
+- The material dusts now have a use in Core itself: **Nero Alloy Dust** and **Starsteel Dust**
+  smelt or blast into their ingots, and **Void Crystal Dust** smelts or blasts into the
+  **Void Crystal** gem — six furnace/blast-furnace recipes with tuned XP and cook times.
+
+### Changed
+
+**Standard Forge-Energy fallback in the energy lookup (NeoForge + Forge)**
+
+- `EnergyLookup.find(...)` now falls back to the loader's standard energy capability
+  (NeoForge `Capabilities.Energy.BLOCK`, Forge `ForgeCapabilities.ENERGY`) when a block
+  exposes no Nero energy, adapting FE↔NE with the config-driven `EnergyConversions` ratio.
+  Universal Pipes, batteries, and side-config auto-eject therefore treat third-party FE
+  cables and machines (e.g. **Energized Power**) as first-class energy neighbours.
+- On NeoForge the **Creative Battery** is additionally exposed on the standard energy
+  capability as an infinite FE source, so third-party cables connect to and draw from it
+  directly. (Exposing the regular Battery on the standard capability — letting external FE
+  networks *pull* from it — is a documented follow-up; it already *pushes* into them.)
+- The **Fabric** lookup remains Nero-only until the Team Reborn Energy API ports to 26.x.
+
+### Build & CI
+
+- New auto-assign workflow for newly opened issues and PRs; `/forge/versions` is now ignored.
+
+[1.3.2]: https://github.com/Neroland/neroland-core/releases/tag/v1.3.2
+
+## [1.3.1]
+
+Maintenance patch — no API or content changes.
+
+### Changed
+
+- Bumped loader/API dependency pins within the current Minecraft line.
+- Publish workflow updates (release metadata).
+
+[1.3.1]: https://github.com/Neroland/neroland-core/releases/tag/v1.3.1
+
 ## [1.3.0]
 
 Additive minor — new APIs and content only; no removals. Every existing API signature,
