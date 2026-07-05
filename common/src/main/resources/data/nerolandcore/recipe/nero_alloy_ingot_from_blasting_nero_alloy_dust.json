@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.3,
+  "ingredient": "nerolandcore:nero_alloy_dust",
+  "result": { "id": "nerolandcore:nero_alloy_ingot" }
+}

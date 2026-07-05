@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.5,
+  "ingredient": "nerolandcore:void_crystal_dust",
+  "result": { "id": "nerolandcore:void_crystal" }
+}
