@@ -46,6 +46,11 @@ major:
   `GasBuffer`, `NeroGases`, and the `nerolandcore:fluid` / `nerolandcore:gas` capabilities
   (added in 1.1.0; see below).
 - **Data / compliance** — `PlayerDataErasure`, `PlayerDataEraser`.
+- **NeroLink link API** (`za.co.neroland.nerolandcore.link`, added in 1.4.0) — the provider SPI
+  the NeroLink Bridge and mods integrate against: `NeroLinkRegistry`, `LinkModuleInfo`,
+  `LinkSnapshotProvider`, `LinkActionHandler`, `LinkActionResult` (+ `LinkActionResult.Error`),
+  `LinkEvent`, `LinkEventBus`, `LinkAlert` (+ `LinkAlert.Severity`). `LinkAlerts` (the `SavedData`
+  store) is `@ApiStatus.Internal` — reach it only through `LinkAlerts.get(server)`.
 
 ## What is internal (may change any time)
 
