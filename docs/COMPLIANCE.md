@@ -9,7 +9,9 @@ data-protection contract. Every Core-storing mod inherits these rules. Part of
 Keyed by player **UUID**, gameplay state only:
 
 - progression gate flags (`ProgressionState`),
-- last-login timestamp for retention (`PlayerActivity`).
+- last-login timestamp for retention (`PlayerActivity`),
+- NeroLink alerts (`LinkAlerts`) — per-player gameplay notifications (module id,
+  severity, short non-personal text, timestamps), keyed by owning UUID.
 
 Core does **not** store balances or reputation itself — those are contracts
 NeroEconomy / NeroFactions implement. Core never stores names, IPs, chat, or location
@@ -26,7 +28,7 @@ history beyond gameplay need.
 
 `PlayerDataErasure` is the single hook that purges a player across **every** system.
 Each Core system registers an eraser at init (progression, currency, reputation,
-activity), and so must every downstream mod that stores player data
+activity, NeroLink alerts), and so must every downstream mod that stores player data
 (NeroEconomy, NeroFactions, NeroSecurity, NeroQuests, NeroEvents):
 
 ```java

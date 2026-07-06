@@ -6,6 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.4.0]
+
+Minor release — introduces the **NeroLink integration surface** (`za.co.neroland.nerolandcore.link`),
+the provider SPI the NeroLink Bridge and companion app are built on. The version is a **minor bump
+only because a new integration surface enters the frozen-between-majors API**; **every existing API
+signature, tag, id, capability and config key is unchanged** and no code is removed or altered — a
+mod built against `1.3.x` continues to compile and run against `1.4.0`.
+
+### Added
+
+**NeroLink link API** (`za.co.neroland.nerolandcore.link`)
+
+- The small, loader-neutral provider SPI a Nero mod uses to plug into NeroLink, and the one surface
+  the (Core-only) NeroLink Bridge reads from. Core ships **only** the SPI, an event bus and an alert
+  store — it registers **no** `core` module itself; the bridge provides `core`'s
+  energy/storage/gates/alerts directly from Core's capabilities, so a Core-only server is fully
+  functional.
+- **Discovery** — `LinkModuleInfo` (module id, mod version, per-module `schemaVersion`, data sections,
+  action ids). The bridge builds its discovery response and the app builds its UI from
+  `NeroLinkRegistry.modules()`.
+- **Read side** — `LinkSnapshotProvider` (`moduleId`, `schemaVersion`, `sections`,
+  `snapshot(playerId, section, params)` → Gson `JsonObject`). Everything returned is already scoped
+  to the player (own-data-only), so authorisation lives at the seam.
+- **Write side** — `LinkActionHandler` (`moduleId`, `actionIds`, `execute(...)` on the server thread,
+  `allowOffline(actionId)` defaulting to `false`) returning a `LinkActionResult` — ok + resulting
+  state, or a stable `LinkActionResult.Error` code (`NOT_OWNER`, `GATE_LOCKED`, `VALIDATION`,
+  `ACTION_DISABLED`, `PLAYER_OFFLINE_REQUIRED`, `INTERNAL`).
+- **Live events** — `LinkEvent` (module, topic, nullable player for broadcasts, `JsonObject` payload,
+  timestamp) published on a thread-safe `LinkEventBus`; the bridge turns these into WebSocket deltas
+  and notifications.
+- **Registry** — `NeroLinkRegistry`, the central static registry: register snapshot providers and
+  action handlers (each with their `LinkModuleInfo`), look them up by module id, enumerate `modules()`
+  for discovery, and reach the shared `LinkEventBus`. Thread-safe (`ConcurrentHashMap` / copy-on-write).
+- **Alerts** — `LinkAlerts`, a persistent per-player alert store (`LinkAlert`: id, module, severity,
+  text, timestamps, acked/snoozed) behind the `core/alerts` section: raise / list / ack / snooze /
+  dismiss. Persisted as vanilla `SavedData` on the overworld using the same `SavedDataType` + Codec
+  pattern as `ProgressionState` / `PlayerActivity`, so a Core-only server persists alerts with no
+  bridge-side storage.
+- **Privacy (POPIA/GDPR)** — `LinkAlerts` is registered with the shared `data.PlayerDataErasure`
+  hook, so one erasure request purges a player's alerts alongside every other mod's data. Alert rows
+  are keyed only by the owning player's UUID and hold non-personal gameplay metadata; snapshots and
+  events are player-scoped by contract; nothing here logs player identity at info.
+
+[1.4.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.4.0
+
 ## [1.3.2]
 
 Additive patch — cross-mod energy interop and battery quality-of-life. No API removals or
