@@ -70,6 +70,19 @@ public final class CoreConfig {
             "dataRetentionDays", 0, 0, 3650, false,
             "Days of inactivity after which a player's stored data is purged (0 = never; opt-in).");
 
+    // --- Item highlights (client-side, local-only) --------------------------
+    // Subtle coloured slot borders on Nero ecosystem items, keyed to the
+    // neroland:highlight/* item tags (see client/ItemHighlights).
+    public static final ConfigValue<Boolean> ITEM_HIGHLIGHTS_ENABLED = SCHEMA.bool(
+            "itemHighlightsEnabled", true, false,
+            "Draw subtle coloured borders on Nero ecosystem items in inventory slots (client-side).");
+    public static final ConfigValue<Integer> ITEM_HIGHLIGHT_OPACITY = SCHEMA.intRange(
+            "itemHighlightOpacity", 65, 0, 100, false,
+            "Item highlight border opacity in percent (0 = invisible, 100 = solid).");
+    public static final ConfigValue<Integer> ITEM_HIGHLIGHT_THICKNESS = SCHEMA.intRange(
+            "itemHighlightThickness", 3, 1, 4, false,
+            "Item highlight border thickness in pixels; rings fade inwards like a glow.");
+
     // --- Local-only toggles -------------------------------------------------
     public static final ConfigValue<Boolean> DEBUG_LOGGING = SCHEMA.bool(
             "debugLogging", false, false,

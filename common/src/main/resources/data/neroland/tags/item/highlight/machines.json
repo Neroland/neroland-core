@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerolandcore:battery", "required": false },
+    { "id": "nerolandcore:fluid_tank", "required": false },
+    { "id": "nerolandcore:gas_tank", "required": false },
+    { "id": "nerolandcore:item_store", "required": false },
+    { "id": "nerolandcore:trash_can", "required": false },
+    { "id": "nerolandcore:creative_battery", "required": false },
+    { "id": "nerolandcore:creative_fluid_tank", "required": false },
+    { "id": "nerolandcore:creative_gas_tank", "required": false },
+    { "id": "nerolandcore:creative_item_store", "required": false }
+  ]
+}

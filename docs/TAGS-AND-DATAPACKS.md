@@ -37,6 +37,14 @@ that means "any Nero Alloy item" regardless of form. Core owns this namespace an
 will keep it stable across minor versions; treat it as the Neroland-specific
 counterpart to `c:`.
 
+Core also owns the **item-highlight category tags** `neroland:highlight/machines`,
+`neroland:highlight/tools`, `neroland:highlight/upgrades` and
+`neroland:highlight/materials` (item tags, `data/neroland/tags/item/highlight/`).
+Membership drives the client-side coloured slot borders (see
+`client/ItemHighlights`); every Nero mod adds its own items to these tags with
+`"replace": false` and `"required": false` entries, exactly like
+`neroland:meteor/grindable`.
+
 **Rule of thumb:** recipe ingredients and external interop → `c:`. "Is this one of
 our materials?" checks inside the ecosystem → `neroland:`.
 

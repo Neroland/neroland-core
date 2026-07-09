@@ -4,7 +4,9 @@
   "package": "za.co.neroland.nerolandcore.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
-  "client": [],
+  "client": [
+    "AbstractContainerScreenMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

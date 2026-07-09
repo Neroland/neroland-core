@@ -74,5 +74,6 @@ never player identity or world data.
 `CoreConfig` registers the shared tuning surface later phases read: material stat
 baselines (`materialHardnessMultiplier`, `materialBlastResistanceMultiplier`), the
 upgrade-module framework (`upgradeModuleSlotCap`, `upgradeStackingDiminish`), the
-energy conversion ratio (`neroEnergyToForgeEnergyRatio`), plus local `debugLogging`
-and a reserved `telemetryEnabled` opt-out.
+energy conversion ratio (`neroEnergyToForgeEnergyRatio`), the client-side item
+highlights (`itemHighlightsEnabled`, `itemHighlightOpacity`, `itemHighlightThickness`
+— local-only), plus local `debugLogging` and a reserved `telemetryEnabled` opt-out.

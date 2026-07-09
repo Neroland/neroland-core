@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.5.0]
+
+Minor release — adds **item highlights**, a client-side quality-of-life feature: a subtle coloured
+border inside inventory slots holding Nero ecosystem items (in the spirit of the classic *Item
+Borders* mod, but ecosystem-aware and tag-driven). Purely additive; **every existing API signature,
+tag, id, capability and config key is unchanged**.
+
+### Added
+
+**Item highlights** (`za.co.neroland.nerolandcore.client.ItemHighlights`)
+
+- A coloured frame drawn just inside the 16×16 slot, beneath the item — concentric one-pixel rings
+  (three by default) fading inwards like a soft glow, and fading towards the top of the slot to stay
+  subtle. Rendered from Core's first mixin
+  (`mixin/AbstractContainerScreenMixin`, hooked at the head of
+  `AbstractContainerScreen.extractSlot`), so it appears in every container screen — vanilla and
+  modded — on all three loaders.
+- **Colour by category, not by mod**, resolved from four new Core-owned item tags
+  (`data/neroland/tags/item/highlight/`; most specific wins):
+  `neroland:highlight/machines` (amber), `neroland:highlight/tools` (violet),
+  `neroland:highlight/upgrades` (green), `neroland:highlight/materials` (teal).
+  Downstream Nero mods add their own items to the same tags (entries `"required": false`,
+  `"replace": false`, matching the `neroland:meteor/grindable` precedent); datapacks can retune
+  membership with no code.
+- Core ships its own membership: all four materials in every form → `materials`; Battery, Fluid
+  Tank, Gas Tank, Item Store, Trash Can and the creative source blocks → `machines`. `tools` and
+  `upgrades` ship empty for downstream mods.
+- **Config** (local-only, client-side, hot-reloadable): `itemHighlightsEnabled` (default `true`),
+  `itemHighlightOpacity` (percent, default `65`) and `itemHighlightThickness` (pixels, 1-4,
+  default `3`).
+- New wiki page [`wiki/Item-Highlights.md`](wiki/Item-Highlights.md); tag and config docs updated.
+
 ## [1.4.0]
 
 Minor release — introduces the **NeroLink integration surface** (`za.co.neroland.nerolandcore.link`),

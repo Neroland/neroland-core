@@ -42,6 +42,9 @@ The sync payload carries only config keys and values — never player identity.
 | `upgradeModuleSlotCap` | Clamps upgrade module slot count |
 | `upgradeStackingDiminish` | Diminishing-returns curve for stacked upgrades |
 | `neroEnergyToForgeEnergyRatio` | NE <-> Forge Energy conversion ratio |
+| `itemHighlightsEnabled` | Coloured slot borders on Nero items (see Item Highlights) |
+| `itemHighlightOpacity` | Highlight border opacity, 0-100 percent |
+| `itemHighlightThickness` | Highlight border thickness in pixels, 1-4 |
 | `debugLogging` | Enables verbose debug logging |
 | `telemetryEnabled` | Reserved opt-out (see Privacy and Data) |
 | `dataRetentionDays` | Inactive-player retention; 0 = never |
