@@ -39,7 +39,7 @@ public final class SideConfigNetworking {
     }
 
     private static void handleIntent(SideConfigIntentPayload payload, ServerPlayer player) {
-        ServerLevel level = (ServerLevel) player.level();
+        ServerLevel level = player.level();
         BlockPos pos = payload.pos();
         if (!level.isLoaded(pos)) {
             return;

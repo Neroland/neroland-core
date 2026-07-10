@@ -35,6 +35,20 @@ class SideConfigModelTest {
     }
 
     @Test
+    void pushAlwaysAutoEjectsRegardlessOfToggle() {
+        // PUSH's defining contract: the base tick ejects from a PUSH face even when the
+        // channel's auto-eject toggle is off. OUTPUT/IO eject only with the toggle on.
+        assertTrue(SideMode.PUSH.shouldAutoEject(false));
+        assertTrue(SideMode.PUSH.shouldAutoEject(true));
+        assertFalse(SideMode.OUTPUT.shouldAutoEject(false));
+        assertTrue(SideMode.OUTPUT.shouldAutoEject(true));
+        assertFalse(SideMode.IO.shouldAutoEject(false));
+        assertTrue(SideMode.IO.shouldAutoEject(true));
+        assertFalse(SideMode.INPUT.shouldAutoEject(true));
+        assertFalse(SideMode.DISABLED.shouldAutoEject(true));
+    }
+
+    @Test
     void packUnpackRoundTrip() {
         ChannelConfig cfg = processorItem();
         cfg.setMode(RelativeFace.TOP, SideMode.INPUT);

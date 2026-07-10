@@ -279,7 +279,13 @@ public final class SideConfigComponent {
 
     // --- auto-eject / auto-input tick ---------------------------------------
 
-    /** Run optional auto-transfer for every channel whose toggle is on. Server-side only. */
+    /**
+     * Run optional auto-transfer for every channel whose toggle is on. Server-side only.
+     *
+     * <p>{@link SideMode#PUSH} faces honour the documented contract of being <em>always</em>
+     * auto-ejected by this tick, regardless of the channel's auto-eject toggle; the toggle
+     * governs only {@link SideMode#OUTPUT} / {@link SideMode#IO} faces.
+     */
     public void serverTick(Level level, BlockPos pos, int rate) {
         if (level.isClientSide() || rate <= 0) {
             return;
@@ -287,13 +293,10 @@ public final class SideConfigComponent {
         Direction machineFacing = facing();
         for (java.util.Map.Entry<Channel, ChannelConfig> entry : config.channels().entrySet()) {
             ChannelConfig cfg = entry.getValue();
-            if (!cfg.autoEject() && !cfg.autoInput()) {
-                continue;
-            }
             for (Direction side : Direction.values()) {
                 SideMode mode = config.mode(entry.getKey(), FaceResolver.fromAbsolute(machineFacing, side));
                 BlockPos neighbour = pos.relative(side);
-                if (cfg.autoEject() && mode.autoEjects()) {
+                if (mode.shouldAutoEject(cfg.autoEject())) {
                     push(entry.getKey(), level, neighbour, side, rate);
                 }
                 if (cfg.autoInput() && mode.autoInputs()) {

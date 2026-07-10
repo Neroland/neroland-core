@@ -54,6 +54,15 @@ public enum SideMode {
         return this == INPUT || this == IO;
     }
 
+    /**
+     * Whether the base tick should eject from this face given the channel's auto-eject toggle.
+     * {@link #PUSH} always ejects (its defining contract); {@link #OUTPUT} and {@link #IO}
+     * eject only when the toggle is enabled.
+     */
+    public boolean shouldAutoEject(boolean autoEjectEnabled) {
+        return this == PUSH || (autoEjectEnabled && autoEjects());
+    }
+
     /** Lower-case id form, e.g. {@code "input"}. */
     public String lowerName() {
         return name().toLowerCase(Locale.ROOT);
