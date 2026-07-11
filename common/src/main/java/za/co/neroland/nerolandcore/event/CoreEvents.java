@@ -39,4 +39,14 @@ public final class CoreEvents {
     public static void onReputation(Consumer<ReputationChange> listener) {
         ReputationEvents.onChange(listener);
     }
+
+    /**
+     * React to a scalar quantity crossing a publisher-defined threshold (added in Core 1.7.0) —
+     * e.g. Nerotech's regional pollution passing its event threshold. See
+     * {@link ThresholdEvents.ThresholdCrossing} for the payload contract (scopes are places or
+     * systems, never people).
+     */
+    public static void onThreshold(Consumer<ThresholdEvents.ThresholdCrossing> listener) {
+        ThresholdEvents.onCrossing(listener);
+    }
 }
