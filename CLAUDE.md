@@ -10,7 +10,7 @@
   build on it. Add shared content under `common/` and wire it through each loader entry point.
 - Mod id: **`nerolandcore`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerolandcore`. Author: **Neroland**.
-- Version: **1.0.0** — the V1 foundation is complete (the full Core API surface is in place). Treat the
+- Version: **1.8.0** — the V1 foundation is complete and additive 1.x APIs continue to land. Treat the
   public API as **frozen between majors**; see [`docs/API-STABILITY.md`](docs/API-STABILITY.md).
 - Targets **MC 26.1.2 AND 26.2** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"6 cells"**.
   **Java 25.** Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).

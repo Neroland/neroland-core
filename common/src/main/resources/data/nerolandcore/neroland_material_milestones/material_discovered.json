@@ -1,0 +1,5 @@
+{
+  "scope": "player",
+  "observations": ["owner_mod", "planet_visit", "player_pickup", "admin"],
+  "title": "Material Discovered"
+}

@@ -21,7 +21,7 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 
 - [Materials](Materials.md) — Nero Alloy, Starsteel, Void Crystal, Plasma Glass and their forms.
 - [Recipes](Recipes.md) — the compaction recipes Core ships.
-- [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) — the Nero energy + machine framework.
+- [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md) — the Nero Flux + machine framework.
 - [Side Configuration](Side-Config.md) — the per-face input/output/power/disabled control every machine shares.
 - Storage blocks — passive endpoints Core ships: [Battery](Battery.md), [Fluid Tank](Fluid-Tank.md),
   [Gas Tank](Gas-Tank.md), [Item Store](Item-Store.md), [Trash Can](Trash-Can.md), and the [Creative Source Blocks](Creative-Source-Blocks.md).

@@ -24,10 +24,18 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class NeoForgeRegistrationFactory implements RegistrationProvider.Factory {
 
     private static final List<DeferredRegister<?>> REGISTERS = new ArrayList<>();
+    private static int attachedRegisters;
 
     /** Attach every DeferredRegister created so far to the mod event bus. */
-    public static void registerAll(IEventBus modEventBus) {
-        REGISTERS.forEach(register -> register.register(modEventBus));
+    public static synchronized void registerAll(IEventBus modEventBus) {
+        while (attachedRegisters < REGISTERS.size()) {
+            REGISTERS.get(attachedRegisters++).register(modEventBus);
+        }
+    }
+
+    @Override
+    public void attach(Object loaderEventBus) {
+        registerAll((IEventBus) loaderEventBus);
     }
 
     @Override

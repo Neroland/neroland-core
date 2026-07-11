@@ -6,9 +6,11 @@ the power unit, the energy contracts, the upgrade resolver, and the cross-loader
 energy interop so every Nero machine speaks the same language. It does, however,
 ship a few **passive storage blocks** (see below) that ride these contracts.
 
-## Nero energy (NE)
+## Nero Flux (NF)
 
-The shared power unit is **Nero energy (NE)**.
+The shared player-facing power unit is **Nero Flux (NF)**. Existing API class names and the
+`neroEnergyToForgeEnergyRatio` config key remain unchanged for compatibility, and NF-to-FE conversion
+uses exactly the same configured ratio as before.
 
 | Piece | Role |
 | --- | --- |
@@ -51,7 +53,7 @@ stack-to-type mapping.
 ## Fluid and gas storage
 
 Core mirrors the energy seam for two more resource types so mods can pipe fluids
-and gases the same way they pipe NE. Both are **generic** — Core ships no specific
+and gases the same way they pipe NF. Both are **generic** — Core ships no specific
 fluids or gases, only the contracts and their cross-loader capabilities.
 
 | Piece | Role |
@@ -73,7 +75,7 @@ pipes and hoppers, but do no work — they are not machines:
 
 | Block | Holds | Page |
 | --- | --- | --- |
-| **Battery** | Nero energy (NE) | [Battery](Battery.md) |
+| **Battery** | Nero Flux (NF) | [Battery](Battery.md) |
 | **Fluid Tank** | one fluid | [Fluid Tank](Fluid-Tank.md) |
 | **Gas Tank** | one gas | [Gas Tank](Gas-Tank.md) |
 | **Item Store** | items (vanilla container) | [Item Store](Item-Store.md) |

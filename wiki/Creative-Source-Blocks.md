@@ -12,7 +12,7 @@ add an endless item source.)
 
 | Block | Provides | Configure |
 | --- | --- | --- |
-| **Creative Battery** | endless energy; accepts (voids) any inserted NE | — |
+| **Creative Battery** | endless energy; accepts (voids) any inserted NF | — |
 | **Creative Fluid Tank** | endless fluid of your choice | starts **empty** — right-click with a **filled bucket** to set the fluid |
 | **Creative Gas Tank** | endless gas | **learns its gas from the first gas piped into it** |
 

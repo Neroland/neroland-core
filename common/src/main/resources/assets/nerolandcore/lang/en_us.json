@@ -29,7 +29,7 @@
   "message.nerolandcore.sentry_test.disabled": "Telemetry is disabled (telemetryEnabled=false) — nothing sent.",
   "block.nerolandcore.battery": "Battery",
   "item.nerolandcore.battery": "Battery",
-  "block.nerolandcore.battery.readout": "Battery: %s / %s NE",
+  "block.nerolandcore.battery.readout": "Battery: %s / %s NF",
   "block.nerolandcore.creative_battery": "Creative Battery",
   "item.nerolandcore.creative_battery": "Creative Battery",
   "block.nerolandcore.creative_battery.readout": "Creative Battery: endless energy",

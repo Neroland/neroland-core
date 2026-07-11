@@ -32,6 +32,7 @@ public final class CoreCreativeTab {
 
     /** Item suppliers contributed by Core systems and downstream mods, drained into the tab on build. */
     private static final List<Supplier<? extends ItemLike>> CONTENTS = new ArrayList<>();
+    private static final List<Supplier<ItemStack>> STACKS = new ArrayList<>();
 
     // NOTE: vanilla CreativeModeTab.builder takes (Row, column); the no-arg overload and
     // withTabsBefore/After are NeoForge-only extensions, so they are avoided here (common = raw vanilla).
@@ -39,7 +40,10 @@ public final class CoreCreativeTab {
             key -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
                     .title(Component.translatable("itemGroup.nerolandcore"))
                     .icon(() -> new ItemStack(ModItems.NERO_ALLOY_INGOT.get()))
-                    .displayItems((params, output) -> CONTENTS.forEach(s -> output.accept(s.get())))
+                    .displayItems((params, output) -> {
+                        CONTENTS.forEach(s -> output.accept(s.get()));
+                        STACKS.forEach(s -> output.accept(s.get()));
+                    })
                     .build());
 
     private CoreCreativeTab() {
@@ -52,6 +56,11 @@ public final class CoreCreativeTab {
      */
     public static void add(Supplier<? extends ItemLike> item) {
         CONTENTS.add(item);
+    }
+
+    /** Append a configured example stack without registering another item id. */
+    public static void addStack(Supplier<ItemStack> stack) {
+        STACKS.add(stack);
     }
 
     /** Force class-load so the static tab registration runs. Called from {@link CoreRegistries#init()}. */

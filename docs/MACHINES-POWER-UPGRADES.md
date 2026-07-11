@@ -4,7 +4,7 @@ The shared base Nerotech, NeroPower and any other machine mod build on, so energ
 upgrade modules and machine boilerplate behave identically across the ecosystem.
 Part of [V1](V1-PLAN.md) Phase 6.
 
-## Power type: Nero energy (NE)
+## Power type: Nero Flux (NF)
 
 `NeroEnergyStorage` is the loader-neutral energy contract every Nero machine,
 generator and cable exposes. `EnergyBuffer` is the ready-made bounded
@@ -12,14 +12,15 @@ implementation:
 
 ```java
 EnergyBuffer energy = new EnergyBuffer(capacity, maxIO, maxIO, this::setChanged);
-energy.generate(8);          // a generator producing NE (bypasses the input limit)
-energy.consume(work * cost); // a machine spending NE
+energy.generate(8);          // a generator producing NF (bypasses the input limit)
+energy.consume(work * cost); // a machine spending NF
 energy.insert(amount, false);// external input (cables), bounded by maxIO
 ```
 
-Energy is measured in **Nero energy units (NE)**. `EnergyConversions` converts to/from
-Forge Energy using the config ratio `neroEnergyToForgeEnergyRatio` (`CoreConfig`),
-which the per-loader bridges use when adapting to a loader's native FE energy.
+Energy is displayed to players as **Nero Flux (NF)**. The existing Java API and persisted values retain
+their `NeroEnergy*` names for 1.x binary/save compatibility. `EnergyConversions` converts to/from Forge
+Energy using the config ratio `neroEnergyToForgeEnergyRatio` (`CoreConfig`); this naming change does not
+alter the FE bridge ratio or semantics.
 
 ## Base machine block-entity
 
@@ -97,7 +98,7 @@ is ready for when they do.
 ## Generic fluid and gas storage
 
 Core mirrors the energy seam for two more resource types, so a downstream mod can pipe
-fluids and gases the same way it pipes NE. These are **generic**: Core ships no specific
+fluids and gases the same way it pipes NF. These are **generic**: Core ships no specific
 fluids or gases, only the storage contracts and their cross-loader capabilities.
 
 ### Fluid
@@ -137,7 +138,7 @@ generation, no upgrade slots):
 
 | Block | Holds | Capability exposed |
 | --- | --- | --- |
-| **Battery** (`nerolandcore:battery`) | Nero energy (NE) | `nerolandcore:energy` |
+| **Battery** (`nerolandcore:battery`) | Nero Flux (NF) | `nerolandcore:energy` |
 | **Fluid Tank** (`nerolandcore:fluid_tank`) | one fluid | `nerolandcore:fluid` |
 | **Gas Tank** (`nerolandcore:gas_tank`) | one gas | `nerolandcore:gas` |
 | **Item Store** (`nerolandcore:item_store`) | items (vanilla `Container`) | the standard item handler |
