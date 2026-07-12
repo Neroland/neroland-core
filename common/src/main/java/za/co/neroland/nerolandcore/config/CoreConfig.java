@@ -34,7 +34,7 @@ public final class CoreConfig {
     // --- Energy conversion (read by Phase 6) --------------------------------
     public static final ConfigValue<Double> NERO_ENERGY_TO_FE = SCHEMA.doubleRange(
             "neroEnergyToForgeEnergyRatio", 1.0D, 0.01D, 100.0D, true,
-            "Conversion ratio: 1 Nero energy unit equals N Forge Energy (rough parity by default).");
+            "Conversion ratio: 1 Nero Flux (NF) equals N Forge Energy (rough parity by default).");
 
     // --- Meteor Material Registry (server-authoritative; read by the grinder) ---
     // The primary balance levers for the Meteor Material Registry resolution
@@ -62,7 +62,7 @@ public final class CoreConfig {
     // NeroLogistics; v1 uses this single global rate. Hot-reloadable.
     public static final ConfigValue<Integer> SIDE_CONFIG_TRANSFER_RATE = SCHEMA.intRange(
             "sideConfigAutoTransferRate", 256, 0, 1_000_000, true,
-            "Per-tick auto-eject/auto-input transfer rate per face: NE for energy, mB for fluid/gas, "
+            "Per-tick auto-eject/auto-input transfer rate per face: NF for energy, mB for fluid/gas, "
                     + "item count for the item channel. 0 disables auto-transfer (manual/pipe routing only).");
 
     // --- Data retention (POPIA/GDPR) ----------------------------------------

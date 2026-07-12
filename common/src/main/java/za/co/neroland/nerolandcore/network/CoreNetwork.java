@@ -15,6 +15,8 @@ import za.co.neroland.nerolandcore.config.ConfigManager;
 import za.co.neroland.nerolandcore.data.PlayerActivity;
 import za.co.neroland.nerolandcore.platform.Services;
 import za.co.neroland.nerolandcore.progression.ClientGates;
+import za.co.neroland.nerolandcore.progression.ClientMaterialMilestones;
+import za.co.neroland.nerolandcore.progression.MaterialMilestones;
 import za.co.neroland.nerolandcore.progression.ProgressionGates;
 
 /**
@@ -75,6 +77,8 @@ public final class CoreNetwork {
                 payload -> ConfigManager.applyServerValues(payload.values()));
         clientbound(GateSyncPayload.TYPE, GateSyncPayload.STREAM_CODEC,
                 payload -> ClientGates.accept(payload.gates()));
+        clientbound(MaterialMilestoneSyncPayload.TYPE, MaterialMilestoneSyncPayload.STREAM_CODEC,
+                payload -> ClientMaterialMilestones.accept(payload.values()));
         // Universal machine side configuration: serverbound intents + clientbound snapshot.
         SideConfigNetworking.register();
     }
@@ -83,6 +87,7 @@ public final class CoreNetwork {
     public static void onPlayerJoin(ServerPlayer player) {
         sendConfigTo(player);
         ProgressionGates.syncTo(player);
+        MaterialMilestones.syncTo(player);
         if (player.level().getServer() != null) {
             PlayerActivity.get(player.level().getServer()).touch(player.getUUID());
         }

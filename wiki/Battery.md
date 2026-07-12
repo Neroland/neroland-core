@@ -1,6 +1,6 @@
 # Battery
 
-A passive **Nero energy (NE)** store that buffers your power grid. The Battery is one of the
+A passive **Nero Flux (NF)** store that buffers your power grid. The Battery is one of the
 four storage blocks Neroland Core ships (see [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md));
 it stores energy but does no work of its own.
 
@@ -10,7 +10,7 @@ it stores energy but does no work of its own.
 
 ## How it works
 
-- Holds a large buffer of **NE**, accepting and providing power on **every side**.
+- Holds a large buffer of **NF**, accepting and providing power on **every side**.
 - Generators fill it through the network; machines drain it the same way — so a production
   hiccup doesn't black out your base.
 - Exposes Core's `nerolandcore:energy` capability, so any Nero machine, cable, or pipe (from

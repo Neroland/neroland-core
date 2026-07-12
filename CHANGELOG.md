@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.8.0]
+
+Additive public-API release for cross-mod material discovery.
+
+### Added
+
+- Typed per-material milestone definitions under
+  `data/<namespace>/neroland_material_milestones/*.json`, with player/team/server scopes.
+- Server-authoritative `MaterialMilestones` observation/query API, validated observation kinds,
+  change events, client sync, direct player export, and shared `PlayerDataErasure` integration.
+- Canonical `nerolandcore:material_discovered` definition for owner-mod, planet-visit,
+  legitimate player-pickup, and administrator observations.
+- Downstream registration attachment and configured-stack contributions to the shared Neroland
+  creative tab, allowing component-backed variants without per-variant registry ids.
+
+### Changed
+
+- Formalised **NF (Nero Flux)** as the player-facing power name. Existing energy Java types,
+  capability ids, persisted values, config keys, and FE conversion semantics are unchanged.
+
 ## [1.5.0]
 
 Minor release — adds **item highlights**, a client-side quality-of-life feature: a subtle coloured

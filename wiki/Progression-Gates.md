@@ -45,10 +45,22 @@ Core ships this default chain:
 already open. The explicit open/close operations force the state regardless.
 Every change fires a change event and re-syncs the affected players.
 
+## Material discovery milestones
+
+Core also provides typed per-material milestones. Instead of merely opening a named gate, these record
+that a particular material identifier has been legitimately encountered through an owning-mod action,
+a planet visit, a server-observed player pickup, or an administrator action. Automation cannot create
+discovery by itself.
+
+Definitions are datapack-driven under
+`data/<namespace>/neroland_material_milestones/<path>.json` and use the same player/team/server scopes.
+The built-in `nerolandcore:material_discovered` definition is the shared ecosystem default.
+
 ## Privacy
 
-Gate storage is POPIA/GDPR-minimal: a player row holds only a UUID plus the gate
-ids. Per-player erasure is supported through Core's shared erasure hook. See
+Progression storage is POPIA/GDPR-minimal: a player row holds only a UUID plus gate or material ids.
+There are no names, locations, or discovery timestamps. Player material rows can be exported and all
+player progression rows are erased through Core's shared erasure hook. See
 [Privacy and Data](Privacy-and-Data.md).
 
 ## Commands

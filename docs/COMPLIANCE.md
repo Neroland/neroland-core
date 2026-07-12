@@ -9,6 +9,7 @@ data-protection contract. Every Core-storing mod inherits these rules. Part of
 Keyed by player **UUID**, gameplay state only:
 
 - progression gate flags (`ProgressionState`),
+- typed material milestones (`MaterialMilestoneState`),
 - last-login timestamp for retention (`PlayerActivity`),
 - NeroLink alerts (`LinkAlerts`) — per-player gameplay notifications (module id,
   severity, short non-personal text, timestamps), keyed by owning UUID.
@@ -27,7 +28,7 @@ history beyond gameplay need.
 ## Right to erasure — the shared hook
 
 `PlayerDataErasure` is the single hook that purges a player across **every** system.
-Each Core system registers an eraser at init (progression, currency, reputation,
+Each Core system registers an eraser at init (progression gates and material milestones, currency, reputation,
 activity, NeroLink alerts), and so must every downstream mod that stores player data
 (NeroEconomy, NeroFactions, NeroSecurity, NeroQuests, NeroEvents):
 
@@ -40,6 +41,10 @@ One call then clears them all:
 ```java
 PlayerDataErasure.erase(server, playerUuid);
 ```
+
+Material milestone subject exports use
+`MaterialMilestones.exportPlayer(server, playerUuid)`. It returns only the player's UUID-keyed rows;
+shared team/server progression is not personal data and is therefore not included.
 
 Players and admins drive it via command:
 

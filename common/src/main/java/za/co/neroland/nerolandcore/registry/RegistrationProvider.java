@@ -34,6 +34,11 @@ public interface RegistrationProvider<T> {
         return Factory.INSTANCE.create(registryKey, modId);
     }
 
+    /** Attach registrations created by the calling downstream mod to its loader event bus. */
+    static void attach(Object loaderEventBus) {
+        Factory.INSTANCE.attach(loaderEventBus);
+    }
+
     <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory);
 
     /** A registered entry: a {@link Supplier} of the value plus its id. */
@@ -49,5 +54,9 @@ public interface RegistrationProvider<T> {
         Factory INSTANCE = Services.load(Factory.class);
 
         <T> RegistrationProvider<T> create(ResourceKey<? extends Registry<T>> registryKey, String modId);
+
+        /** Fabric registers eagerly; deferred-register loaders override this hook. */
+        default void attach(Object loaderEventBus) {
+        }
     }
 }

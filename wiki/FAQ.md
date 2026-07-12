@@ -29,7 +29,7 @@ datapack-overridable, and numeric balance lives in config. See
 
 ## Does Core have machines or power?
 
-Core ships the **framework** (Nero energy, a base machine block-entity, the upgrade-module system) but
+Core ships the **framework** (Nero Flux, a base machine block-entity, the upgrade-module system) but
 no concrete machines or generators — those come from mods like Nerotech and NeroPower. See
 [Machines, Power & Upgrades](Machines-Power-and-Upgrades.md).
 

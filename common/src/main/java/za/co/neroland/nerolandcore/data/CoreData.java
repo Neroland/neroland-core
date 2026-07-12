@@ -3,6 +3,7 @@ package za.co.neroland.nerolandcore.data;
 import za.co.neroland.nerolandcore.economy.CurrencyApi;
 import za.co.neroland.nerolandcore.link.LinkAlerts;
 import za.co.neroland.nerolandcore.progression.ProgressionState;
+import za.co.neroland.nerolandcore.progression.MaterialMilestoneState;
 import za.co.neroland.nerolandcore.reputation.ReputationApi;
 
 /**
@@ -20,6 +21,7 @@ public final class CoreData {
 
     public static void init() {
         PlayerDataErasure.register((server, uuid) -> ProgressionState.get(server).forgetPlayer(uuid));
+        PlayerDataErasure.register((server, uuid) -> MaterialMilestoneState.get(server).forgetPlayer(uuid));
         PlayerDataErasure.register((server, uuid) -> CurrencyApi.provider().forgetPlayer(uuid));
         PlayerDataErasure.register((server, uuid) -> ReputationApi.provider().forgetPlayer(uuid));
         PlayerDataErasure.register((server, uuid) -> PlayerActivity.get(server).forget(uuid));

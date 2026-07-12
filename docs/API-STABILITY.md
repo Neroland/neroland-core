@@ -36,7 +36,9 @@ major:
   tag set (see `TAGS-AND-DATAPACKS.md`). Tag ids are a frozen contract.
 - **Config** — `ConfigManager`, `ConfigSchema`, `ConfigValue` and the `CoreConfig` keys.
 - **Progression** — `ProgressionGates`, `CoreGates` ids, `GateScope`, `GateEvents`,
-  `ClientGates`, and the `neroland_gates` datapack format.
+  `ClientGates`, `MaterialMilestones`, `MaterialMilestone`, `MaterialObservation`,
+  `MaterialMilestoneEvents`, `ClientMaterialMilestones`, and the `neroland_gates` /
+  `neroland_material_milestones` datapack formats.
 - **Economy / reputation** — `CurrencyApi`, `Currency`, `CurrencyProvider`,
   `CurrencyEvents`; `ReputationApi`, `ReputationProvider`, `ReputationEvents`.
 - **Machines / power / upgrades** — `NeroEnergyStorage`, `EnergyBuffer`,
@@ -65,9 +67,10 @@ Internal includes:
   `NeoForgeRegistrationFactory`, the loader `*Network` / `*EnergyLookup` impls — note
   the `*EnergyLookup.ENERGY` capability fields they expose *are* API).
 - Core's content-registration internals (`ModBlocks`, `ModItems`, `CoreRegistries`),
-  the in-memory providers, the `SavedData` stores (`ProgressionState`,
+  the in-memory providers, the `SavedData` stores (`ProgressionState`, `MaterialMilestoneState`,
   `PlayerActivity`), the gate loader (`GateDefinitions`), and the wire payloads
-  (`ConfigSyncPayload`, `GateSyncPayload`) — all `@ApiStatus.Internal`. Use the
+  (`ConfigSyncPayload`, `GateSyncPayload`, `MaterialMilestoneSyncPayload`) — all
+  `@ApiStatus.Internal`. Use the
   facade/interface and reference materials by tag, never these classes.
 - Procedural placeholder textures and exact balance constants (config- or
   datapack-tunable; expected to be re-skinned / re-tuned).

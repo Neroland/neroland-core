@@ -24,10 +24,18 @@ import net.minecraftforge.registries.RegistryObject;
 public final class ForgeRegistrationFactory implements RegistrationProvider.Factory {
 
     private static final List<DeferredRegister<?>> REGISTERS = new ArrayList<>();
+    private static int attachedRegisters;
 
     /** Attach every DeferredRegister created so far to the mod bus group. */
-    public static void registerAll(BusGroup modBusGroup) {
-        REGISTERS.forEach(register -> register.register(modBusGroup));
+    public static synchronized void registerAll(BusGroup modBusGroup) {
+        while (attachedRegisters < REGISTERS.size()) {
+            REGISTERS.get(attachedRegisters++).register(modBusGroup);
+        }
+    }
+
+    @Override
+    public void attach(Object loaderEventBus) {
+        registerAll((BusGroup) loaderEventBus);
     }
 
     @Override

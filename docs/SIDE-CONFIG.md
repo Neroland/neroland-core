@@ -110,7 +110,7 @@ invalidates cached capabilities so adjacent pipes reconnect.
 
 Optional per-channel toggles, off by default, push from `OUTPUT`/`PUSH` faces and
 pull into `INPUT` faces against adjacent Core capabilities each tick, bounded by the
-server-authoritative `sideConfigAutoTransferRate` config value (NE for energy, mB for
+server-authoritative `sideConfigAutoTransferRate` config value (NF for energy, mB for
 fluid/gas, item count for items; `0` disables). Item auto-transfer covers adjacent
 vanilla containers; mod pipes still pull through the gated `WorldlyContainer`.
 
