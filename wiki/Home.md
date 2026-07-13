@@ -31,6 +31,7 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 - [Item Highlights](Item-Highlights.md) — the coloured slot borders that mark Nero items in inventories.
 - [Configuration](Configuration.md) — the config file and reload command.
 - [Tags & Datapacks](Tags-and-Datapacks.md) — `c:`/`neroland:` tags and pack retuning.
+- [Decor Contracts](Decor-Contracts.md) — palette export, dashboard surfaces, and `neroland:decor/*` tags.
 - [Privacy & Data](Privacy-and-Data.md) — POPIA/GDPR, erasure, and retention.
 
 ## For developers

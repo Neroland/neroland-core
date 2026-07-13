@@ -16,6 +16,18 @@ Neroland Core follows semantic versioning on its **public API**:
 
 Downstream mods should depend on a Core major (e.g. `[1.0,2.0)`).
 
+### 1.9.0 — additive minor
+
+`1.9.0` adds the **decor contracts** (see [`DECOR-CONTRACTS.md`](DECOR-CONTRACTS.md)),
+all additive: the **palette export** (`palette.PaletteRegistry` / `Finish` / `CoreFinishes`
+plus the `neroland:` finish ids), the **dashboard content contract**
+(`link.display.DisplaySurface` / `DisplaySurfaces` / `DisplayAddress` / `DisplayPayload`),
+the **`neroland:decor/*` block-tag family** (`decor.DecorTags` + empty base tag files), and
+a second creative tab (`CoreCreativeTab.NEROLAND_DECOR` / `addDecor(...)`,
+`itemGroup.nerolandcore.decor`). Nothing was removed: every existing API signature, tag,
+id and capability still works unchanged. All new surfaces are cosmetic-only and carry no
+player data.
+
 ### 1.1.0 — additive minor
 
 `1.1.0` is an additive minor: it adds the four passive storage blocks (Battery, Fluid Tank,
@@ -48,6 +60,12 @@ major:
   `GasBuffer`, `NeroGases`, and the `nerolandcore:fluid` / `nerolandcore:gas` capabilities
   (added in 1.1.0; see below).
 - **Data / compliance** — `PlayerDataErasure`, `PlayerDataEraser`.
+- **Decor contracts** (added in 1.9.0; see [`DECOR-CONTRACTS.md`](DECOR-CONTRACTS.md)) —
+  the palette export (`palette.PaletteRegistry`, `palette.Finish`, `palette.CoreFinishes`
+  and the `neroland:` finish ids), the dashboard content contract
+  (`link.display.DisplaySurface`, `DisplaySurfaces`, `DisplayAddress`, `DisplayPayload`),
+  the `neroland:decor/*` block-tag ids (`decor.DecorTags`), and the decor creative-tab seam
+  (`CoreCreativeTab.NEROLAND_DECOR` / `CoreCreativeTab.addDecor`). Cosmetic-only.
 - **NeroLink link API** (`za.co.neroland.nerolandcore.link`, added in 1.4.0) — the provider SPI
   the NeroLink Bridge and mods integrate against: `NeroLinkRegistry`, `LinkModuleInfo`,
   `LinkSnapshotProvider`, `LinkActionHandler`, `LinkActionResult` (+ `LinkActionResult.Error`),

@@ -34,6 +34,9 @@ public final class CoreCreativeTab {
     private static final List<Supplier<? extends ItemLike>> CONTENTS = new ArrayList<>();
     private static final List<Supplier<ItemStack>> STACKS = new ArrayList<>();
 
+    /** Contents of the separate decor sub-group tab (see {@link #NEROLAND_DECOR}). */
+    private static final List<Supplier<? extends ItemLike>> DECOR_CONTENTS = new ArrayList<>();
+
     // NOTE: vanilla CreativeModeTab.builder takes (Row, column); the no-arg overload and
     // withTabsBefore/After are NeoForge-only extensions, so they are avoided here (common = raw vanilla).
     public static final RegistryEntry<CreativeModeTab> NEROLAND = TABS.register("neroland",
@@ -46,6 +49,20 @@ public final class CoreCreativeTab {
                     })
                     .build());
 
+    /**
+     * The separate <b>Neroland Decor</b> sub-group tab (added in Core 1.9.0). Decorative
+     * mods (NeroDecor first) register their many blocks here via {@link #addDecor(Supplier)}
+     * so a large decor kit lives in its own organised tab instead of swamping the main
+     * Neroland tab. Icon is Plasma Glass — a recognisably decorative Core block. If no mod
+     * contributes decor, the tab is simply empty (harmless).
+     */
+    public static final RegistryEntry<CreativeModeTab> NEROLAND_DECOR = TABS.register("neroland_decor",
+            key -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 1)
+                    .title(Component.translatable("itemGroup.nerolandcore.decor"))
+                    .icon(() -> new ItemStack(ModItems.PLASMA_GLASS_BLOCK_ITEM.get()))
+                    .displayItems((params, output) -> DECOR_CONTENTS.forEach(s -> output.accept(s.get())))
+                    .build());
+
     private CoreCreativeTab() {
     }
 
@@ -56,6 +73,17 @@ public final class CoreCreativeTab {
      */
     public static void add(Supplier<? extends ItemLike> item) {
         CONTENTS.add(item);
+    }
+
+    /**
+     * Append an item to the <b>Neroland Decor</b> sub-group tab ({@link #NEROLAND_DECOR}).
+     * Call during mod init, before tabs are built. Decorative mods use this instead of
+     * {@link #add(Supplier)} to keep the main tab uncluttered.
+     *
+     * @param item supplier of the item to show (typically a {@link RegistryEntry})
+     */
+    public static void addDecor(Supplier<? extends ItemLike> item) {
+        DECOR_CONTENTS.add(item);
     }
 
     /** Append a configured example stack without registering another item id. */

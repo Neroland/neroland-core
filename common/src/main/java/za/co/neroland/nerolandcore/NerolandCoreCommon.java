@@ -7,6 +7,7 @@ import za.co.neroland.nerolandcore.config.CoreConfig;
 import za.co.neroland.nerolandcore.data.CoreData;
 import za.co.neroland.nerolandcore.meteor.MeteorMaterials;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
+import za.co.neroland.nerolandcore.palette.PaletteRegistry;
 import za.co.neroland.nerolandcore.platform.Services;
 import za.co.neroland.nerolandcore.registry.CoreRegistries;
 
@@ -47,5 +48,8 @@ public final class NerolandCoreCommon {
 
         // Aggregate grindable meteor materials (annotation scan now; data files load per world).
         MeteorMaterials.init();
+
+        // Palette export: register Core's built-in finishes so any mod/data pack can match trims.
+        PaletteRegistry.init();
     }
 }
