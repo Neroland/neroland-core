@@ -1,9 +1,7 @@
 # Neroland Core — V1 (1.0.0) Plan
 
 > Planning doc for the first stable release of **Neroland Core**, the foundation library every
-> Neroland mod builds on. Design source of truth lives in the umbrella repo under
-> [`../neroland-mc-ecosystem/neroland-core`](https://github.com/dario-maselli/neroland-mc-ecosystem)
-> (`README` / `DESIGN` / `FEATURES` / `DEPENDENCIES` / `IDEAS`). This doc turns that design into a
+> Neroland mod builds on. This doc turns the ecosystem design into a
 > shippable V1; [`V1-CHECKLIST.md`](V1-CHECKLIST.md) is the line-by-line task list.
 
 ## Goal of V1

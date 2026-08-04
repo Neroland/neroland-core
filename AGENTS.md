@@ -10,7 +10,7 @@
   build on it. Add shared content under `common/` and wire it through each loader entry point.
 - Mod id: **`nerolandcore`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerolandcore`. Author: **Neroland**.
-- Version: **1.8.0** — the V1 foundation is complete and additive 1.x APIs continue to land. Treat the
+- Version: **1.10.0** — the V1 foundation is complete and additive 1.x APIs continue to land. Treat the
   public API as **frozen between majors**; see [`docs/API-STABILITY.md`](docs/API-STABILITY.md).
 - Targets **MC 26.1.2 AND 26.2** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"6 cells"**.
   **Java 25.** Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).
@@ -33,6 +33,15 @@ pack-maker-facing pages live in [`wiki/`](wiki/Home.md).
   `energy/` + `machine/` + `upgrade/` + `platform/EnergyLookup`; [`docs/MACHINES-POWER-UPGRADES.md`](docs/MACHINES-POWER-UPGRADES.md).
 - **Data & compliance** — shared per-player erasure, retention, opt-out. `data/`
   (`PlayerDataErasure`); [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md).
+
+Additive 1.x additions on top of those six: decor contracts (1.9.0 — `palette/`,
+`link/display/`, `decor/DecorTags`; [`docs/DECOR-CONTRACTS.md`](docs/DECOR-CONTRACTS.md)) and,
+in 1.10.0, the **space tags** `neroland:space/*` (`worldgen/SpaceTags` — biome +
+dimension-type vocabulary for off-Earth places, membership shipped `"required": false` so the
+tags are legitimately empty without a planet mod) and the **entity registration seam**
+(`entity/EntityRegistrationSupport` — default attributes + spawn placements declared from
+common code, flushed by per-loader plumbing); both in
+[`docs/SPACE-TAGS-AND-ENTITIES.md`](docs/SPACE-TAGS-AND-ENTITIES.md).
 
 Cross-cutting: ServiceLoader platform seams (`platform/`, `network/`), a unified `event/CoreEvents`
 bus facade, and Sentry telemetry (`telemetry/`, opt-out via `telemetryEnabled`). Commands live under

@@ -98,6 +98,24 @@ A consumer's `nerolandcore_version` must name a Core version that exists in GitH
 consumer at it, or leave the consumer on the older pinned version (Core accepts the 1.0–2.0
 range at runtime; the build-time pin just has to resolve).
 
+### Minimum versions for the newer APIs
+
+Core's API is additive within 1.x, so a consumer must pin at least the version that introduced
+the API it calls (and floor its manifest `versionRange` at the same number — a `[1.0,2.0)`
+floor loads happily against a Core that is too old and then fails at runtime):
+
+| API | Since |
+| --- | ----- |
+| Palette export, dashboard surfaces, `neroland:decor/*` tags | `1.9.0` |
+| `SpaceTags` (`neroland:space/*`) and `EntityRegistrationSupport` | `1.10.0` |
+
+## What to call once it resolves
+
+This page is about **getting** Core on the classpath. For the APIs themselves start at
+[`docs/USING-CORE.md`](docs/USING-CORE.md), which indexes every system and its deep doc —
+including [`docs/SPACE-TAGS-AND-ENTITIES.md`](docs/SPACE-TAGS-AND-ENTITIES.md) for the
+`neroland:space/*` biome vocabulary and the cross-loader mob-registration seam.
+
 ## Privacy
 
 Publishing and resolving Core handles only build artifacts and version strings — no personal

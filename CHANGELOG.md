@@ -6,6 +6,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.10.0]
+
+Additive public-API release for off-Earth content: a shared "where is space?" tag vocabulary
+and a cross-loader entity registration seam. **Every existing API signature, tag, id,
+capability and config key is unchanged.**
+
+### Added
+
+**Space tags** (`za.co.neroland.nerolandcore.worldgen.SpaceTags`)
+
+- The `neroland:space/*` vocabulary — biome tags `space/dark_biomes`, `space/moon_biomes`,
+  `space/crystalline_biomes`, `space/asteroid_biomes` and the umbrella `space/planet_biomes`,
+  plus the dimension-**type** tag `space/dimensions`. Core owns the ids; the mods that own the
+  planets supply the members.
+- Base membership shipped in `data/neroland/tags/worldgen/biome/space/` and
+  `data/neroland/tags/dimension_type/space/`, with **every entry `"required": false`** —
+  Nerospace's biomes themed from their own JSON plus `nerospace:gravity_*` membership, and
+  best-effort Ad Astra entries on the usual tag-mediated, no-hard-dependency footing.
+  `space/planet_biomes` includes the four themed tags by reference.
+- Helpers `isSpace(ServerLevel)`, `biomeIn(Holder<Biome>, TagKey<Biome>)` and
+  `biomeIn(LevelReader, BlockPos, TagKey<Biome>)`. **Empty tags are a supported state** —
+  consumers must read an empty tag as "no such place here", never as an error.
+
+**Entity registration seam** (`za.co.neroland.nerolandcore.entity.EntityRegistrationSupport`)
+
+- Declare a mob's **default attributes** and **natural spawn placement** once from common code:
+  `get(modId).registerAttributes(typeSupplier, builderSupplier)` and
+  `registerSpawnPlacement(typeSupplier, placementType, heightmap, predicate)`. Both take
+  suppliers so a `RegistrationProvider.RegistryEntry` can be passed straight in on the
+  deferred-register loaders.
+- Buffered in common and flushed by per-loader plumbing (a ServiceLoader seam,
+  `EntityRegistrationSupport$Plumbing`): NeoForge `EntityAttributeCreationEvent` /
+  `RegisterSpawnPlacementsEvent`, Forge `EntityAttributeCreationEvent` /
+  `SpawnPlacementRegisterEvent`, Fabric `FabricDefaultAttributeRegistry` plus the vanilla
+  `SpawnPlacements.register` applied immediately.
+- Requires **no loader wiring downstream** — Core installs the flush listeners during its own
+  bootstrap and the events reach every mod. `attach(loaderEventBus)` is offered for parity
+  with `RegistrationProvider.attach(...)` and is idempotent; every buffered entry is applied at
+  most once, and a failing entry is logged (mod id only) rather than aborting the batch.
+- New docs page [`docs/SPACE-TAGS-AND-ENTITIES.md`](docs/SPACE-TAGS-AND-ENTITIES.md) and wiki
+  page [`wiki/Space-Tags-and-Entities.md`](wiki/Space-Tags-and-Entities.md).
+
 ## [1.8.0]
 
 Additive public-API release for cross-mod material discovery.

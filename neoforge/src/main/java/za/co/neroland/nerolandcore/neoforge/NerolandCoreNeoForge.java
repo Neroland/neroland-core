@@ -12,6 +12,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
+import za.co.neroland.nerolandcore.entity.NeoForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.registry.NeoForgeRegistrationFactory;
 import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
@@ -31,6 +32,9 @@ public final class NerolandCoreNeoForge {
         // Anonymous, Neroland-Core-only crash reporting (opt-out via config; off-tagged in dev).
         NerolandCoreTelemetry.init();
         NeoForgeRegistrationFactory.registerAll(modEventBus);
+        // Flush listeners for the shared entity seam (default attributes + spawn placements). Mod-bus
+        // events reach every mod, so this one attachment also serves downstream mods' registrations.
+        NeoForgeEntityRegistrationPlumbing.attachBus(modEventBus);
         NeoForgeNetwork.register(modEventBus);
         // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
         NeoForgeCoreCapabilities.register(modEventBus);

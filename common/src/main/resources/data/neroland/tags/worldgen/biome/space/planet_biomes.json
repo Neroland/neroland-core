@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "#neroland:space/dark_biomes",
+    "#neroland:space/moon_biomes",
+    "#neroland:space/crystalline_biomes",
+    "#neroland:space/asteroid_biomes",
+    { "id": "nerospace:cindara", "required": false },
+    { "id": "nerospace:glacira", "required": false },
+    { "id": "nerospace:greenxertz", "required": false },
+    { "id": "nerospace:terraformed", "required": false },
+    { "id": "nerospace:terraformed_meadow", "required": false },
+    { "id": "nerospace:terraformed_savanna", "required": false },
+    { "id": "nerospace:terraformed_tundra", "required": false },
+    { "id": "ad_astra:moon", "required": false },
+    { "id": "ad_astra:moon_desert", "required": false },
+    { "id": "ad_astra:mars", "required": false },
+    { "id": "ad_astra:venus", "required": false },
+    { "id": "ad_astra:mercury", "required": false },
+    { "id": "ad_astra:glacio", "required": false },
+    { "id": "ad_astra:orbit", "required": false }
+  ]
+}

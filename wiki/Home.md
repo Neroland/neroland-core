@@ -1,7 +1,7 @@
 # Neroland Core Wiki
 
-Player- and contributor-facing documentation for **Neroland Core**, part of the
-[Neroland ecosystem](../../neroland-mc-ecosystem/README.md).
+Player- and contributor-facing documentation for **Neroland Core**, the foundation
+library of the Neroland ecosystem.
 
 > **Status:** V1 foundation complete — version `1.3.0`. Core is a **library, not a content mod**:
 > it ships materials, tags, and a stack of APIs that other Neroland mods (Nerospace, Nerotech,
@@ -32,6 +32,8 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 - [Configuration](Configuration.md) — the config file and reload command.
 - [Tags & Datapacks](Tags-and-Datapacks.md) — `c:`/`neroland:` tags and pack retuning.
 - [Decor Contracts](Decor-Contracts.md) — palette export, dashboard surfaces, and `neroland:decor/*` tags.
+- [Space Tags & Entity Registration](Space-Tags-and-Entities.md) — the `neroland:space/*` biome
+  vocabulary and the cross-loader mob-registration seam.
 - [Privacy & Data](Privacy-and-Data.md) — POPIA/GDPR, erasure, and retention.
 
 ## For developers
@@ -42,5 +44,3 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 ## See also
 
 - [Build & contributor context](../AGENTS.md)
-- [Ecosystem overview](../../neroland-mc-ecosystem/README.md)
-- [This mod's planning docs](../../neroland-mc-ecosystem/neroland-core/)

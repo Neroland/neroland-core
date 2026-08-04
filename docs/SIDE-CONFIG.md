@@ -7,8 +7,7 @@ side pulls a resource in, which pushes it out, which connects to power, and whic
 disabled. The behaviour lives in Core, so a mod author declares the surface once and
 never hand-rolls face routing, and the player learns the control once.
 
-This is the developer reference. The ecosystem design rationale lives in
-`neroland-mc-ecosystem/neroland-core/SIDE-CONFIG.md`; the player-facing page is in
+This is the developer reference. The player-facing page is in
 [`../wiki/Side-Config.md`](../wiki/Side-Config.md).
 
 ## The model

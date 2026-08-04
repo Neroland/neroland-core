@@ -45,6 +45,18 @@ Membership drives the client-side coloured slot borders (see
 `"replace": false` and `"required": false` entries, exactly like
 `neroland:meteor/grindable`.
 
+Two further Core-owned `neroland:` families are documented separately because they tag
+things other than items:
+
+- **`neroland:decor/*`** — block tags for the decorative layer; see
+  [`DECOR-CONTRACTS.md`](DECOR-CONTRACTS.md).
+- **`neroland:space/*`** — biome and dimension-type tags describing off-Earth places
+  (`space/dark_biomes`, `space/moon_biomes`, `space/crystalline_biomes`,
+  `space/asteroid_biomes`, `space/planet_biomes`, `space/dimensions`). Core ships base
+  membership with **every entry `"required": false`**, so the tags resolve to whichever
+  planet mods are installed and are legitimately **empty** on a Core-only server. See
+  [`SPACE-TAGS-AND-ENTITIES.md`](SPACE-TAGS-AND-ENTITIES.md).
+
 **Rule of thumb:** recipe ingredients and external interop → `c:`. "Is this one of
 our materials?" checks inside the ecosystem → `neroland:`.
 

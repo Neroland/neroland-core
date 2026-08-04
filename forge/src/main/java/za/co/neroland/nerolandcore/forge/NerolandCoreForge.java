@@ -11,6 +11,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
+import za.co.neroland.nerolandcore.entity.ForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.registry.ForgeRegistrationFactory;
 import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
@@ -31,6 +32,9 @@ public final class NerolandCoreForge {
         // Anonymous, Neroland-Core-only crash reporting (opt-out via config; off-tagged in dev).
         NerolandCoreTelemetry.init();
         ForgeRegistrationFactory.registerAll(modBusGroup);
+        // Flush listeners for the shared entity seam (default attributes + spawn placements). Both
+        // events share one static bus, so this single installation also serves downstream mods.
+        ForgeEntityRegistrationPlumbing.installListeners();
         ForgeNetwork.register();
         // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
         ForgeCoreCapabilities.register();

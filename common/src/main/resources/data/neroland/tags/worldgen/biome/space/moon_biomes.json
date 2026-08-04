@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerospace:glacira", "required": false },
+    { "id": "ad_astra:moon", "required": false },
+    { "id": "ad_astra:moon_desert", "required": false },
+    { "id": "ad_astra:mercury", "required": false }
+  ]
+}

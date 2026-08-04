@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerospace:cindara", "required": false },
+    { "id": "ad_astra:orbit", "required": false }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerospace:space", "required": false },
+    { "id": "ad_astra:moon", "required": false },
+    { "id": "ad_astra:mars", "required": false },
+    { "id": "ad_astra:venus", "required": false },
+    { "id": "ad_astra:mercury", "required": false },
+    { "id": "ad_astra:glacio", "required": false },
+    { "id": "ad_astra:orbit", "required": false }
+  ]
+}

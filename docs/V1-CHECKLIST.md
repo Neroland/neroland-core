@@ -103,8 +103,7 @@
 ## Notes
 
 - Build order: Core is mod **#1**; nothing else in the ecosystem can be built cleanly until these
-  contracts exist. See the umbrella
-  [ROADMAP](https://github.com/dario-maselli/neroland-mc-ecosystem/blob/main/ROADMAP.md).
+  contracts exist.
 - External interop (Create / AE2 / Mekanism / Ad Astra) is delivered **only** through Core's common
   tags — never a hard or soft dependency.
 - Resources are hand-authored; this multiloader does not run datagen.

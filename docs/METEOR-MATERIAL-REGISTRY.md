@@ -212,4 +212,3 @@ retention limit, and stay opt-out. See [COMPLIANCE.md](COMPLIANCE.md).
 
 - [Tags & Datapacks](TAGS-AND-DATAPACKS.md) · [Progression](PROGRESSION.md) ·
   [Config](CONFIG.md) · [Using Core](USING-CORE.md)
-- Umbrella spec: `../../neroland-mc-ecosystem/neroland-core/METEOR-MATERIAL-REGISTRY.md`

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerospace:glacira", "required": false },
+    { "id": "nerospace:greenxertz", "required": false },
+    { "id": "ad_astra:glacio", "required": false }
+  ]
+}

@@ -31,6 +31,8 @@ Every system is reached through a small facade; the per-loader wiring is Core's 
 | Adjust faction standing | `ReputationApi` | [ECONOMY-REPUTATION](ECONOMY-REPUTATION.md) |
 | Build a machine | extend `AbstractMachineBlockEntity` | [MACHINES-POWER-UPGRADES](MACHINES-POWER-UPGRADES.md) |
 | Expose/find energy | `EnergyLookup` + `*EnergyLookup.ENERGY` | [MACHINES-POWER-UPGRADES](MACHINES-POWER-UPGRADES.md) |
+| Ask "is this place off-Earth?" | `SpaceTags` (`isSpace` / `biomeIn`) | [SPACE-TAGS-AND-ENTITIES](SPACE-TAGS-AND-ENTITIES.md) |
+| Register mob attributes / spawn placement | `EntityRegistrationSupport.get(modId)` | [SPACE-TAGS-AND-ENTITIES](SPACE-TAGS-AND-ENTITIES.md) |
 | Store player data | register a `PlayerDataEraser` | [COMPLIANCE](COMPLIANCE.md) |
 
 Put loader-agnostic logic in your `common` module and reach loader specifics through

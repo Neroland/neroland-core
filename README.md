@@ -1,6 +1,6 @@
 # Neroland Core
 
-> Part of the [Neroland](../neroland-mc-ecosystem) sci-fi Minecraft mod ecosystem, built on **Neroland Core**.
+> The foundation library of the Neroland sci-fi Minecraft mod ecosystem.
 
 **Status:** V1 foundation complete — version `1.0.0`. The full Core API surface is in
 place (materials, config, progression gates, currency/reputation contracts, and the
@@ -49,7 +49,7 @@ See [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) for agent and contributo
 - [docs/MACHINES-POWER-UPGRADES.md](docs/MACHINES-POWER-UPGRADES.md) — machine / power / upgrade framework
 - [docs/COMPLIANCE.md](docs/COMPLIANCE.md) — POPIA/GDPR: erasure, retention, logging
 
-## Planning docs
+## Developer docs
 
-Design, feature and dependency docs for this mod live in the umbrella repo under
-[`../neroland-mc-ecosystem/neroland-core`](../neroland-mc-ecosystem/neroland-core).
+Deep developer documentation lives in [`docs/`](docs/); player- and pack-maker-facing
+pages live in the [wiki](wiki/Home.md).
