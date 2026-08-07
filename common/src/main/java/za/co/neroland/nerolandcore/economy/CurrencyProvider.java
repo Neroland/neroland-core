@@ -31,7 +31,19 @@ public interface CurrencyProvider {
         return false;
     }
 
-    /** POPIA/GDPR erasure hook: drop everything stored for a player. No-op by default. */
+    /**
+     * POPIA/GDPR erasure hook: drop every balance stored for {@code player}.
+     *
+     * @implSpec <b>Any provider that persists balances MUST override this.</b>
+     *     {@link za.co.neroland.nerolandcore.data.PlayerDataErasure} purges the economy by calling
+     *     {@code CurrencyApi.provider().forgetPlayer(uuid)} — this method is the <em>only</em> route
+     *     an erasure request has into currency storage. The default body is a no-op purely because
+     *     making it abstract would break the frozen-between-majors API; inheriting it means a
+     *     "successful" erasure leaves the player's balances on disk. Implement it even if storage is
+     *     in-memory only (an explicit empty override documents the intent and silences the warning
+     *     the default body logs).
+     */
     default void forgetPlayer(UUID player) {
+        za.co.neroland.nerolandcore.data.ErasureWarnings.warnDefaultForgetPlayer("CurrencyProvider", this);
     }
 }

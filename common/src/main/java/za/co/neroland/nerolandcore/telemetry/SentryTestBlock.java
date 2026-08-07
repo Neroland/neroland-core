@@ -37,7 +37,11 @@ public class SentryTestBlock extends Block {
         if (level.isClientSide()) {
             return;
         }
-        boolean dispatched = NerolandCoreTelemetry.sendTestEvent("placed at " + pos.toShortString());
+        // No block position here: PRIVACY.md guarantees telemetry never carries coordinates, and this
+        // synthetic event goes through the same pipeline as a real report. The origin string is the
+        // dimension id only (world data, not personal data) — enough to tell client from server.
+        boolean dispatched = NerolandCoreTelemetry.sendTestEvent(
+                "sentry test block placed in " + level.dimension().identifier());
         if (placer instanceof Player player) {
             player.sendSystemMessage(Component.translatable(dispatched
                     ? "message.nerolandcore.sentry_test.sent"

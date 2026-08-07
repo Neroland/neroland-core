@@ -106,8 +106,8 @@ bus facade, and Sentry telemetry (`telemetry/`, opt-out via `telemetryEnabled`).
   wiki as part of "done"; code without a matching wiki update is incomplete.
 - One page per topic; keep `wiki/Home.md` as the index that links every page, with relative links
   between pages. Validate Markdown via the gradle MCP `markdown_check` (honours `.markdownlint.json`).
-- The wiki is **per-mod** — document only Neroland Core here; cross-mod / ecosystem concepts live in the
-  umbrella docs and are referenced by relative path.
+- The wiki is **per-mod** — document only Neroland Core here; cross-mod / ecosystem concepts belong in the
+  relevant other mod's own wiki.
 
 ## DO NOT
 

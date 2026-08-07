@@ -29,7 +29,19 @@ public interface ReputationProvider {
         return updated;
     }
 
-    /** POPIA/GDPR erasure hook: drop everything stored for a player. No-op by default. */
+    /**
+     * POPIA/GDPR erasure hook: drop every standing stored for {@code player}.
+     *
+     * @implSpec <b>Any provider that persists reputation MUST override this.</b>
+     *     {@link za.co.neroland.nerolandcore.data.PlayerDataErasure} purges reputation by calling
+     *     {@code ReputationApi.provider().forgetPlayer(uuid)} — this method is the <em>only</em>
+     *     route an erasure request has into reputation storage. The default body is a no-op purely
+     *     because making it abstract would break the frozen-between-majors API; inheriting it means
+     *     a "successful" erasure leaves the player's standings on disk. Implement it even if storage
+     *     is in-memory only (an explicit empty override documents the intent and silences the
+     *     warning the default body logs).
+     */
     default void forgetPlayer(UUID player) {
+        za.co.neroland.nerolandcore.data.ErasureWarnings.warnDefaultForgetPlayer("ReputationProvider", this);
     }
 }

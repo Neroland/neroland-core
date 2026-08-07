@@ -38,6 +38,17 @@ public final class ProgressionState extends SavedData {
 
     private final Set<String> server = new LinkedHashSet<>();
     private final Map<UUID, Set<String>> players = new LinkedHashMap<>();
+
+    // KNOWN GAP (POPIA/GDPR): team-scoped rows survive player erasure. They are keyed by scoreboard
+    // team NAME, not by UUID, so forgetPlayer(UUID) below has no way to find a player's team rows —
+    // and clearing a shared team's gates on one member's erasure request would revoke progression the
+    // other members legitimately earned. A team name is not in itself a personal identifier, which is
+    // why this is tolerated; the edge case it does not cover is a single-member team named after its
+    // player ("Dario", "Steve123"), where the team name IS effectively personal data and the row
+    // outlives the erasure. Closing this properly needs team membership recorded alongside the gates
+    // (so a purge can tell single-member teams from shared ones) — a data-format change, deferred to
+    // the next major. Until then an erasure request for such a player must be completed by manually
+    // removing the matching team row.
     private final Map<String, Set<String>> teams = new LinkedHashMap<>();
 
     public ProgressionState() {

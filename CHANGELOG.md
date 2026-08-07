@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
-## [1.10.0]
+## [1.10.0] - 2026-08-04
 
 Additive public-API release for off-Earth content: a shared "where is space?" tag vocabulary
 and a cross-loader entity registration seam. **Every existing API signature, tag, id,
@@ -48,7 +48,43 @@ capability and config key is unchanged.**
 - New docs page [`docs/SPACE-TAGS-AND-ENTITIES.md`](docs/SPACE-TAGS-AND-ENTITIES.md) and wiki
   page [`wiki/Space-Tags-and-Entities.md`](wiki/Space-Tags-and-Entities.md).
 
-## [1.8.0]
+## [1.9.0] - 2026-07-17
+
+Additive public-API release for **decor contracts** — the surfaces NeroDecor and the NeroLink
+dashboard build against. All new surfaces are cosmetic-only and carry **no player data**;
+**every existing API signature, tag, id, capability and config key is unchanged**. See
+[`docs/DECOR-CONTRACTS.md`](docs/DECOR-CONTRACTS.md).
+
+### Added
+
+**Palette export** (`za.co.neroland.nerolandcore.palette`)
+
+- `PaletteRegistry`, `Finish` and `CoreFinishes` plus the `neroland:` finish ids — the shared
+  material/finish vocabulary a decor mod reads so its blocks match the ecosystem's look without
+  hard-coding colours.
+
+**Dashboard content contract** (`za.co.neroland.nerolandcore.link.display`)
+
+- `DisplaySurface`, `DisplaySurfaces`, `DisplayAddress` and `DisplayPayload` — the seam through
+  which a mod publishes content to an in-world display or dashboard panel. Sits alongside the
+  1.4.0 link API and depends only on Core.
+
+**Decor block tags** (`za.co.neroland.nerolandcore.decor.DecorTags`)
+
+- The `neroland:decor/*` block-tag family, with empty base tag files shipped so downstream mods
+  and datapacks can add members immediately. Tag ids are a frozen contract as usual.
+
+**Second creative tab**
+
+- `CoreCreativeTab.NEROLAND_DECOR` and `CoreCreativeTab.addDecor(...)`, backed by the
+  `itemGroup.nerolandcore.decor` translation key, so decor content no longer crowds the main tab.
+
+### Build & CI
+
+- New `wiki.yml` workflow publishing the wiki from the in-repo `wiki/` folder.
+- Publish workflow updates (release metadata).
+
+## [1.8.0] - 2026-07-13
 
 Additive public-API release for cross-mod material discovery.
 
@@ -68,7 +104,37 @@ Additive public-API release for cross-mod material discovery.
 - Formalised **NF (Nero Flux)** as the player-facing power name. Existing energy Java types,
   capability ids, persisted values, config keys, and FE conversion semantics are unchanged.
 
-## [1.5.0]
+## [1.7.0] - 2026-07-11
+
+Additive minor — a generic **threshold-crossing event system**, so two mods can react to each
+other's scalar quantities without either importing the other. Purely additive; **every existing
+API signature, tag, id, capability and config key is unchanged**.
+
+> No `1.6.0` was released; the version went straight from `1.5.0` to `1.7.0`.
+
+### Added
+
+**Threshold events** (`za.co.neroland.nerolandcore.event.ThresholdEvents`)
+
+- A mod that tracks a scalar quantity — Nerotech's regional pollution, a reactor's containment
+  stress, a colony's food stock — publishes a `ThresholdCrossing` when the value passes a
+  threshold, and any mod (the intended consumer is NeroEvents, reacting with dynamic world
+  events) subscribes via `onCrossing(...)`. Both sides depend only on Core.
+- `ThresholdCrossing` is a record of `channel` (the quantity, namespaced by the publisher, e.g.
+  `nerotech:pollution`), `scope` (publisher-defined key for *where* it crossed), `value`,
+  `threshold`, and `rising` (`true` crossing upward, `false` recovering back below).
+- Unlike `GateEvents`, `fire(...)` is **public**: the publishers are downstream mods, not Core.
+  Listeners run on the server thread, so publishers must fire from server-side code only.
+- Exposed through the unified facade as `CoreEvents.onThreshold(...)`.
+- **Privacy (POPIA/GDPR):** the `scope` key identifies a **place or system** (a region key, a
+  dimension id, a machine class) and never a person — publishers must not encode player UUIDs
+  or names into crossings.
+
+### Fixed
+
+- Side-config auto-eject rules corrected.
+
+## [1.5.0] - 2026-07-10
 
 Minor release — adds **item highlights**, a client-side quality-of-life feature: a subtle coloured
 border inside inventory slots holding Nero ecosystem items (in the spirit of the classic *Item
@@ -100,7 +166,7 @@ tag, id, capability and config key is unchanged**.
   default `3`).
 - New wiki page [`wiki/Item-Highlights.md`](wiki/Item-Highlights.md); tag and config docs updated.
 
-## [1.4.0]
+## [1.4.0] - 2026-07-06
 
 Minor release — introduces the **NeroLink integration surface** (`za.co.neroland.nerolandcore.link`),
 the provider SPI the NeroLink Bridge and companion app are built on. The version is a **minor bump
@@ -145,7 +211,7 @@ mod built against `1.3.x` continues to compile and run against `1.4.0`.
 
 [1.4.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.4.0
 
-## [1.3.2]
+## [1.3.2] - 2026-07-06
 
 Additive patch — cross-mod energy interop and battery quality-of-life. No API removals or
 signature changes; the `EnergyLookup` contract is unchanged (the fallback widens what it finds).
@@ -189,7 +255,7 @@ signature changes; the `EnergyLookup` contract is unchanged (the fallback widens
 
 [1.3.2]: https://github.com/Neroland/neroland-core/releases/tag/v1.3.2
 
-## [1.3.1]
+## [1.3.1] - 2026-07-04
 
 Maintenance patch — no API or content changes.
 
@@ -200,7 +266,7 @@ Maintenance patch — no API or content changes.
 
 [1.3.1]: https://github.com/Neroland/neroland-core/releases/tag/v1.3.1
 
-## [1.3.0]
+## [1.3.0] - 2026-06-29
 
 Additive minor — new APIs and content only; no removals. Every existing API signature,
 tag, id, and capability is unchanged (frozen-between-majors policy, see
@@ -237,7 +303,43 @@ tag, id, and capability is unchanged (frozen-between-majors policy, see
 
 [1.3.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.3.0
 
-## [1.1.0]
+## [1.2.0] - 2026-06-29
+
+Additive minor — introduces the **Meteor Material Registry**, the datapack-driven pool the
+meteor grinder rolls against. New APIs and content only; no removals. Every existing API
+signature, tag, id, and capability is unchanged. See
+[`docs/METEOR-MATERIAL-REGISTRY.md`](docs/METEOR-MATERIAL-REGISTRY.md).
+
+### Added
+
+**Meteor Material Registry** (`za.co.neroland.nerolandcore.meteor`)
+
+- `MeteorMaterialRegistry` — the central registry of grindable meteor materials, plus the
+  `MeteorMaterialEntry` model, the `MeteorTier` rarity scale (common / uncommon / rare),
+  `MeteorPlanets` for planet binding, and `MeteorResolution`, the weighted resolution
+  algorithm that picks an output for a finished grind.
+- **Datapack format** `data/<namespace>/meteor_materials/*.json`, so a pack or a downstream mod
+  contributes materials with no code. Core ships four entries of its own: `nero_alloy`,
+  `starsteel`, `void_crystal` and `plasma_glass`.
+- **Tags** — `MeteorMaterialTags` and the `neroland:meteor/grindable` item tag naming what the
+  grinder will accept as input.
+- **Annotation SPI** — `@GrindableMaterial` plus the `MeteorAnnotationScanner` seam, with a
+  per-loader scanner on Fabric, Forge and NeoForge, so a mod can declare grindables in code
+  instead of JSON. Malformed declarations are logged and skipped rather than failing the load.
+- **Config** (server-authoritative, hot-reloadable; read live on every roll) — the base tier
+  weights `meteorTierBaseWeightCommon` (60), `meteorTierBaseWeightUncommon` (25) and
+  `meteorTierBaseWeightRare` (12), the `meteorPlanetBias` multiplier applied when grinding
+  inside a material's bound planet dimension (2.0), and `meteorExoticChance`, the per-grind
+  probability that the separate exotic bonus pool also fires (0.08).
+- **Commands** — `/neroland meteor list` and `/neroland meteor reload`.
+
+### Build & CI
+
+- Core is now published to **GitHub Packages**, which is how every downstream mod resolves it
+  at build time.
+- New [`USING-CORE.md`](USING-CORE.md) — the downstream integration guide.
+
+## [1.1.0] - 2026-06-29
 
 Additive minor — new APIs and content only; no removals. Every existing API signature,
 tag, id, and capability is unchanged.
@@ -275,3 +377,96 @@ tag, id, and capability is unchanged.
   `nerolandcore:gas` exactly as they do against `nerolandcore:energy`.
 
 [1.1.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.1.0
+
+## [1.0.1] - 2026-06-28
+
+Maintenance patch — documentation and build plumbing only. No API, content or data-contract
+changes.
+
+### Added
+
+- The V1 wiki, and refreshed project docs.
+
+### Build & CI
+
+- Maven-local publishing enabled across all three loaders, so a downstream mod can build
+  against an unreleased Core.
+
+## [1.0.0] - 2026-06-28
+
+**First release.** Core's public API opens here and is frozen until `2.0` — see
+[`docs/API-STABILITY.md`](docs/API-STABILITY.md). Every mod in the Neroland ecosystem hard-depends
+on this and consumes its shared APIs.
+
+### Added
+
+**Platform & registration seams**
+
+- `RegistrationProvider`, `Services`, `IPlatformHelper` and `NetworkPlatform` — the multiloader
+  seams that let common code register content and send packets once and run on NeoForge, Forge
+  and Fabric alike. Plus the Gradle MCP tooling the whole ecosystem builds with.
+
+**Materials, tags & datapacks**
+
+- The four Core materials and their forms — **Nero Alloy** and **Starsteel** (ingot, nugget,
+  dust, plate, block), **Void Crystal** (gem, shard, dust, block) and **Plasma Glass** (item,
+  block, pane) — the shared Neroland creative tab, and the `c:` + `neroland:` tag set that is
+  the sole integration path to third-party mods. Tag ids are a frozen contract; see
+  `docs/TAGS-AND-DATAPACKS.md`.
+
+**Config framework**
+
+- `ConfigManager`, `ConfigSchema`, `ConfigValue` and the `CoreConfig` keys — a typed,
+  validated, hot-reloadable config with server-authoritative values synced to clients, plus the
+  `/neroland` command framework.
+
+**Progression gates**
+
+- `ProgressionGates`, the `CoreGates` arc ids (`industrial_power`, `reached_orbit`,
+  `first_colony`, `deep_space`), `GateScope` (server / team / player), `GateEvents`,
+  `ClientGates`, the `neroland_gates` datapack format and the `ProgressionState` store — the
+  shared "has the server unlocked this yet?" vocabulary every mod gates content behind.
+
+**Economy & reputation APIs**
+
+- `CurrencyApi`, `Currency`, `CurrencyProvider`, `CurrencyEvents`; `ReputationApi`,
+  `ReputationProvider`, `ReputationEvents`. **Core defines these but stores nothing** —
+  NeroEconomy and NeroFactions supply the providers; Core ships in-memory defaults so a
+  Core-only server still works.
+
+**Machines, energy & upgrades**
+
+- `NeroEnergyStorage`, `EnergyBuffer`, `EnergyConversions` (NE↔FE), `EnergyLookup` and the
+  per-loader energy capability objects, `AbstractMachineBlockEntity`, and the upgrade framework
+  (`UpgradeType`, `UpgradeContainer`, `UpgradeModifiers`).
+
+**Events facade**
+
+- `CoreEvents`, the unified event-bus facade over Core's individual event surfaces.
+
+**Data & compliance (POPIA/GDPR)**
+
+- `PlayerDataErasure` and `PlayerDataEraser` — the shared per-player erasure hook every
+  Core-storing system and downstream mod registers with, so one request purges a player across
+  the whole ecosystem. `PlayerActivity` backs the `dataRetentionDays` inactivity sweep. Erasure
+  never logs player identity.
+
+**Telemetry**
+
+- Opt-out Sentry error reporting (EU-hosted, `sendDefaultPii` disabled, scrubbed, capped and
+  de-duplicated), disabled with `telemetryEnabled=false`. Full disclosure in
+  [`PRIVACY.md`](PRIVACY.md). Logo and store assets shipped alongside.
+
+### Notes
+
+- Implementation types are annotated `@ApiStatus.Internal` — that annotation, not a package
+  split, is the enforced api/impl boundary.
+
+[1.0.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.0.0
+[1.0.1]: https://github.com/Neroland/neroland-core/releases/tag/v1.0.1
+[1.2.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.2.0
+[1.5.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.5.0
+[1.7.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.7.0
+[1.8.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.8.0
+[1.9.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.9.0
+[1.10.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.10.0

@@ -73,7 +73,7 @@ public static final RegistryObject<Item> COBALT_DUST = ...;
 
 ## Resolved design decisions
 
-The umbrella spec flagged four open questions; this implementation resolves them as
+The original spec flagged four open questions; this implementation resolves them as
 follows.
 
 1. **Annotation class path + scan boundary.** Class path

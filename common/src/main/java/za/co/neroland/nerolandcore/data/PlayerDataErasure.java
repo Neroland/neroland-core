@@ -32,16 +32,36 @@ public final class PlayerDataErasure {
         ERASERS.add(eraser);
     }
 
-    /** Purge everything stored for {@code player} across every registered system. */
+    /**
+     * Purge everything stored for {@code player} across every registered system.
+     *
+     * <p>Every eraser is attempted even if an earlier one fails. A failure is caught as
+     * {@link Throwable} rather than {@code RuntimeException} deliberately: an {@link Error}
+     * thrown out of one mod's eraser (a {@code NoSuchMethodError} from a version mismatch,
+     * for instance) must not abort the remaining erasers and leave a silent partial erasure.
+     * Failures are logged with the offending eraser's class so the responsible mod can be
+     * identified, and the summary line reports how many systems actually succeeded.
+     */
     public static void erase(MinecraftServer server, UUID player) {
+        int failed = 0;
         for (PlayerDataEraser eraser : ERASERS) {
             try {
                 eraser.erase(server, player);
-            } catch (RuntimeException e) {
-                NerolandCoreCommon.LOGGER.warn("[Neroland Core] A data eraser failed during erasure.", e);
+            } catch (Throwable t) {
+                failed++;
+                NerolandCoreCommon.LOGGER.warn(
+                        "[Neroland Core] Data eraser '{}' failed during erasure; continuing with the rest. "
+                                + "This player's data may be only partially erased.",
+                        eraser.getClass().getName(), t);
             }
         }
-        NerolandCoreCommon.LOGGER.info("[Neroland Core] Player data erased on request ({} systems).", ERASERS.size());
+        int total = ERASERS.size();
+        if (failed > 0) {
+            NerolandCoreCommon.LOGGER.warn(
+                    "[Neroland Core] Player data erasure INCOMPLETE: {} of {} systems failed.", failed, total);
+        } else {
+            NerolandCoreCommon.LOGGER.info("[Neroland Core] Player data erased on request ({} systems).", total);
+        }
     }
 
     /**

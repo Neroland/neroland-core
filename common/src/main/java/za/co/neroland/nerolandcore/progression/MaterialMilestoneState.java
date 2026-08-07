@@ -29,6 +29,14 @@ public final class MaterialMilestoneState extends SavedData {
 
     private final Map<String, Set<String>> server = new LinkedHashMap<>();
     private final Map<UUID, Map<String, Set<String>>> players = new LinkedHashMap<>();
+
+    // KNOWN GAP (POPIA/GDPR): team-scoped rows survive player erasure. They are keyed by scoreboard
+    // team NAME, not by UUID, so forgetPlayer(UUID) has no way to find a player's team rows — and
+    // clearing a shared team's milestones on one member's erasure request would revoke discoveries
+    // the other members legitimately earned. A team name is not in itself a personal identifier,
+    // which is why this is tolerated; the edge case it does not cover is a single-member team named
+    // after its player, where the team name IS effectively personal data and the row outlives the
+    // erasure. Same gap and same deferral as ProgressionState.teams — see the note there.
     private final Map<String, Map<String, Set<String>>> teams = new LinkedHashMap<>();
 
     public static MaterialMilestoneState get(MinecraftServer server) {
