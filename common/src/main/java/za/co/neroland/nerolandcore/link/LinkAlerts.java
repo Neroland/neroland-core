@@ -17,6 +17,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 /**
  * The per-player alert store behind NeroLink's {@code core/alerts} section. Modules
@@ -60,9 +61,24 @@ public final class LinkAlerts extends SavedData {
     public LinkAlerts() {
     }
 
-    /** The one store, on the overworld so it is always loaded. */
+    /**
+     * The one store, on the overworld so it is always loaded. Routed through
+     * {@link SavedDataRecovery} so a corrupt {@code link_alerts.dat} degrades to the last-known-good
+     * backup (or a fresh store) instead of crashing every time an alert is raised or listed.
+     */
     public static LinkAlerts get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(server.overworld(), TYPE, LinkAlerts::new, ID.toString());
+    }
+
+    /**
+     * POPIA/GDPR erasure entry point registered with {@link PlayerDataErasure} by {@code CoreData}:
+     * drop every alert stored for the player and push the change to the recovery backup in the same
+     * request, so the erased rows do not survive in the backup file.
+     */
+    public static void eraseFor(MinecraftServer server, UUID player) {
+        LinkAlerts alerts = get(server);
+        alerts.forget(player);
+        SavedDataRecovery.backupNow(server.overworld(), TYPE, alerts, ID.toString());
     }
 
     /**

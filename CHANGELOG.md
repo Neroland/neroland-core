@@ -6,6 +6,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [Unreleased]
+
+Crash-safety and POPIA/GDPR hardening. No existing API signature, tag, id, capability or config
+key changes.
+
+### Added
+
+**Erasure conformance harness** (`za.co.neroland.nerolandcore.data.ErasureConformance`)
+
+- A reusable, mod-agnostic harness in the **main** source set, so any downstream mod can run it from
+  its own test suite: `ErasureConformance.create().probe("mymod:rows", uuid -> …).verify(server, uuid)`.
+  Erasure is the one contract that spans the whole ecosystem, and this makes it mechanically
+  provable instead of assumed.
+- A run asserts that every probe held data **before** the request and none **after** (a probe that
+  never held data is a failure, not a vacuous pass); that an eraser which throws — `RuntimeException`
+  or `Error` — does not stop the erasers registered after it; and that
+  `CurrencyProvider.forgetPlayer` / `ReputationProvider.forgetPlayer` were actually reached rather
+  than silently inheriting Core's default no-op body.
+- Failures are actionable: `ErasureConformance.Report` names each subsystem that retained data and
+  `verify(...)` throws an `AssertionError` carrying the summary. The report never carries the player
+  UUID. No test dependency is added to Core's main source set.
+- `SavedDataRecovery.backupNow(level, type, instance, name)` — forces an immediate last-known-good
+  backup refresh, for use straight after erasing a player.
+- `PlayerActivity.hasRecord(UUID)` — whether an activity record exists, for subject-access checks
+  and conformance probes.
+- `PlayerDataErasure.unregister(PlayerDataEraser)` and `registeredCount()`, both
+  `@ApiStatus.Internal` — test teardown and diagnostics only.
+- Core-side unit tests covering all six of Core's registered erasers, the failure-isolation
+  guarantee, and the default-no-op provider case.
+
+### Changed
+
+- **All four of Core's `SavedData` stores now load through `SavedDataRecovery`** —
+  `ProgressionState`, `MaterialMilestoneState`, `PlayerActivity` and `LinkAlerts`. A corrupt or
+  unreadable `.dat` previously propagated out of `computeIfAbsent` on every access and hard-crashed
+  the server tick loop repeatedly (the MC-NEROSPACE-H failure class); it now falls back to the
+  last-known-good backup, then to a fresh store, and reports the failure as handled telemetry.
+  `getDataStorage()` no longer appears anywhere in Core outside `SavedDataRecovery` itself.
+- `SavedDataRecovery` gained the backup ladder and periodic last-known-good backup writing already
+  proven in Nerospace (throttled, hash-compared, write-temp-then-atomic-rename), on top of the
+  argument validation and null-return handling Core already had.
+- Each store gained an `eraseFor(server, uuid)` entry point, and `CoreData` registers those instead
+  of bare `forget(uuid)` calls: the recovery backup is a second copy of the same player-keyed rows,
+  so an erasure request now refreshes it immediately rather than leaving the erased rows on disk
+  until the next periodic pass.
+- `CoreData`'s currency and reputation eraser registration is idempotent and split out, so a
+  plain-JVM conformance run can guarantee those seams are wired without a live server.
+
+### Documentation
+
+- [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) — new "Known gap — team-scoped progression rows survive
+  individual erasure" section: what survives, why a scoreboard team name is not inherently personal
+  data, the residual risk of a single-member team named after its player, and the recommended
+  mitigations (naming policy now, membership-aware purge plus a team-scope admin command in the next
+  major). Also documents erasure reaching the recovery backups and the conformance harness.
+- [`wiki/Privacy-and-Data.md`](wiki/Privacy-and-Data.md) — the same gap in admin-facing terms, plus
+  the two stores that were missing from the "what Core stores" list.
+- [`docs/USING-CORE.md`](docs/USING-CORE.md) — how a downstream mod runs the conformance harness and
+  adopts `SavedDataRecovery`; [`docs/API-STABILITY.md`](docs/API-STABILITY.md) — both new surfaces
+  added to the frozen-API list.
+
 ## [1.10.0] - 2026-08-04
 
 Additive public-API release for off-Earth content: a shared "where is space?" tag vocabulary

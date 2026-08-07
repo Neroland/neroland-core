@@ -51,3 +51,18 @@ ReputationApi.setProvider(new MyReputationStore());  // NeroFactions
 
 Register a `PlayerDataEraser` so one erase request clears your data too, and route
 player-keyed storage through it — see [COMPLIANCE.md](COMPLIANCE.md).
+
+Then **prove it** from your own test suite with Core's reusable harness (it lives in the main
+source set, so it comes with the artifact you already depend on):
+
+```java
+ErasureConformance.create()
+        .probe("mymod:player_rows", uuid -> myState.has(uuid))
+        .verify(null, player);   // pass the real MinecraftServer from a game test
+```
+
+If any store keeps its state in a vanilla `SavedData`, load it through
+`SavedDataRecovery.get(level, TYPE, MyStore::new, "mymod:my_store")` rather than
+`getDataStorage().computeIfAbsent(TYPE)` — a corrupt `.dat` otherwise hard-crashes the tick loop
+on every access. That helper also keeps a last-known-good backup of the file, which holds the same
+player-keyed rows, so call `SavedDataRecovery.backupNow(...)` right after purging a player.

@@ -59,7 +59,11 @@ major:
 - **Storage (fluid / gas)** — `NeroFluidStorage`, `FluidBuffer`, `NeroGasStorage`,
   `GasBuffer`, `NeroGases`, and the `nerolandcore:fluid` / `nerolandcore:gas` capabilities
   (added in 1.1.0; see below).
-- **Data / compliance** — `PlayerDataErasure`, `PlayerDataEraser`.
+- **Data / compliance** — `PlayerDataErasure`, `PlayerDataEraser`, `SavedDataRecovery`
+  (the crash-safe `SavedData` accessor every Neroland store loads through) and
+  `ErasureConformance` (+ `ErasureConformance.Report`), the reusable erasure-conformance harness
+  downstream test suites call. `PlayerDataErasure.unregister` / `registeredCount` are
+  `@ApiStatus.Internal` — test teardown and diagnostics only.
 - **Decor contracts** (added in 1.9.0; see [`DECOR-CONTRACTS.md`](DECOR-CONTRACTS.md)) —
   the palette export (`palette.PaletteRegistry`, `palette.Finish`, `palette.CoreFinishes`
   and the `neroland:` finish ids), the dashboard content contract

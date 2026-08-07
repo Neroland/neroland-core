@@ -17,6 +17,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 /** Persistent server-authoritative material milestone values across player/team/server scopes. */
 @org.jetbrains.annotations.ApiStatus.Internal
@@ -39,8 +40,24 @@ public final class MaterialMilestoneState extends SavedData {
     // erasure. Same gap and same deferral as ProgressionState.teams — see the note there.
     private final Map<String, Map<String, Set<String>>> teams = new LinkedHashMap<>();
 
+    /**
+     * The one store, on the overworld so it is always loaded. Routed through
+     * {@link SavedDataRecovery} so a corrupt {@code material_milestones.dat} degrades to the
+     * last-known-good backup (or a fresh store) instead of crashing the tick loop.
+     */
     public static MaterialMilestoneState get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(server.overworld(), TYPE, MaterialMilestoneState::new, ID.toString());
+    }
+
+    /**
+     * POPIA/GDPR erasure entry point registered with {@link
+     * za.co.neroland.nerolandcore.data.PlayerDataErasure} by {@code CoreData}: purge the player's
+     * milestones and push the anonymised state to the recovery backup in the same request.
+     */
+    public static void eraseFor(MinecraftServer server, UUID player) {
+        MaterialMilestoneState state = get(server);
+        state.forgetPlayer(player);
+        SavedDataRecovery.backupNow(server.overworld(), TYPE, state, ID.toString());
     }
 
     public boolean containsServer(Identifier milestone, Identifier material) {

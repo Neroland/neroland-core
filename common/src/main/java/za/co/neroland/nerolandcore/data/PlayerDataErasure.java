@@ -33,6 +33,28 @@ public final class PlayerDataErasure {
     }
 
     /**
+     * Remove a previously registered eraser.
+     *
+     * <p>Production code never needs this — an eraser registered at init stays for the life of the
+     * process. It exists for test teardown, so a suite (notably {@link ErasureConformance}, which
+     * temporarily registers a deliberately failing canary) can restore the registry to exactly the
+     * state it found. Removing a real system's eraser at runtime would silently break erasure for
+     * that system, which is why this is not part of the supported downstream API.
+     *
+     * @return {@code true} if the eraser was registered and has been removed
+     */
+    @org.jetbrains.annotations.ApiStatus.Internal
+    public static boolean unregister(PlayerDataEraser eraser) {
+        return ERASERS.remove(eraser);
+    }
+
+    /** How many erasers are currently registered (diagnostics and conformance reporting only). */
+    @org.jetbrains.annotations.ApiStatus.Internal
+    public static int registeredCount() {
+        return ERASERS.size();
+    }
+
+    /**
      * Purge everything stored for {@code player} across every registered system.
      *
      * <p>Every eraser is attempted even if an earlier one fails. A failure is caught as

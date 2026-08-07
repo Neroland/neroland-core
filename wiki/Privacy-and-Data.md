@@ -10,7 +10,9 @@ every Neroland system and downstream mod registers with.
 Keyed by player UUID, gameplay state only:
 
 - progression gate flags
+- material milestones (which materials you have discovered)
 - last-login timestamp (for retention)
+- NeroLink alerts (module id, severity, a short non-personal message)
 
 Core does **not** store balances or reputation itself — those are
 [NeroEconomy and NeroFactions contracts](Economy-and-Reputation.md). Core never
@@ -32,6 +34,32 @@ every downstream mod that stores player data registers an eraser at init.
 | --- | --- | --- |
 | `/neroland data eraseme` | Any player | Erase your own Neroland data (opt-out / reset) |
 | `/neroland data erase <uuid>` | Admin (op level 2) | Erase a specific player |
+
+## Known gap: team-scoped progression
+
+Gates and material milestones declared with `scope: team` are stored against the
+**scoreboard team name**, not against a player UUID, so erasing a player does not
+remove them. This is deliberate: a team row records what the *team* achieved and is
+shared, so clearing it for one member would revoke progression the other members
+earned. A team name like `builders` or `red` is not personal data.
+
+The exception is a **one-person team named after its player** (`Dario`, `Steve123`) —
+there the team name effectively identifies someone, and the row outlives their erasure
+request.
+
+**What server admins should do:**
+
+- Name teams after roles or colours, never after individual players.
+- Treat a one-person team named after its player as something to rename.
+- If such a team already exists, completing that player's erasure request means
+  removing the team's rows as well. There is no command for this yet; it currently
+  needs an offline edit of the world save's
+  `data/nerolandcore_progression.dat`, `data/nerolandcore_material_milestones.dat`
+  and their `_backup.dat` counterparts.
+
+A future major version will record team membership alongside the rows so a purge can
+tell single-member teams from shared ones and clear only the former, together with an
+admin command for team-scoped rows.
 
 ## Retention
 

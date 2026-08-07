@@ -40,14 +40,38 @@ public final class PlayerActivity extends SavedData {
     public PlayerActivity() {
     }
 
+    /**
+     * The one store, on the overworld so it is always loaded. Routed through
+     * {@link SavedDataRecovery} so a corrupt {@code player_activity.dat} degrades to the
+     * last-known-good backup (or a fresh store) instead of crashing on every login.
+     */
     public static PlayerActivity get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(server.overworld(), TYPE, PlayerActivity::new, ID.toString());
+    }
+
+    /**
+     * POPIA/GDPR erasure entry point registered with {@link PlayerDataErasure} by {@link CoreData}:
+     * drop the player's activity record and push the change to the recovery backup in the same
+     * request, so the erased row does not survive in the backup file.
+     */
+    public static void eraseFor(MinecraftServer server, UUID player) {
+        PlayerActivity activity = get(server);
+        activity.forget(player);
+        SavedDataRecovery.backupNow(server.overworld(), TYPE, activity, ID.toString());
     }
 
     /** Record that {@code player} was just seen. */
     public void touch(UUID player) {
         lastSeen.put(player, System.currentTimeMillis());
         setDirty();
+    }
+
+    /**
+     * Whether an activity record exists for {@code player}. Used by subject-access checks and by
+     * {@link ErasureConformance} probes; never logged.
+     */
+    public boolean hasRecord(UUID player) {
+        return lastSeen.containsKey(player);
     }
 
     /** UUIDs whose last login is older than {@code days} (empty if {@code days <= 0}). */

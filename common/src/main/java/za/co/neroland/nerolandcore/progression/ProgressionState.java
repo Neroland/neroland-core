@@ -17,6 +17,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 /**
  * Server-authoritative, persistent store of which gates are open, in each scope:
@@ -54,9 +55,25 @@ public final class ProgressionState extends SavedData {
     public ProgressionState() {
     }
 
-    /** The one store, on the overworld so it is always loaded. */
+    /**
+     * The one store, on the overworld so it is always loaded. Routed through
+     * {@link SavedDataRecovery} so a corrupt {@code progression.dat} degrades to the last-known-good
+     * backup (or a fresh store) instead of crashing the tick loop on every gate check.
+     */
     public static ProgressionState get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(server.overworld(), TYPE, ProgressionState::new, ID.toString());
+    }
+
+    /**
+     * POPIA/GDPR erasure entry point registered with {@link
+     * za.co.neroland.nerolandcore.data.PlayerDataErasure} by {@code CoreData}: purge the player's
+     * gates and push the anonymised state to the recovery backup in the same request, so the erased
+     * rows do not survive in the backup file until the next periodic pass.
+     */
+    public static void eraseFor(MinecraftServer server, UUID player) {
+        ProgressionState state = get(server);
+        state.forgetPlayer(player);
+        SavedDataRecovery.backupNow(server.overworld(), TYPE, state, ID.toString());
     }
 
     // --- server scope -------------------------------------------------------
