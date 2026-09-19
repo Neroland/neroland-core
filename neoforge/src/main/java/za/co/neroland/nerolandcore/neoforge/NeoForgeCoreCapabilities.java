@@ -8,6 +8,7 @@ import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 import za.co.neroland.nerolandcore.platform.NeoForgeEnergyLookup;
+import za.co.neroland.nerolandcore.platform.NeoForgeFluidHandlers;
 import za.co.neroland.nerolandcore.platform.NeoForgeFluidLookup;
 import za.co.neroland.nerolandcore.platform.NeoForgeGasLookup;
 import za.co.neroland.nerolandcore.registry.ModBlockEntities;
@@ -47,6 +48,12 @@ public final class NeoForgeCoreCapabilities {
                 ModBlockEntities.FLUID_TANK.get(), (be, side) -> be.getTank());
         event.registerBlockEntity(NeoForgeFluidLookup.FLUID,
                 ModBlockEntities.CREATIVE_FLUID_TANK.get(), (be, side) -> be.getTank());
+        // Also expose both tanks on the STANDARD fluid capability so third-party fluid pipes and
+        // machines fill and drain them directly, the way the Item Store rides Capabilities.Item.BLOCK.
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FLUID_TANK.get(),
+                (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CREATIVE_FLUID_TANK.get(),
+                (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));
 
         // Gas — Gas Tank + Creative Gas Tank.
         event.registerBlockEntity(NeoForgeGasLookup.GAS,
@@ -69,6 +76,8 @@ public final class NeoForgeCoreCapabilities {
                         : VanillaContainerWrapper.of(be));
         event.registerBlockEntity(NeoForgeFluidLookup.FLUID,
                 ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getFluid());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getFluid()));
         event.registerBlockEntity(NeoForgeGasLookup.GAS,
                 ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getGas());
     }

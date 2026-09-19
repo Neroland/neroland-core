@@ -1,9 +1,11 @@
 package za.co.neroland.nerolandcore.fabric;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 
 import za.co.neroland.nerolandcore.platform.FabricEnergyLookup;
+import za.co.neroland.nerolandcore.platform.FabricFluidHandlers;
 import za.co.neroland.nerolandcore.platform.FabricFluidLookup;
 import za.co.neroland.nerolandcore.platform.FabricGasLookup;
 import za.co.neroland.nerolandcore.registry.ModBlockEntities;
@@ -33,6 +35,14 @@ public final class FabricCoreCapabilities {
                 (be, side) -> be.getTank(), ModBlockEntities.FLUID_TANK.get());
         FabricFluidLookup.FLUID.registerForBlockEntity(
                 (be, side) -> be.getTank(), ModBlockEntities.CREATIVE_FLUID_TANK.get());
+        // Also expose both tanks on the STANDARD Fabric fluid storage so third-party fluid pipes
+        // and machines fill and drain them directly, the way the Item Store rides ItemStorage.SIDED.
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, side) -> FabricFluidHandlers.asFluidStorage(be.getTank()),
+                ModBlockEntities.FLUID_TANK.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, side) -> FabricFluidHandlers.asFluidStorage(be.getTank()),
+                ModBlockEntities.CREATIVE_FLUID_TANK.get());
 
         // Gas — Gas Tank + Creative Gas Tank.
         FabricGasLookup.GAS.registerForBlockEntity(
@@ -52,6 +62,9 @@ public final class FabricCoreCapabilities {
                 (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.TRASH_CAN.get());
         FabricFluidLookup.FLUID.registerForBlockEntity(
                 (be, side) -> be.getFluid(), ModBlockEntities.TRASH_CAN.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, side) -> FabricFluidHandlers.asFluidStorage(be.getFluid()),
+                ModBlockEntities.TRASH_CAN.get());
         FabricGasLookup.GAS.registerForBlockEntity(
                 (be, side) -> be.getGas(), ModBlockEntities.TRASH_CAN.get());
     }

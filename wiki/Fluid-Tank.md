@@ -12,8 +12,11 @@ and offers it up for pipes and buckets.
 
 - Holds **one** fluid at a time, measured in millibuckets (mB).
 - **Buckets:** right-click with a filled bucket to pour in, an empty bucket to draw out.
-- **Pipes:** fills and drains on **every side** through Core's `nerolandcore:fluid`
-  capability, so any Neroland mod's fluid pipe can move fluid in or out.
+- **Pipes:** fills and drains on **every side**, through both Core's `nerolandcore:fluid`
+  capability and the loader's **standard** fluid capability (NeoForge `Capabilities.Fluid`,
+  Forge `FLUID_HANDLER`, Fabric `FluidStorage.SIDED`) — so any Neroland mod's fluid pipe *and*
+  any other mod's fluid pipe can move fluid in or out. The tank also draws from, and fills,
+  third-party tanks it sits next to.
 - Bare-hand right-click reads out the contents.
 
 Core ships no specific fluids — the tank holds whatever fluid a downstream mod or vanilla

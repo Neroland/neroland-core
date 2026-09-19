@@ -171,6 +171,7 @@ public final class SideConfig {
     public static final class Builder {
 
         private final EnumMap<Channel, ChannelConfig> channels = new EnumMap<>(Channel.class);
+        private final EnumMap<Channel, SidePreset> channelPresets = new EnumMap<>(Channel.class);
         private SidePreset preset = SidePreset.ALL_DISABLED;
 
         private Builder() {
@@ -250,9 +251,22 @@ public final class SideConfig {
             return this;
         }
 
+        /**
+         * Override the starting preset for ONE channel, for machines whose channels want different
+         * layouts — an electrolyzer takes power and water in on every face while its gas products
+         * leave on every face, which no single preset expresses. Declares the channel if it is not
+         * declared yet, and is also what {@code resetToPreset} restores that channel to.
+         */
+        public Builder preset(Channel channel, SidePreset preset) {
+            channelConfig(channel);
+            channelPresets.put(channel, preset);
+            return this;
+        }
+
         public SideConfig build() {
-            for (ChannelConfig cfg : channels.values()) {
-                cfg.setPreset(preset);
+            for (Map.Entry<Channel, ChannelConfig> entry : channels.entrySet()) {
+                ChannelConfig cfg = entry.getValue();
+                cfg.setPreset(channelPresets.getOrDefault(entry.getKey(), preset));
                 cfg.applyPreset();
             }
             return new SideConfig(channels);

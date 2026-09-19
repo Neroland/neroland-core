@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.12.0] - 2026-09-19
+
+Fluid interoperability with the rest of the modded ecosystem. Additive only — no existing API
+signature, tag, id, capability or config key changes.
+
+### Added
+
+**Standard fluid-capability bridge on all three loaders**
+
+- `NeoForgeFluidHandlers`, `ForgeFluidHandlers` and `FabricFluidHandlers` adapt Core's
+  `NeroFluidStorage` to and from each loader's own fluid surface — NeoForge
+  `Capabilities.Fluid.BLOCK` (a `ResourceHandler<FluidResource>`), Forge
+  `ForgeCapabilities.FLUID_HANDLER` (`IFluidHandler`), and Fabric `FluidStorage.SIDED`
+  (`Storage<FluidVariant>`). This is the fluid twin of the Forge-Energy bridge added in `1.3.2`,
+  and it closes the "deferred enhancement" `NeroFluidStorage` has carried since `1.1.0`.
+- `FluidLookup.find(...)` now falls back to the loader's standard fluid capability when a block
+  exposes no Nero fluid, so Core tanks and downstream machines treat third-party fluid pipes and
+  tanks as first-class neighbours.
+- Core's **Fluid Tank**, **Creative Fluid Tank** and **Trash Can** are additionally exposed on the
+  standard fluid capability, so any mod's pipes fill and drain them directly — the same way the
+  Item Store has always ridden the standard item handler.
+- Transactions are honoured in both directions: the NeoForge adapter is a `SnapshotJournal` and the
+  Fabric adapter a `SnapshotParticipant`, so an aborted transfer rolls a Nero tank back exactly.
+- `SideConfig.Builder#preset(Channel, SidePreset)` — a per-channel starting preset, for machines
+  whose channels want different layouts (power and fluid in on every face while gas leaves on every
+  face, which no single preset expresses). `resetToPreset` restores each channel to its own preset.
+
+### Notes
+
+- **Units.** NeoForge and Forge count millibuckets, as Core does, so nothing is converted there.
+  Fabric counts droplets at 81 per mB; the adapter floors, and moves fluid in two phases (probe in a
+  rolled-back transaction, then transfer exactly the whole-millibucket amount) so no sub-millibucket
+  remainder is created or lost at the seam.
+- Resources carrying data components are refused rather than silently stripped: a `NeroFluidStorage`
+  holds a bare fluid.
+
+[1.12.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.12.0
+
 ## [1.11.0] - 2026-08-08
 
 Crash-safety and POPIA/GDPR hardening. No existing API signature, tag, id, capability or config

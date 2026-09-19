@@ -14,6 +14,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
@@ -23,6 +24,7 @@ import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
 import za.co.neroland.nerolandcore.fluid.NeroFluidStorage;
 import za.co.neroland.nerolandcore.gas.NeroGasStorage;
 import za.co.neroland.nerolandcore.platform.ForgeEnergyLookup;
+import za.co.neroland.nerolandcore.platform.ForgeFluidHandlers;
 import za.co.neroland.nerolandcore.platform.ForgeFluidLookup;
 import za.co.neroland.nerolandcore.platform.ForgeGasLookup;
 import za.co.neroland.nerolandcore.storage.BatteryBlockEntity;
@@ -107,6 +109,7 @@ public final class ForgeCoreCapabilities {
 
         private final LazyOptional<NeroEnergyStorage> energy;
         private final LazyOptional<NeroFluidStorage> fluid;
+        private final LazyOptional<IFluidHandler> fluidStandard;
         private final LazyOptional<NeroGasStorage> gas;
         @Nullable
         private final Container container;
@@ -118,6 +121,10 @@ public final class ForgeCoreCapabilities {
                 @Nullable Supplier<NeroGasStorage> gas, @Nullable Container container) {
             this.energy = energy == null ? LazyOptional.empty() : LazyOptional.<NeroEnergyStorage>of(energy::get);
             this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.<NeroFluidStorage>of(fluid::get);
+            Supplier<NeroFluidStorage> fluidSupplier = fluid;
+            this.fluidStandard = fluid == null
+                    ? LazyOptional.empty()
+                    : LazyOptional.<IFluidHandler>of(() -> ForgeFluidHandlers.asFluidHandler(fluidSupplier.get()));
             this.gas = gas == null ? LazyOptional.empty() : LazyOptional.<NeroGasStorage>of(gas::get);
             this.container = container;
             this.itemUnsided = container == null ? null : LazyOptional.of(() -> itemHandler(container, null));
@@ -133,6 +140,10 @@ public final class ForgeCoreCapabilities {
             }
             if (cap == ForgeGasLookup.GAS) {
                 return gas.cast();
+            }
+            if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.FLUID_HANDLER) {
+                // Standard Forge fluid surface, so third-party pipes fill/drain Core's tanks directly.
+                return fluidStandard.cast();
             }
             if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER && container != null) {
                 return item(side).cast();
@@ -150,6 +161,7 @@ public final class ForgeCoreCapabilities {
         void invalidate() {
             energy.invalidate();
             fluid.invalidate();
+            fluidStandard.invalidate();
             gas.invalidate();
             if (itemUnsided != null) {
                 itemUnsided.invalidate();

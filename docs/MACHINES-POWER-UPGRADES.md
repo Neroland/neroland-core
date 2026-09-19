@@ -115,6 +115,20 @@ fluid.drain(amount, false);   // external output
 Core owns the shared `nerolandcore:fluid` capability/lookup on each loader, exactly like
 `nerolandcore:energy`.
 
+**Third-party pipes (since `1.12.0`).** Core's lookup is Nero-only, so a tank registered on it
+alone is invisible to every other mod's pipe. Register the same storage on the loader's standard
+fluid capability as well, through the adapters Core ships:
+
+- **NeoForge** — `event.registerBlockEntity(Capabilities.Fluid.BLOCK, MY_BE.get(),
+  (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));`
+- **Fabric** — `FluidStorage.SIDED.registerForBlockEntity((be, side) ->
+  FabricFluidHandlers.asFluidStorage(be.getTank()), MY_BE.get());`
+- **Forge** — return `ForgeFluidHandlers.asFluidHandler(tank)` for `ForgeCapabilities.FLUID_HANDLER`.
+
+The reverse direction needs nothing: `FluidLookup.find(...)` already falls back to the standard
+capability, so a third-party tank or pipe next door is a Nero neighbour. Amounts are millibuckets
+on NeoForge and Forge; the Fabric adapter converts droplets at 81 per mB, flooring.
+
 ### Gas
 
 `NeroGasStorage` is the gas contract; `GasBuffer` is its bounded implementation. A gas is
@@ -139,10 +153,10 @@ generation, no upgrade slots):
 | Block | Holds | Capability exposed |
 | --- | --- | --- |
 | **Battery** (`nerolandcore:battery`) | Nero Flux (NF) | `nerolandcore:energy` |
-| **Fluid Tank** (`nerolandcore:fluid_tank`) | one fluid | `nerolandcore:fluid` |
+| **Fluid Tank** (`nerolandcore:fluid_tank`) | one fluid | `nerolandcore:fluid` + the standard fluid handler |
 | **Gas Tank** (`nerolandcore:gas_tank`) | one gas | `nerolandcore:gas` |
 | **Item Store** (`nerolandcore:item_store`) | items (vanilla `Container`) | the standard item handler |
-| **Trash Can** (`nerolandcore:trash_can`) | nothing — voids what is inserted | `nerolandcore:fluid`, `nerolandcore:gas`, and the item handler (input-only) |
+| **Trash Can** (`nerolandcore:trash_can`) | nothing — voids what is inserted | `nerolandcore:fluid` (+ the standard fluid handler), `nerolandcore:gas`, and the item handler (input-only) |
 
 The Battery rides Core's energy API (`EnergyBuffer`); the Fluid Tank and Gas Tank ride the
 new `FluidBuffer` / `GasBuffer`. The Item Store is a plain vanilla `Container` — it opens the
