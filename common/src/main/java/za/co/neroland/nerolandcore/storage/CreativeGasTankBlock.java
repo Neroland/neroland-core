@@ -14,6 +14,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerolandcore.gas.NeroGases;
 
 /**
@@ -22,13 +23,12 @@ import za.co.neroland.nerolandcore.gas.NeroGases;
  */
 public class CreativeGasTankBlock extends AbstractStorageBlock {
 
-    public static final MapCodec<CreativeGasTankBlock> CODEC = simpleCodec(CreativeGasTankBlock::new);
+    public static final MapCodec<CreativeGasTankBlock> CODEC = BlockCodecs.simple(CreativeGasTankBlock::new);
 
     public CreativeGasTankBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<CreativeGasTankBlock> codec() {
         return CODEC;
     }

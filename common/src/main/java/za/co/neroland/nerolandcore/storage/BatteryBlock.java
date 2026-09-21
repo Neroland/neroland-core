@@ -18,6 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerolandcore.registry.ModBlockEntities;
 
 /**
@@ -26,13 +27,12 @@ import za.co.neroland.nerolandcore.registry.ModBlockEntities;
  */
 public class BatteryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<BatteryBlock> CODEC = simpleCodec(BatteryBlock::new);
+    public static final MapCodec<BatteryBlock> CODEC = BlockCodecs.simple(BatteryBlock::new);
 
     public BatteryBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<BatteryBlock> codec() {
         return CODEC;
     }

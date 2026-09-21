@@ -5,13 +5,13 @@
 **Status:** V1 foundation complete — version `1.0.0`. The full Core API surface is in
 place (materials, config, progression gates, currency/reputation contracts, and the
 machine/power/upgrade framework) on the platform, registration and networking seams.
-Core is a **library**, not a content mod. All six cells build; runtime client/server
+Core is a **library**, not a content mod. All nine cells build; runtime client/server
 testing is the recommended next step before tagging a release.
 
 ## Build targets
 
-- **Minecraft:** 26.1.2 and 26.2
-- **Loaders:** NeoForge, MinecraftForge/Forge, Fabric (the "6 cells")
+- **Minecraft:** 26.1.2, 26.2 and 26.3
+- **Loaders:** NeoForge, MinecraftForge/Forge, Fabric (the "9 cells")
 - **Java:** 25
 - Mod id: `nerolandcore` · package `za.co.neroland.nerolandcore`
 
@@ -29,9 +29,9 @@ The build is the repo root, with a flattened cross-loader structure driven by St
 
 ```sh
 ./gradlew :fabric:26.2:build          # one cell
-./gradlew :neoforge:26.1.2:build :neoforge:26.2:build \
-          :forge:26.1.2:build :forge:26.2:build \
-          :fabric:26.1.2:build :fabric:26.2:build   # all six
+./gradlew :neoforge:26.1.2:build :neoforge:26.2:build :neoforge:26.3:build \
+          :forge:26.1.2:build :forge:26.2:build :forge:26.3:build \
+          :fabric:26.1.2:build :fabric:26.2:build :fabric:26.3:build   # all nine
 ```
 
 See [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) for agent and contributor context.

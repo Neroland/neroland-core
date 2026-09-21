@@ -18,16 +18,17 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
+
 /** Fluid Tank block — holds a {@link FluidTankBlockEntity}; right-click empty-handed to read its contents. */
 public class FluidTankBlock extends BaseEntityBlock {
 
-    public static final MapCodec<FluidTankBlock> CODEC = simpleCodec(FluidTankBlock::new);
+    public static final MapCodec<FluidTankBlock> CODEC = BlockCodecs.simple(FluidTankBlock::new);
 
     public FluidTankBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<FluidTankBlock> codec() {
         return CODEC;
     }

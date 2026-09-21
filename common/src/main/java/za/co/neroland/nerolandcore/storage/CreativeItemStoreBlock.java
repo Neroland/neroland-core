@@ -15,19 +15,20 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
+
 /**
  * Creative Item Store block — holds a {@link CreativeItemStoreBlockEntity}. Right-click with an item to
  * set the endless source; sneak-right-click (empty hand) to clear it.
  */
 public class CreativeItemStoreBlock extends AbstractStorageBlock {
 
-    public static final MapCodec<CreativeItemStoreBlock> CODEC = simpleCodec(CreativeItemStoreBlock::new);
+    public static final MapCodec<CreativeItemStoreBlock> CODEC = BlockCodecs.simple(CreativeItemStoreBlock::new);
 
     public CreativeItemStoreBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<CreativeItemStoreBlock> codec() {
         return CODEC;
     }

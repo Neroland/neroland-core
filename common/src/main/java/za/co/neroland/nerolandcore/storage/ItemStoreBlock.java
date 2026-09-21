@@ -14,16 +14,17 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
+
 /** Item Store block — right-click opens a vanilla 3-row chest GUI; holds an {@link ItemStoreBlockEntity}. */
 public class ItemStoreBlock extends BaseEntityBlock {
 
-    public static final MapCodec<ItemStoreBlock> CODEC = simpleCodec(ItemStoreBlock::new);
+    public static final MapCodec<ItemStoreBlock> CODEC = BlockCodecs.simple(ItemStoreBlock::new);
 
     public ItemStoreBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<ItemStoreBlock> codec() {
         return CODEC;
     }

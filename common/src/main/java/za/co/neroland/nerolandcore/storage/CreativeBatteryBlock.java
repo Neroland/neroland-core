@@ -13,18 +13,18 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerolandcore.registry.ModBlockEntities;
 
 /** Creative Battery block — holds a {@link CreativeBatteryBlockEntity} that pushes into adjacent receivers each tick. */
 public class CreativeBatteryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<CreativeBatteryBlock> CODEC = simpleCodec(CreativeBatteryBlock::new);
+    public static final MapCodec<CreativeBatteryBlock> CODEC = BlockCodecs.simple(CreativeBatteryBlock::new);
 
     public CreativeBatteryBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<CreativeBatteryBlock> codec() {
         return CODEC;
     }

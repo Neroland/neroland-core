@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.13.0] - 2026-09-20
+
+Minecraft **26.3** support. Additive only: one new API class (`registry.BlockCodecs`); no existing API signature, tag, id, capability or config key changes.
+
+### Added
+
+- **Minecraft 26.3** as a new Stonecutter node on every loader — NeoForge `26.3.0.7-beta`,
+  Forge `26.3-66.0.2` and Fabric (fabric-api `0.161.0+26.3`, NeoForm `26.3-1`) — built alongside
+  26.1.2 and 26.2, so every release now ships **nine** loader × version jars.
+- JEI `31.1.0.12` pinned for the 26.3 node (common + NeoForge/Fabric APIs; Forge stays on the
+  common API only, as JEI still publishes no Forge 26.x artifact).
+
+### Changed
+
+- VS Code run/debug configurations (`.vscode/launch.json`, `.vscode/tasks.json`) gain the three
+  26.3 cells; the "Build all" task now builds all nine.
+- CI (`multiloader.yml`, `publish.yml`) builds, attaches and publishes the 26.3 jars.
+- JEI pins moved to the newest published builds on each Minecraft version: `29.40.0.101` (26.1.2), `30.35.0.223` (26.2) and `31.3.0.18` (26.3). Compile-time API only — JEI remains a soft dependency and the shipped jar gains no hard requirement.
+- **Fixed (26.3-fatal):** the `battery`, `fluid_tank`, `gas_tank` and `item_store` recipes referenced `c:ingots/nerosium` and `c:ingots/nerosteel` — tags owned by Nerospace, not Core. With Core loaded without Nerospace the tags do not exist, and 26.3 loads recipes as a datapack registry, so a single unresolvable ingredient aborts registry loading and world creation fails outright (26.1.2/26.2 merely skipped the recipe with a warning). The four recipes now ship in Nerospace, which owns those materials and already depends on Core; the recipe ids are unchanged (`nerolandcore:battery`, …), so a Core+Nerospace install crafts exactly as before. Core no longer references a tag it does not define.
+
+### 26.3 port notes
+
+- **`registry.BlockCodecs`** (new API) — version-neutral replacement for `Block.simpleCodec` / `propertiesCodec`. It resolves the vanilla members reflectively on 26.1.2 / 26.2 and returns an inert placeholder on 26.3+, where block-type codecs no longer exist. Core's own storage blocks use it.
+- Build: the shared `common/` Java source is now preprocessed by Stonecutter for every non-active node (`stonecutterProcessCommon`), so common code can carry `//? if >=26.3 {` blocks, and `common/src/main/resources-<mc>` overlay folders are merged over the shared resources for matching nodes (`mergeCommonResources`). The active node still compiles the raw `common/` folder.
+- NeoForge metadata: the deprecated `logoFile` property is replaced by `iconFile` on 26.2+ (the logo is a square 256x256 PNG) while 26.1.2, whose FML only understands the old key, still gets `logoFile` — the key is chosen per cell when the manifest is expanded. This clears NeoForge 26.2+'s dev-only "uses the deprecated `logoFile` property" warning screen. The Forge manifest is unchanged: `logoFile` is still the only key Forge supports.
+
+[1.13.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.13.0
+
 ## [1.12.0] - 2026-09-19
 
 Fluid interoperability with the rest of the modded ecosystem. Additive only — no existing API

@@ -20,6 +20,8 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
+
 /**
  * Creative Fluid Tank block — an endless source of one configured fluid (defaults to empty/unset).
  * Right-click with a filled bucket to choose the source fluid (the bucket is kept), sneak-empty-hand to
@@ -27,13 +29,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CreativeFluidTankBlock extends AbstractStorageBlock {
 
-    public static final MapCodec<CreativeFluidTankBlock> CODEC = simpleCodec(CreativeFluidTankBlock::new);
+    public static final MapCodec<CreativeFluidTankBlock> CODEC = BlockCodecs.simple(CreativeFluidTankBlock::new);
 
     public CreativeFluidTankBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<CreativeFluidTankBlock> codec() {
         return CODEC;
     }

@@ -15,16 +15,17 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
+
 /** Trash Can block — holds a {@link TrashCanBlockEntity} void sink. */
 public class TrashCanBlock extends BaseEntityBlock {
 
-    public static final MapCodec<TrashCanBlock> CODEC = simpleCodec(TrashCanBlock::new);
+    public static final MapCodec<TrashCanBlock> CODEC = BlockCodecs.simple(TrashCanBlock::new);
 
     public TrashCanBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<TrashCanBlock> codec() {
         return CODEC;
     }

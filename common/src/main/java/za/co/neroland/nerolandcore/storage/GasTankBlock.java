@@ -16,18 +16,18 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerolandcore.gas.NeroGases;
 
 /** Gas Tank block — holds a {@link GasTankBlockEntity}; right-click empty-handed to read its contents. */
 public class GasTankBlock extends BaseEntityBlock {
 
-    public static final MapCodec<GasTankBlock> CODEC = simpleCodec(GasTankBlock::new);
+    public static final MapCodec<GasTankBlock> CODEC = BlockCodecs.simple(GasTankBlock::new);
 
     public GasTankBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<GasTankBlock> codec() {
         return CODEC;
     }
