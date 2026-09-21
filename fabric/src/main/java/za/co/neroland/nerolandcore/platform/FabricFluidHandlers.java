@@ -17,6 +17,7 @@ import java.util.List;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
+import za.co.neroland.nerolandcore.fluid.GatedFluidView;
 import za.co.neroland.nerolandcore.fluid.NeroFluidStorage;
 
 /**
@@ -40,9 +41,14 @@ public final class FabricFluidHandlers {
     private FabricFluidHandlers() {
     }
 
-    /** Expose a Nero tank on Fabric's standard fluid storage surface. */
+    /** Expose a Nero tank on Fabric's standard fluid storage surface, ungated. */
     public static Storage<FluidVariant> asFluidStorage(NeroFluidStorage store) {
-        return new NeroToStandard(store);
+        return asFluidStorage(GatedFluidView.open(store));
+    }
+
+    /** Expose a Nero tank on Fabric's standard fluid storage, honouring a face's permissions. */
+    public static Storage<FluidVariant> asFluidStorage(GatedFluidView view) {
+        return new NeroToStandard(view);
     }
 
     /**
@@ -50,12 +56,12 @@ public final class FabricFluidHandlers {
      * a gas tank riding a transport fluid needs this: one block offers one fluid storage, but that
      * storage may hold many slots.
      */
-    public static Storage<FluidVariant> asFluidStorage(List<? extends NeroFluidStorage> stores) {
-        List<SingleSlotStorage<FluidVariant>> parts = new ArrayList<>(stores.size());
-        for (NeroFluidStorage store : stores) {
-            parts.add(new NeroToStandard(store));
+    public static Storage<FluidVariant> asFluidStorage(List<GatedFluidView> views) {
+        List<SingleSlotStorage<FluidVariant>> parts = new ArrayList<>(views.size());
+        for (GatedFluidView view : views) {
+            parts.add(new NeroToStandard(view));
         }
-        return new CombinedStorage<>(parts);
+        return new CombinedStorage<>(List.copyOf(parts));
     }
 
     /** Adapt a third-party {@link Storage} of {@link FluidVariant} to Core's contract. */
@@ -79,20 +85,25 @@ public final class FabricFluidHandlers {
      * Nero tank seen as a single-slot {@link Storage}. Mutations are applied immediately and undone
      * by {@link #readSnapshot(Snapshot)} if the transaction aborts, which is the
      * {@link SnapshotParticipant} contract for storage that is not itself transactional.
+     *
+     * <p>Permissions are checked here, against {@link GatedFluidView}, while the snapshot and its
+     * rollback speak to the raw storage — an undo must never be refused by the gate it just passed.
      */
     private static final class NeroToStandard extends SnapshotParticipant<Snapshot>
             implements SingleSlotStorage<FluidVariant> {
 
+        private final GatedFluidView view;
         private final NeroFluidStorage store;
 
-        private NeroToStandard(NeroFluidStorage store) {
-            this.store = store;
+        private NeroToStandard(GatedFluidView view) {
+            this.view = view;
+            this.store = view.storage();
         }
 
         @Override
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            if (resource.hasComponents()) {
+            if (resource.hasComponents() || !this.view.insertable()) {
                 return 0; // a Nero tank holds a bare fluid; never silently strip components
             }
             long offered = toMillibuckets(maxAmount);
@@ -110,7 +121,8 @@ public final class FabricFluidHandlers {
         @Override
         public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            if (resource.hasComponents() || this.store.getFluid() != resource.getFluid()) {
+            if (resource.hasComponents() || !this.view.extractable()
+                    || this.store.getFluid() != resource.getFluid()) {
                 return 0;
             }
             long requested = toMillibuckets(maxAmount);
@@ -171,6 +183,10 @@ public final class FabricFluidHandlers {
     /**
      * Third-party fluid storage seen as a Nero tank. Multi-slot storages are flattened: the reported
      * fluid is the first non-empty view's and amounts/capacities are summed.
+     *
+     * <p>{@code fill}/{@code drain} open an outer transaction, which throws if one is already open on
+     * this thread, so this adapter belongs at the START of a transfer (Core's lookups, side-config
+     * push/pull, machine ticks) and never inside another storage's transaction.
      */
     private static final class StandardToNero implements NeroFluidStorage {
 

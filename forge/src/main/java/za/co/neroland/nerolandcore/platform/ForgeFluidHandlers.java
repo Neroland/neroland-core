@@ -10,6 +10,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import org.jetbrains.annotations.NotNull;
 
+import za.co.neroland.nerolandcore.fluid.GatedFluidView;
 import za.co.neroland.nerolandcore.fluid.NeroFluidStorage;
 
 /**
@@ -27,9 +28,14 @@ public final class ForgeFluidHandlers {
     private ForgeFluidHandlers() {
     }
 
-    /** Expose a Nero tank on Forge's standard fluid capability. */
+    /** Expose a Nero tank on Forge's standard fluid capability, ungated. */
     public static IFluidHandler asFluidHandler(NeroFluidStorage store) {
-        return new NeroToStandard(store);
+        return asFluidHandler(GatedFluidView.open(store));
+    }
+
+    /** Expose a Nero tank on Forge's standard fluid capability, honouring a face's permissions. */
+    public static IFluidHandler asFluidHandler(GatedFluidView view) {
+        return new NeroToStandard(view);
     }
 
     /**
@@ -37,12 +43,12 @@ public final class ForgeFluidHandlers {
      * {@code stores.get(i)}. A machine with both a fluid tank and a gas tank riding a transport fluid
      * needs this: one block carries one fluid capability, but that capability may have many tanks.
      */
-    public static IFluidHandler asFluidHandler(List<? extends NeroFluidStorage> stores) {
-        List<IFluidHandler> parts = new ArrayList<>(stores.size());
-        for (NeroFluidStorage store : stores) {
-            parts.add(asFluidHandler(store));
+    public static IFluidHandler asFluidHandler(List<GatedFluidView> views) {
+        List<IFluidHandler> parts = new ArrayList<>(views.size());
+        for (GatedFluidView view : views) {
+            parts.add(asFluidHandler(view));
         }
-        return new Composite(parts);
+        return new Composite(List.copyOf(parts));
     }
 
     /** Adapt a third-party {@link IFluidHandler} to Core's {@link NeroFluidStorage} contract. */
@@ -54,13 +60,19 @@ public final class ForgeFluidHandlers {
         return (int) Math.max(0, Math.min(Integer.MAX_VALUE, value));
     }
 
-    /** Nero tank seen as a single-tank {@link IFluidHandler}. */
+    /**
+     * Nero tank seen as a single-tank {@link IFluidHandler}. Forge's fluid capability has no
+     * transactions, so simulate/execute pass straight through; the face's permissions are checked
+     * here, per operation, so a player's side-config change takes effect immediately.
+     */
     private static final class NeroToStandard implements IFluidHandler {
 
+        private final GatedFluidView view;
         private final NeroFluidStorage store;
 
-        private NeroToStandard(NeroFluidStorage store) {
-            this.store = store;
+        private NeroToStandard(GatedFluidView view) {
+            this.view = view;
+            this.store = view.storage();
         }
 
         @Override
@@ -85,7 +97,7 @@ public final class ForgeFluidHandlers {
 
         @Override
         public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-            if (tank != 0 || stack.isEmpty()) {
+            if (tank != 0 || stack.isEmpty() || !this.view.insertable()) {
                 return false;
             }
             Fluid held = this.store.getFluid();
@@ -94,7 +106,7 @@ public final class ForgeFluidHandlers {
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
-            if (resource == null || resource.isEmpty()) {
+            if (resource == null || resource.isEmpty() || !this.view.insertable()) {
                 return 0;
             }
             return clampToInt(this.store.fill(resource.getFluid(), resource.getAmount(), action.simulate()));
@@ -113,7 +125,7 @@ public final class ForgeFluidHandlers {
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
             Fluid held = this.store.getFluid();
-            if (maxDrain <= 0 || held == Fluids.EMPTY) {
+            if (maxDrain <= 0 || held == Fluids.EMPTY || !this.view.extractable()) {
                 return FluidStack.EMPTY;
             }
             long drained = this.store.drain(maxDrain, action.simulate());

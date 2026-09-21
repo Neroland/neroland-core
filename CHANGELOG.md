@@ -29,6 +29,11 @@ signature, tag, id, capability or config key changes.
   Item Store has always ridden the standard item handler.
 - Transactions are honoured in both directions: the NeoForge adapter is a `SnapshotJournal` and the
   Fabric adapter a `SnapshotParticipant`, so an aborted transfer rolls a Nero tank back exactly.
+- `GatedFluidView` pairs a raw tank with the permissions a face currently allows, and the adapters
+  check those per operation while snapshot and rollback speak to the raw tank. A pre-gated tank would
+  have had its rollback refused by the same gate the mutation passed — an insert simulated against an
+  input-only face would have stuck, creating fluid out of an aborted transaction. The suppliers are
+  read per operation, so a side-config change takes effect without re-resolving the capability.
 - `SideConfig.Builder#preset(Channel, SidePreset)` — a per-channel starting preset, for machines
   whose channels want different layouts (power and fluid in on every face while gas leaves on every
   face, which no single preset expresses). `resetToPreset` restores each channel to its own preset.
