@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.14.0] - 2026-09-24
+
+EMI compatibility. No gameplay, id, tag or config change.
+
+### Added
+
+- **EMI support.** Every Neroland Core recipe uses a vanilla recipe type, which EMI shows on its own, so
+  nothing needed a plugin. The build now compiles against the community EMI Unofficial Port (Unstable),
+  the only EMI build for Minecraft 26.x, and dev clients load it with `-PwithEmi` (default runs stay
+  JEI-only). EMI stays optional.
+
+[1.14.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.14.0
+
 ## [1.13.0] - 2026-09-20
 
 Minecraft **26.3** support. Additive only: one new API class (`registry.BlockCodecs`); no existing API signature, tag, id, capability or config key changes.
