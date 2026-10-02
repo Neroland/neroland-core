@@ -84,7 +84,10 @@ public final class GateDefinitions {
                     NerolandCoreCommon.LOGGER.warn("[Neroland Core] Could not read gate {}", gateId, e);
                 }
             }
-        } catch (RuntimeException e) {
+        // LinkageError too: a jar built for another Minecraft line fails here with NoSuchMethodError
+        // (ResourceManager.listResources changed signature in 26.3), which must fall back to the
+        // built-ins rather than kill the player join (Sentry MC-NEROLAND-CORE-2).
+        } catch (RuntimeException | LinkageError e) {
             NerolandCoreCommon.LOGGER.warn("[Neroland Core] Gate definition load failed; using built-ins.", e);
         }
         return loaded.isEmpty() ? CoreGates.builtinDefaults() : loaded;

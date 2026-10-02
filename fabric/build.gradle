@@ -9,6 +9,10 @@ plugins {
 
 // MC version comes from the Stonecutter node (e.g. :fabric:26.1.2), not a global property.
 def mc = stonecutter.current.version
+// Upper bound of this cell's Minecraft range: the next minor line (26.1.2 -> 26.2, 26.2 -> 26.3).
+// Without it a jar built for one line loads on the next and dies on a changed signature at runtime
+// (Sentry MC-NEROLAND-CORE-2: a 26.2 jar on 26.3 hit NoSuchMethodError in ResourceManager.listResources).
+def mcCeiling = mc.tokenize('.').with { "${it[0]}.${it[1].toInteger() + 1}" }
 def fabricApi = project.findProperty("fabric_api_version_${mc}")
 def jeiVersion = project.findProperty("jei_version_${mc}")
 def emiFile = project.findProperty("emi_file_fabric_${mc}")
@@ -107,6 +111,7 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
         mod_license          : rootProject.mod_license,
         fabric_loader_version: rootProject.fabric_loader_version,
         minecraft_version    : mc,
+        minecraft_version_ceiling: mcCeiling,
     ]
     inputs.properties(props)
     expand(props)

@@ -61,7 +61,10 @@ public final class MaterialMilestoneDefinitions {
                             exception);
                 }
             }
-        } catch (RuntimeException exception) {
+        // LinkageError too: a jar built for another Minecraft line fails here with NoSuchMethodError
+        // (ResourceManager.listResources changed signature in 26.3), which must fall back to the
+        // built-ins rather than kill the player join (Sentry MC-NEROLAND-CORE-2).
+        } catch (RuntimeException | LinkageError exception) {
             NerolandCoreCommon.LOGGER.warn(
                     "[Neroland Core] Material milestone load failed; using built-ins.", exception);
         }

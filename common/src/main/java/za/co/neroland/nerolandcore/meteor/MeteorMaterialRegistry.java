@@ -117,7 +117,10 @@ public final class MeteorMaterialRegistry {
                     }
                 }
             }
-        } catch (RuntimeException e) {
+        // LinkageError too: a jar built for another Minecraft line fails here with NoSuchMethodError
+        // (ResourceManager.listResources changed signature in 26.3), which must fall back to the
+        // built-ins rather than kill the player join (Sentry MC-NEROLAND-CORE-2).
+        } catch (RuntimeException | LinkageError e) {
             NerolandCoreCommon.LOGGER.warn(
                     "[Neroland Core] Meteor material load failed; using built-ins.", e);
             return builtinDefaults();
