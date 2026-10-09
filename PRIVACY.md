@@ -1,9 +1,10 @@
 # Neroland Core privacy & telemetry disclosure
 
-Neroland Core includes optional, anonymous error reporting so that crashes and bugs caused
-by the mod can be found and fixed. This page is the full disclosure required by CurseForge's
-moderation rules for mods that use an external analytics/error service, and it documents how
-the system is designed to comply with the GDPR (EU) and POPIA (South Africa).
+Neroland Core includes anonymous error reporting so that crashes and bugs caused by the mod
+can be found and fixed. It is **on by default** and **opt-out** (see
+[How to opt out](#how-to-opt-out)). This page is the full disclosure required by
+CurseForge's moderation rules for mods that use an external analytics/error service, and it
+documents how the system is designed to comply with the GDPR (EU) and POPIA (South Africa).
 
 ## What is collected
 
@@ -108,6 +109,6 @@ required by CurseForge moderation policy:
 
 > **Telemetry notice:** Neroland Core sends anonymous error reports (stack trace + mod/game
 > versions only — never IPs, usernames, UUIDs, or world data) to the developers via Sentry
-> (EU servers) so crashes can be fixed. Opt out any time by setting `telemetryEnabled = false`
-> in `config/nerolandcore.properties`. Full details:
+> (EU servers) so crashes can be fixed. On by default — opt out any time by setting
+> `telemetryEnabled = false` in `config/nerolandcore.properties`. Full details:
 > [PRIVACY.md](https://github.com/Neroland/neroland-core/blob/main/PRIVACY.md).

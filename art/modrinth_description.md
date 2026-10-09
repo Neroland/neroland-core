@@ -51,8 +51,8 @@ External interop (Create / AE2 / Mekanism / Ad Astra) is routed through common `
 
 > **Telemetry notice:** Neroland Core sends anonymous error reports (stack trace + mod/game
 > versions only — never IPs, usernames, UUIDs, or world data) to the developers via Sentry
-> (EU servers) so crashes can be fixed. Opt out any time by setting `telemetryEnabled = false`
-> in `config/nerolandcore.properties`. Full details:
+> (EU servers) so crashes can be fixed. On by default — opt out any time by setting
+> `telemetryEnabled = false` in `config/nerolandcore.properties`. Full details:
 > [PRIVACY.md](https://github.com/Neroland/nerolandcore/blob/main/PRIVACY.md).
 
 ---

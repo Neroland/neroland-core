@@ -68,6 +68,32 @@ player's data is kept. `/neroland data purge-inactive` erases everyone past the
 threshold through the same shared hook — run it on a schedule for hands-off
 retention. See [Configuration](Configuration.md).
 
+## Crash reporting (Sentry)
+
+Crash reporting is **on by default** and is **opt-out**. When an error caused by
+Neroland Core's own code occurs, an anonymous report is sent to Sentry, hosted in
+the EU (`ingest.de.sentry.io`). It contains the stack trace and error message (file
+paths are scrubbed of your account name), the mod / Minecraft / loader / OS / Java
+versions, Core's config values, the ids and versions of your other loaded mods, a
+short trail of generic action names, and anonymous per-session stability and timing
+data.
+
+It never contains your IP address, username, player UUID, machine name, world data,
+chat, coordinates or inventories, and there is no persistent identifier linking
+reports. Errors from other mods or Minecraft itself are filtered out, and reports
+are capped at 10 per session and deleted after 90 days.
+
+To opt out, set this in `config/nerolandcore.properties` (created on first launch)
+and restart:
+
+```properties
+telemetryEnabled=false
+```
+
+This one switch covers everything Core sends. It is a local setting — the server
+does not sync it to clients — so each player and each server decides for itself.
+Questions or data requests: [info@neroland.co.za](mailto:info@neroland.co.za).
+
 ## For downstream mods
 
 If your mod stores player data:

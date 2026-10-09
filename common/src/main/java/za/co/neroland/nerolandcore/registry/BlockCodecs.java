@@ -1,7 +1,8 @@
 package za.co.neroland.nerolandcore.registry;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import com.mojang.serialization.Codec;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  * {@code Block#propertiesCodec}, {@code BlockBehaviour#codec()}, {@code BlockBehaviour.Properties#CODEC}
  * and the {@code BLOCK_TYPE} registry are all gone. Shared {@code common} source is compiled unchanged
  * against 26.1.2, 26.2 and 26.3, so it cannot name those members directly. This helper resolves them at
- * runtime where they still exist and hands back an inert placeholder on 26.3+, where nothing reads a
+ * runtime (via {@link MethodHandles}, never {@code Class#getMethod}) where they still exist and hands back an inert placeholder on 26.3+, where nothing reads a
  * block's codec.
  *
  * <p>Usage in a block class — note {@code codec()} is declared <em>without</em> {@code @Override}, since
@@ -39,7 +40,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  */
 public final class BlockCodecs {
 
-    private static final Method SIMPLE_CODEC = findSimpleCodec();
+    private static final MethodHandle SIMPLE_CODEC = findSimpleCodec();
     private static final Codec<BlockBehaviour.Properties> PROPERTIES_CODEC = findPropertiesCodec();
 
     private BlockCodecs() {
@@ -57,8 +58,10 @@ public final class BlockCodecs {
             return MapCodec.<B>unit(BlockCodecs::removed);
         }
         try {
-            return (MapCodec<B>) SIMPLE_CODEC.invoke(null, factory);
-        } catch (ReflectiveOperationException e) {
+            return (MapCodec<B>) SIMPLE_CODEC.invoke(factory);
+        } catch (RuntimeException | Error e) {
+            throw e;
+        } catch (Throwable e) {
             throw new IllegalStateException("Block.simpleCodec could not be invoked", e);
         }
     }
@@ -75,10 +78,21 @@ public final class BlockCodecs {
         throw new UnsupportedOperationException("Block-type codecs were removed in Minecraft 26.3");
     }
 
-    private static Method findSimpleCodec() {
+    // Resolved with MethodHandles, NOT Class#getMethod / #getField. Class#getMethod builds the full
+    // public-method table of Block (and every supertype), which links the parameter and return types of
+    // every method — including loader-patched, client-only ones. On a Forge 26.2 dedicated server that
+    // linked net.minecraft.client.renderer.block.BlockAndTintGetter, threw NoClassDefFoundError from this
+    // class's static initialiser and aborted block registration (Sentry MC-NEROLAND-CORE-4, with
+    // CORE-3/5/6 as the cascading "Registry Object not present: nerolandcore:battery" failures).
+    // A MethodHandles lookup resolves only the one named member, so unrelated signatures are never
+    // touched. LinkageError is caught as well so a codec lookup can never take registration down: the
+    // fallback is the same inert placeholder 26.3 uses, and nothing reads a block codec at runtime.
+
+    private static MethodHandle findSimpleCodec() {
         try {
-            return Block.class.getMethod("simpleCodec", Function.class);
-        } catch (NoSuchMethodException e) {
+            return MethodHandles.lookup().findStatic(Block.class, "simpleCodec",
+                    MethodType.methodType(MapCodec.class, Function.class));
+        } catch (ReflectiveOperationException | LinkageError e) {
             return null;
         }
     }
@@ -86,9 +100,11 @@ public final class BlockCodecs {
     @SuppressWarnings("unchecked")
     private static Codec<BlockBehaviour.Properties> findPropertiesCodec() {
         try {
-            Field field = BlockBehaviour.Properties.class.getField("CODEC");
-            return (Codec<BlockBehaviour.Properties>) field.get(null);
-        } catch (ReflectiveOperationException e) {
+            MethodHandle getter = MethodHandles.lookup().findStaticGetter(
+                    BlockBehaviour.Properties.class, "CODEC", Codec.class);
+            return (Codec<BlockBehaviour.Properties>) getter.invoke();
+        } catch (Throwable e) {
+            // ReflectiveOperationException (26.3+: the field is gone) or LinkageError — placeholder either way.
             return null;
         }
     }
