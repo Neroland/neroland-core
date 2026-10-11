@@ -13,7 +13,7 @@ name: Sync Modrinth project page
 # not the 1024px master (which is over the limit).
 #
 # Requires repository secrets:
-#   MODRINTH_PROJECT_ID — project id (base62 ID preferred over the slug) of https://modrinth.com/mod/neroland-core
+#   MODRINTH_PROJECT_ID — project id (base62 ID preferred over the slug) of the Neroland Core Modrinth project
 #   MODRINTH_API_TOKEN  — a Modrinth PAT with the "Edit project details" scope
 on:
   push:
@@ -48,6 +48,12 @@ jobs:
             exit 1
           fi
 
+          # The slug is deliberately NOT in this payload. Modrinth treats a slug in a
+          # PATCH as a rename request and returns HTTP 400 "Slug collides with other
+          # project's id!" when the target slug is taken. Renaming a project also
+          # breaks every existing link to it, so change the slug by hand in the
+          # Modrinth UI, never from CI.
+          #
           # jq -Rs reads the description file as one string and JSON-escapes it
           # safely; everything else is pinned here so the page can't drift from the
           # repo (a fumbled UI edit gets corrected on the next sync run).
@@ -55,7 +61,6 @@ jobs:
           # License" — this is the field AutoMod's "Missing License" check reads.
           jq -Rs '{
             body: .,
-            slug: "neroland-core",
             title: "Neroland Core",
             description: "The shared foundation library for the Neroland sci-fi mod ecosystem — required by Nerospace and every other Nero mod.",
             categories: ["library"],
