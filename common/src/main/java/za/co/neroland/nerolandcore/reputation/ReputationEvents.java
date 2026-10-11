@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 import net.minecraft.resources.Identifier;
 
+import za.co.neroland.nerolandcore.event.ListenerGuard;
+
 /**
  * Reputation-change notifications, fired by {@link ReputationApi} when a player's
  * standing with a faction changes. Subscribers react (e.g. unlock a faction perk,
@@ -28,8 +30,6 @@ public final class ReputationEvents {
     }
 
     static void fire(ReputationChange change) {
-        for (Consumer<ReputationChange> listener : LISTENERS) {
-            listener.accept(change);
-        }
+        ListenerGuard.dispatch("ReputationEvents", LISTENERS, change);
     }
 }

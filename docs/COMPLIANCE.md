@@ -13,6 +13,9 @@ Keyed by player **UUID**, gameplay state only:
 - last-login timestamp for retention (`PlayerActivity`),
 - NeroLink alerts (`LinkAlerts`) — per-player gameplay notifications (module id,
   severity, short non-personal text, timestamps), keyed by owning UUID.
+  Capped per player (`linkAlertsMaxPerPlayer`, default 50) and per module
+  (`linkAlertsMaxPerModule`, default 25) since 1.15.0. Over a cap, the oldest acknowledged alert
+  is evicted first, then the oldest.
 
 Core does **not** store balances or reputation itself — those are contracts
 NeroEconomy / NeroFactions implement. Core never stores names, IPs, chat, or location

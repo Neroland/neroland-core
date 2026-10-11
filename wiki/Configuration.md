@@ -48,6 +48,8 @@ The sync payload carries only config keys and values — never player identity.
 | `debugLogging` | Enables verbose debug logging |
 | `telemetryEnabled` | Anonymous Neroland-Core-only crash reports via Sentry (EU servers); default `true`, set `false` to opt out. Client-local, not synced (see Privacy and Data) |
 | `dataRetentionDays` | Inactive-player retention; 0 = never |
+| `linkAlertsMaxPerPlayer` | Most NeroLink alerts kept per player (default 50); oldest acknowledged evicted first |
+| `linkAlertsMaxPerModule` | Most NeroLink alerts kept per player from one mod (default 25) |
 
 ## Commands
 

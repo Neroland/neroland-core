@@ -53,6 +53,10 @@ major:
   `neroland_material_milestones` datapack formats.
 - **Economy / reputation** — `CurrencyApi`, `Currency`, `CurrencyProvider`,
   `CurrencyEvents`; `ReputationApi`, `ReputationProvider`, `ReputationEvents`.
+- **Events & attribution** — `event.ThresholdEvents` (+ `ThresholdCrossing`, and
+  `SourcedCrossing` from 1.15.0) and `event.SourceIds` (1.15.0). `event.ListenerGuard` is
+  `@ApiStatus.Internal`.
+- **Item sources** (added in 1.15.0) — `item.ItemSource`, `item.ItemSources`.
 - **Machines / power / upgrades** — `NeroEnergyStorage`, `EnergyBuffer`,
   `EnergyConversions`, `AbstractMachineBlockEntity`, `UpgradeType`, `UpgradeContainer`,
   `UpgradeModifiers`.

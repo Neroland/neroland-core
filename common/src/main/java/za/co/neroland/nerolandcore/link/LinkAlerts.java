@@ -1,6 +1,8 @@
 package za.co.neroland.nerolandcore.link;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.config.CoreConfig;
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
@@ -42,7 +45,15 @@ import za.co.neroland.nerolandcore.data.SavedDataRecovery;
  *
  * <p>Raising and acking an alert publishes a {@link LinkEvent} on the shared
  * {@link LinkEventBus} (topic {@code alerts}) so the bridge can push it while the app is
- * closed.
+ * closed. Since Core 1.15.0 the event is published under the alert's own
+ * {@link LinkAlert#moduleId() module id} (falling back to {@code "core"} when blank), so the
+ * bridge attributes it to the module that raised it.
+ *
+ * <p><b>Caps (Core 1.15.0).</b> Each player's store is bounded by
+ * {@code linkAlertsMaxPerModule} (alerts from one module) and {@code linkAlertsMaxPerPlayer}
+ * (all modules) in Core's config. When {@link #raise} pushes a player over a cap, the oldest
+ * acknowledged alert is evicted first, then the oldest overall; each eviction publishes an
+ * {@code alerts} event with {@code "event": "evicted"}.
  */
 @org.jetbrains.annotations.ApiStatus.Internal
 public final class LinkAlerts extends SavedData {
@@ -86,10 +97,54 @@ public final class LinkAlerts extends SavedData {
      * {@code alerts} event. @return the stored alert.
      */
     public LinkAlert raise(MinecraftServer server, UUID player, LinkAlert alert) {
-        byPlayer.computeIfAbsent(player, ignored -> new LinkedHashMap<>()).put(alert.id(), alert);
+        Map<String, LinkAlert> alerts = byPlayer.computeIfAbsent(player, ignored -> new LinkedHashMap<>());
+        alerts.put(alert.id(), alert);
         setDirty();
         publish(player, alert, "raised");
+        enforceCaps(player, alerts, alert);
         return alert;
+    }
+
+    /** Evict over-cap alerts for one player: the raised alert's module first, then the player total. */
+    private void enforceCaps(UUID player, Map<String, LinkAlert> alerts, LinkAlert raised) {
+        String module = raised.moduleId();
+        List<LinkAlert> sameModule = new ArrayList<>();
+        for (LinkAlert a : alerts.values()) {
+            if (java.util.Objects.equals(a.moduleId(), module)) {
+                sameModule.add(a);
+            }
+        }
+        evict(player, alerts, selectEvictions(sameModule, CoreConfig.LINK_ALERTS_MAX_PER_MODULE.get(), raised.id()));
+        evict(player, alerts, selectEvictions(alerts.values(), CoreConfig.LINK_ALERTS_MAX_PER_PLAYER.get(), raised.id()));
+    }
+
+    private void evict(UUID player, Map<String, LinkAlert> alerts, List<LinkAlert> victims) {
+        for (LinkAlert victim : victims) {
+            if (alerts.remove(victim.id()) != null) {
+                setDirty();
+                publish(player, victim, "evicted");
+            }
+        }
+    }
+
+    /**
+     * The alerts to evict so that at most {@code cap} remain: oldest acknowledged first, then oldest
+     * overall (by {@code createdAt}, ties by encounter order). The {@code keepId} alert (the one just
+     * raised) is never selected. Package-private for unit tests.
+     */
+    static List<LinkAlert> selectEvictions(Collection<LinkAlert> alerts, int cap, String keepId) {
+        int excess = alerts.size() - Math.max(1, cap);
+        if (excess <= 0) {
+            return List.of();
+        }
+        List<LinkAlert> candidates = new ArrayList<>();
+        for (LinkAlert a : alerts) {
+            if (!a.id().equals(keepId)) {
+                candidates.add(a);
+            }
+        }
+        candidates.sort(Comparator.comparing((LinkAlert a) -> !a.acked()).thenComparingLong(LinkAlert::createdAt));
+        return List.copyOf(candidates.subList(0, Math.min(excess, candidates.size())));
     }
 
     /** All of a player's alerts, most-recently-created first (a defensive copy). */
@@ -168,7 +223,13 @@ public final class LinkAlerts extends SavedData {
         delta.addProperty("at", alert.createdAt());
         delta.addProperty("acked", alert.acked());
         delta.addProperty("event", verb);
-        NeroLinkRegistry.eventBus().publish(LinkEvent.forPlayer("core", SECTION, player, delta));
+        NeroLinkRegistry.eventBus().publish(LinkEvent.forPlayer(publishingModule(alert), SECTION, player, delta));
+    }
+
+    /** The module an alert's event is published under: its own module id, or {@code "core"} when blank. */
+    static String publishingModule(LinkAlert alert) {
+        String module = alert.moduleId();
+        return module == null || module.isBlank() ? "core" : module;
     }
 
     // --- persistence (same SavedDataType + Codec pattern as ProgressionState) --------

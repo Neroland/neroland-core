@@ -70,6 +70,17 @@ public final class CoreConfig {
             "dataRetentionDays", 0, 0, 3650, false,
             "Days of inactivity after which a player's stored data is purged (0 = never; opt-in).");
 
+    // --- NeroLink alert store caps (server-side) ------------------------------
+    // Bound the per-player alert store so a chatty module cannot grow link_alerts.dat without limit
+    // (data minimisation). Over a cap, the oldest acknowledged alert is evicted first, then the oldest.
+    public static final ConfigValue<Integer> LINK_ALERTS_MAX_PER_PLAYER = SCHEMA.intRange(
+            "linkAlertsMaxPerPlayer", 50, 1, 1000, false,
+            "Maximum NeroLink alerts stored per player across all modules. Over the cap the oldest "
+                    + "acknowledged alert is evicted first, then the oldest.");
+    public static final ConfigValue<Integer> LINK_ALERTS_MAX_PER_MODULE = SCHEMA.intRange(
+            "linkAlertsMaxPerModule", 25, 1, 1000, false,
+            "Maximum NeroLink alerts stored per player from any single module. Same eviction order.");
+
     // --- Item highlights (client-side, local-only) --------------------------
     // Subtle coloured slot borders on Nero ecosystem items, keyed to the
     // neroland:highlight/* item tags (see client/ItemHighlights).

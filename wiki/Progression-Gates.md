@@ -77,6 +77,9 @@ A bare id like `reached_orbit` is treated as `nerolandcore:reached_orbit`.
 
 ## For developers
 
+Gates can be checked and opened for players who are offline. A team gate resolves
+through the player's scoreboard team, the same way it does while they are online.
+
 The full progression API is documented in
 [../docs/PROGRESSION.md](../docs/PROGRESSION.md).
 

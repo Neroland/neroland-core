@@ -6,10 +6,15 @@ import java.util.function.Consumer;
 
 import net.minecraft.resources.Identifier;
 
+import za.co.neroland.nerolandcore.event.ListenerGuard;
+
 /**
  * Change notifications for progression gates. Any mod (e.g. NeroEvents reacting to
  * {@code reached_orbit}) registers a listener; {@link ProgressionGates} fires one
  * whenever a gate opens or closes. Listeners run on the server thread.
+ *
+ * <p>Since Core 1.15.0 a listener that throws a {@link RuntimeException} is logged once per listener
+ * class (without the change) and skipped; the remaining listeners still run.
  */
 public final class GateEvents {
 
@@ -35,8 +40,6 @@ public final class GateEvents {
     }
 
     static void fire(GateChange change) {
-        for (Consumer<GateChange> listener : LISTENERS) {
-            listener.accept(change);
-        }
+        ListenerGuard.dispatch("GateEvents", LISTENERS, change);
     }
 }

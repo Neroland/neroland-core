@@ -26,4 +26,10 @@ class SavedDataRecoveryTest {
         assertThrows(IllegalArgumentException.class, () -> SavedDataRecovery.backupNow(
                 null, PlayerActivity.TYPE, new PlayerActivity(), "nerolandcore:player_activity"));
     }
+
+    @Test
+    void theRegistryAwareBackupOverloadRejectsAMissingLevel() {
+        assertThrows(IllegalArgumentException.class, () -> SavedDataRecovery.backupNow(
+                null, PlayerActivity.TYPE, new PlayerActivity(), "nerolandcore:player_activity", null));
+    }
 }

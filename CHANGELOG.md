@@ -6,6 +6,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
+## [1.15.0] - 2026-10-11
+
+Integration seams requested by NeroEconomy, plus hardening. Additive only: no existing public
+signature, record component, tag, id, capability or config key changes.
+
+### Added
+
+- **Attributed currency calls.** `CurrencyApi.deposit/withdraw(UUID, Currency, long, String sourceModId,
+  String reason)` and `CurrencyApi.transfer(UUID, UUID, Currency, long, String, String)`. `sourceModId`
+  must match `[a-z0-9_.-]{1,64}` and `reason` must match `[a-z0-9_]{1,32}`; an invalid value returns
+  `false` without reaching the provider. `CurrencyProvider` gains matching default overloads that
+  delegate to the 3-argument methods, so existing providers are unaffected.
+- **`CurrencyEvents.onAttributedChange`** and the new `CurrencyEvents.AttributedChange(change, sourceModId,
+  reason)` record. This is a side-channel: `BalanceChange` and `onChange` are unchanged.
+- **`event.SourceIds`** holds the shared `SOURCE_MOD_ID` / `REASON` patterns and `isValidSourceModId` /
+  `isValidReason`.
+- **Threshold publisher identity.** `ThresholdEvents.fire(String sourceModId, ThresholdCrossing)`,
+  `ThresholdEvents.onSourcedCrossing(Consumer<SourcedCrossing>)` and the
+  `ThresholdEvents.SourcedCrossing(sourceModId, crossing)` record. The existing `fire(crossing)` still
+  works and reports a `null` source.
+- **Offline progression gates.** `ProgressionGates.isOpen/open/close(MinecraftServer, UUID, Identifier)`
+  work for online and offline players. A `TEAM` gate resolves through the player's scoreboard team (looked
+  up by their cached profile name) and falls back to the player's own row. These overloads fire the same
+  `GateEvents` and re-sync online players.
+- **Item lookup seam.** The `item.ItemSource` interface (`count(server, player, itemId)` and
+  `extract(server, player, itemId, n, simulate)`) and the `item.ItemSources` registry, keyed by mod id. The
+  registry provides `register`, `unregister`, `get`, `modIds`, `count`, `countBySource` and `extract`; it
+  aggregates in registration order and isolates failing sources.
+- **`SavedDataRecovery.backupNow(ServerLevel, SavedDataType, T, String, HolderLookup.Provider)`** encodes
+  with an explicit registry provider.
+- **NeroLink alert caps** in new config keys `linkAlertsMaxPerPlayer` (default 50) and
+  `linkAlertsMaxPerModule` (default 25). Over a cap, the oldest acknowledged alert is evicted first, then
+  the oldest. Each eviction publishes an `alerts` event with `"event": "evicted"`.
+
+### Changed
+
+- **Listener isolation on every Core bus.** `CurrencyEvents`, `ReputationEvents`, `GateEvents`,
+  `MaterialMilestoneEvents`, `ThresholdEvents`, `LinkEventBus` and `ItemSources` now catch a listener's
+  `RuntimeException`, log it once per listener class (bus, class, exception type and top frame only, never
+  the payload or message) and continue with the next listener.
+- `LinkAlerts` publishes its `alerts` events under the alert's own module id, falling back to `core` when
+  the id is blank. Previously every alert event was published as `core`.
+- `SavedDataRecovery` backups are now encoded and decoded with the level's registry-aware ops, so stores
+  holding registry-backed data (item stacks with components) back up correctly on 26.x.
+- Each loader manifest now caps the Minecraft range per cell, so a jar only loads on its own minor line.
+  This avoids cross-line `NoSuchMethodError` crashes.
+- `registry.BlockCodecs` now looks up codecs with `MethodHandles` instead of broad reflection.
+
+### Fixed
+
+- **Silent saved-data decode failures on 26.x.** On 26.x vanilla does not throw for an unreadable file or
+  a codec error: it returns a fresh or partial store, which the first backup pass then wrote over the good
+  backup. `SavedDataRecovery.get` now re-checks each store's primary file on its first load per world. If
+  the codec rejects the file, it restores the last-known-good backup and reports the failure through the
+  log and the scrubbed handled-error telemetry. With no usable backup, it keeps vanilla's store without
+  overwriting the unreadable file.
+- Datapack-driven loaders (meteor materials, gates, material milestones) also catch `LinkageError` and
+  fall back to their built-in defaults.
+
+[1.15.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.15.0
+
 ## [1.14.0] - 2026-09-24
 
 EMI compatibility. No gameplay, id, tag or config change.

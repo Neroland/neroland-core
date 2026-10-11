@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
-import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.event.ListenerGuard;
 
 /**
  * The shared publish/subscribe channel between event-producing modules and the bridge.
@@ -28,13 +28,8 @@ public final class LinkEventBus {
 
     /** Publish an event to every subscriber. */
     public void publish(LinkEvent event) {
-        for (Consumer<LinkEvent> subscriber : subscribers) {
-            try {
-                subscriber.accept(event);
-            } catch (RuntimeException e) {
-                NerolandCoreCommon.LOGGER.warn("[Neroland Core] A NeroLink event subscriber failed.", e);
-            }
-        }
+        // Logged once per subscriber class, without the event (its payload may be player-scoped).
+        ListenerGuard.dispatch("LinkEventBus", subscribers, event);
     }
 
     /** Subscribe to all events (typically the bridge). */

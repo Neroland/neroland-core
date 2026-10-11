@@ -34,6 +34,8 @@ Every system is reached through a small facade; the per-loader wiring is Core's 
 | Ask "is this place off-Earth?" | `SpaceTags` (`isSpace` / `biomeIn`) | [SPACE-TAGS-AND-ENTITIES](SPACE-TAGS-AND-ENTITIES.md) |
 | Register mob attributes / spawn placement | `EntityRegistrationSupport.get(modId)` | [SPACE-TAGS-AND-ENTITIES](SPACE-TAGS-AND-ENTITIES.md) |
 | Store player data | register a `PlayerDataEraser` | [COMPLIANCE](COMPLIANCE.md) |
+| Count/draw a player's items across mods | `item.ItemSources` (register an `ItemSource`) | [ECONOMY-REPUTATION](ECONOMY-REPUTATION.md) |
+| Publish/observe a threshold crossing | `event.ThresholdEvents` (`fire(sourceModId, crossing)`) | [ECONOMY-REPUTATION](ECONOMY-REPUTATION.md) |
 
 Put loader-agnostic logic in your `common` module and reach loader specifics through
 Core's seams (or your own), mirroring Core's structure.
@@ -66,3 +68,9 @@ If any store keeps its state in a vanilla `SavedData`, load it through
 `getDataStorage().computeIfAbsent(TYPE)` — a corrupt `.dat` otherwise hard-crashes the tick loop
 on every access. That helper also keeps a last-known-good backup of the file, which holds the same
 player-keyed rows, so call `SavedDataRecovery.backupNow(...)` right after purging a player.
+Backups are encoded with the level's registry-aware ops, so stores holding item stacks or other
+registry-backed data back up correctly on 26.x; pass a `HolderLookup.Provider` (for example
+`server.registryAccess()`) to the 5-argument `backupNow` if you hold one. On 26.x vanilla does
+not throw for an undecodable file: it hands back an empty store. `get` re-checks each store's
+primary file the first time it is loaded, restores the backup if the codec rejects the file, and
+reports it.

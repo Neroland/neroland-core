@@ -9,7 +9,7 @@ body:
         Thanks for helping improve **NerolandCore**!
 
         Please search existing issues first to avoid duplicates. For questions or general
-        discussion, use [Discussions](https://github.com/Neroland/nerolandcore/discussions) or the
+        discussion, use [Discussions](https://github.com/Neroland/neroland-core/discussions) or the
         [Discord](https://discord.gg/ArPXvYUzJG) instead.
   - type: textarea
     id: what-happened

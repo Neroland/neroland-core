@@ -44,16 +44,16 @@ External interop (Create / AE2 / Mekanism / Ad Astra) is routed through common `
 
 ## Links
 
-- Wiki: https://github.com/Neroland/nerolandcore/wiki
+- Wiki: https://github.com/Neroland/neroland-core/wiki
 - Discord: https://discord.gg/ArPXvYUzJG
-- Issues: https://github.com/Neroland/nerolandcore/issues
+- Issues: https://github.com/Neroland/neroland-core/issues
 - The flagship mod that uses it: **Nerospace**
 
 > **Telemetry notice:** Neroland Core sends anonymous error reports (stack trace + mod/game
 > versions only — never IPs, usernames, UUIDs, or world data) to the developers via Sentry
 > (EU servers) so crashes can be fixed. On by default — opt out any time by setting
 > `telemetryEnabled = false` in `config/nerolandcore.properties`. Full details:
-> [PRIVACY.md](https://github.com/Neroland/nerolandcore/blob/main/PRIVACY.md).
+> [PRIVACY.md](https://github.com/Neroland/neroland-core/blob/main/PRIVACY.md).
 
 ---
 

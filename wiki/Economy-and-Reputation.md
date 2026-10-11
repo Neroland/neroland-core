@@ -22,6 +22,11 @@ Change events fire around successful operations. A provider implements
 `getBalance`, `deposit`, and `withdraw`; `transfer` and `forgetPlayer` have
 default implementations.
 
+A mod can also name itself and give a short reason code when it moves money
+(for example `neroquests` / `quest_reward`), so an economy mod can keep a ledger
+of who paid what and why. The mod id and reason code only accept lowercase
+letters, digits and a few separators, so they never carry personal data.
+
 ## Reputation
 
 Reputation is an integer standing keyed by (player UUID, faction id). The scale

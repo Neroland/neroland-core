@@ -77,3 +77,5 @@ upgrade-module framework (`upgradeModuleSlotCap`, `upgradeStackingDiminish`), th
 energy conversion ratio (`neroEnergyToForgeEnergyRatio`), the client-side item
 highlights (`itemHighlightsEnabled`, `itemHighlightOpacity`, `itemHighlightThickness`
 — local-only), plus local `debugLogging` and a reserved `telemetryEnabled` opt-out.
+The NeroLink alert-store caps (`linkAlertsMaxPerPlayer`, default 50, and
+`linkAlertsMaxPerModule`, default 25; added in 1.15.0) bound how many alerts are kept per player.

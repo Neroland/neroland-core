@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 
 import net.minecraft.resources.Identifier;
 
+import za.co.neroland.nerolandcore.event.ListenerGuard;
+
 /** Server-thread notifications for typed material milestone changes. */
 public final class MaterialMilestoneEvents {
 
@@ -23,6 +25,6 @@ public final class MaterialMilestoneEvents {
     }
 
     static void fire(Change change) {
-        LISTENERS.forEach(listener -> listener.accept(change));
+        ListenerGuard.dispatch("MaterialMilestoneEvents", LISTENERS, change);
     }
 }

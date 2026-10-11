@@ -32,6 +32,7 @@ Every system is reached through a small facade; per-loader wiring is Core's job.
 | Ask "is this place off-Earth?" | `SpaceTags.isSpace(level)` / `SpaceTags.biomeIn(...)` | [Space Tags & Entity Registration](Space-Tags-and-Entities.md) | [SPACE-TAGS-AND-ENTITIES](../docs/SPACE-TAGS-AND-ENTITIES.md) |
 | Register mob attributes / spawn placement | `EntityRegistrationSupport.get(modId)` | [Space Tags & Entity Registration](Space-Tags-and-Entities.md) | [SPACE-TAGS-AND-ENTITIES](../docs/SPACE-TAGS-AND-ENTITIES.md) |
 | Store player data | register a `PlayerDataEraser` | [Privacy & Data](Privacy-and-Data.md) | [COMPLIANCE](../docs/COMPLIANCE.md) |
+| Count/draw a player's items across mods | `ItemSources` + an `ItemSource` | [Economy & Reputation](Economy-and-Reputation.md) | [ECONOMY-REPUTATION](../docs/ECONOMY-REPUTATION.md) |
 
 ## Implementing a Core provider
 

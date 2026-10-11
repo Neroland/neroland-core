@@ -62,6 +62,21 @@ ClientGates.isOpen(CoreGates.REACHED_ORBIT);
 force it. Every change fires a `GateEvents` notification and re-syncs affected
 players.
 
+### Offline players (1.15.0)
+
+`isOpen(server, uuid, gate)`, `open(server, uuid, gate)` and `close(server, uuid, gate)` work
+whether or not the player is online — for payouts, colony exports or NeroLink actions that run
+while the player is away. Online, they delegate to the `ServerPlayer` overloads. Offline,
+`SERVER` and `PLAYER` gates resolve as usual; a `TEAM` gate resolves through the player's
+scoreboard team, found by their last-known name in the server's profile cache. A player with no
+team, or whose name the cache no longer holds, falls back to their own row, the same as a teamless
+online player. An offline change fires the same `GateEvents.GateChange` (it carries no
+`ServerPlayer`) and re-syncs every online player. These overloads do not check `requires`; there is
+no offline `tryOpen`.
+
+Since 1.15.0, a gate listener that throws is logged once per listener class and skipped, so it can
+no longer stop the other listeners.
+
 ## Reacting to changes
 
 ```java

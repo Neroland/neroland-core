@@ -56,7 +56,7 @@ FABRIC_LOADER_META = "https://maven.fabricmc.net/net/fabricmc/fabric-loader/mave
 FABRIC_API_META = "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"
 JEI_META = "https://maven.blamejared.com/mezz/jei/jei-{mc}-{loader}/maven-metadata.xml"
 
-USER_AGENT = "nerolandcore-auto-deps/1.0 (+https://github.com/Neroland/nerolandcore)"
+USER_AGENT = "nerolandcore-auto-deps/1.0 (+https://github.com/Neroland/neroland-core)"
 
 # Set by --dry-run; when True, _write() reports instead of touching files.
 _DRY = False

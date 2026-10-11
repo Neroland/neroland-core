@@ -13,7 +13,7 @@ name: Sync Modrinth project page
 # not the 1024px master (which is over the limit).
 #
 # Requires repository secrets:
-#   MODRINTH_PROJECT_ID — project id (or slug) of https://modrinth.com/mod/nerolandcore
+#   MODRINTH_PROJECT_ID — project id (base62 ID preferred over the slug) of https://modrinth.com/mod/neroland-core
 #   MODRINTH_API_TOKEN  — a Modrinth PAT with the "Edit project details" scope
 on:
   push:
@@ -55,17 +55,18 @@ jobs:
           # License" — this is the field AutoMod's "Missing License" check reads.
           jq -Rs '{
             body: .,
+            slug: "neroland-core",
             title: "Neroland Core",
             description: "The shared foundation library for the Neroland sci-fi mod ecosystem — required by Nerospace and every other Nero mod.",
             categories: ["library"],
             client_side: "required",
             server_side: "required",
-            issues_url: "https://github.com/Neroland/nerolandcore/issues",
-            source_url: "https://github.com/Neroland/nerolandcore",
-            wiki_url: "https://github.com/Neroland/nerolandcore/wiki",
+            issues_url: "https://github.com/Neroland/neroland-core/issues",
+            source_url: "https://github.com/Neroland/neroland-core",
+            wiki_url: "https://github.com/Neroland/neroland-core/wiki",
             discord_url: "https://discord.gg/ArPXvYUzJG",
             license_id: "LicenseRef-Custom",
-            license_url: "https://github.com/Neroland/nerolandcore/blob/main/LICENSE"
+            license_url: "https://github.com/Neroland/neroland-core/blob/main/LICENSE"
           }' art/modrinth_description.md > payload.json
 
           HTTP_CODE=$(curl -sS -o response.txt -w "%{http_code}" \
