@@ -7,6 +7,8 @@
     "nerolandcore:fluid_tank",
     "nerolandcore:gas_tank",
     "nerolandcore:item_store",
-    "nerolandcore:trash_can"
+    "nerolandcore:trash_can",
+    "nerolandcore:plasma_glass_block",
+    "nerolandcore:plasma_glass_pane"
   ]
 }
