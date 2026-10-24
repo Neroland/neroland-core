@@ -136,7 +136,7 @@ public final class SideConfigWidget {
 
         if (!open) {
             button(g, l.px, l.py, CELL, CELL, TAB_CLOSED);
-            center(g, font, "Cfg", l.px + CELL / 2, l.py + 4, 0xFF0A0A0A);
+            center(g, font, Component.translatable("gui.nerolandcore.side_config.tab"), l.px + CELL / 2, l.py + 4, 0xFF0A0A0A);
             return;
         }
 
@@ -144,9 +144,9 @@ public final class SideConfigWidget {
         g.fill(l.px, l.py, l.px + PANEL_W, l.panelBottom, PANEL);
         outline(g, l.px, l.py, PANEL_W, l.panelBottom - l.py, OUTLINE);
         g.fill(l.px, l.py, l.px + PANEL_W, l.py + HEADER_H, HEADER);
-        g.text(font, Component.literal("Side Config"), l.px + 5, l.py + 3, TEXT, false);
-        String chName = channelLabel(activeChannel);
-        g.text(font, Component.literal(chName), l.px + PANEL_W - font.width(chName) - 5, l.py + 3, channelColor(activeChannel), false);
+        g.text(font, Component.translatable("gui.nerolandcore.side_config.title"), l.px + 5, l.py + 3, TEXT, false);
+        Component chName = channelLabel(activeChannel);
+        g.text(font, chName, l.px + PANEL_W - font.width(chName) - 5, l.py + 3, channelColor(activeChannel), false);
 
         // Channel sub-tabs.
         if (config.isMultiChannel()) {
@@ -171,7 +171,7 @@ public final class SideConfigWidget {
 
         // Right column: mode palette while a face is selected, otherwise the legend.
         if (paletteFace != null && cfg != null) {
-            g.text(font, Component.literal("Set " + faceLabel(paletteFace) + ":"), l.colX, l.netY - 1, SUBTLE, false);
+            g.text(font, Component.translatable("gui.nerolandcore.side_config.set_face", faceLabel(paletteFace)), l.colX, l.netY - 1, SUBTLE, false);
             int sy = l.netY + 10;
             for (SideMode mode : SideMode.VALUES) {
                 if (!cfg.isAllowed(mode)) {
@@ -194,15 +194,15 @@ public final class SideConfigWidget {
         // Controls — auto-eject / auto-input toggles, then reset / copy / paste.
         boolean autoEject = cfg != null && cfg.autoEject();
         boolean autoInput = cfg != null && cfg.autoInput();
-        labelledButton(g, font, l.px + 5, l.ctrlY1, 64, "Auto-Eject", autoEject ? BTN_ON : BTN, autoEject ? 0xFF0A0A0A : TEXT);
-        labelledButton(g, font, l.px + 73, l.ctrlY1, 64, "Auto-Input", autoInput ? BTN_ON : BTN, autoInput ? 0xFF0A0A0A : TEXT);
-        labelledButton(g, font, l.px + 5, l.ctrlY2, 42, "Reset", BTN, TEXT);
-        labelledButton(g, font, l.px + 49, l.ctrlY2, 42, "Copy", BTN, TEXT);
+        labelledButton(g, font, l.px + 5, l.ctrlY1, 64, Component.translatable("gui.nerolandcore.side_config.auto_eject"), autoEject ? BTN_ON : BTN, autoEject ? 0xFF0A0A0A : TEXT);
+        labelledButton(g, font, l.px + 73, l.ctrlY1, 64, Component.translatable("gui.nerolandcore.side_config.auto_input"), autoInput ? BTN_ON : BTN, autoInput ? 0xFF0A0A0A : TEXT);
+        labelledButton(g, font, l.px + 5, l.ctrlY2, 42, Component.translatable("gui.nerolandcore.side_config.reset"), BTN, TEXT);
+        labelledButton(g, font, l.px + 49, l.ctrlY2, 42, Component.translatable("gui.nerolandcore.side_config.copy"), BTN, TEXT);
         labelledButton(g, font, l.px + 93, l.ctrlY2, 44,
-                SideConfigClipboard.hasFor(typeKey) ? "Paste" : "Paste", SideConfigClipboard.hasFor(typeKey) ? BTN_ON : BTN,
+                Component.translatable("gui.nerolandcore.side_config.paste"), SideConfigClipboard.hasFor(typeKey) ? BTN_ON : BTN,
                 SideConfigClipboard.hasFor(typeKey) ? 0xFF0A0A0A : SUBTLE);
 
-        g.text(font, Component.literal("L cycle  ·  R off  ·  M menu"), l.px + 5, l.hintY, SUBTLE, false);
+        g.text(font, Component.translatable("gui.nerolandcore.side_config.hint"), l.px + 5, l.hintY, SUBTLE, false);
     }
 
     // --- input --------------------------------------------------------------
@@ -310,7 +310,7 @@ public final class SideConfigWidget {
     private void swatch(GuiGraphicsExtractor g, Font font, int x, int y, SideMode mode) {
         g.fill(x, y, x + 8, y + 8, BORDER);
         g.fill(x + 1, y + 1, x + 7, y + 7, SideModeColors.of(mode));
-        g.text(font, Component.literal(modeLabel(mode)), x + 11, y, TEXT, false);
+        g.text(font, modeLabel(mode), x + 11, y, TEXT, false);
     }
 
     private static int[] faceCell(int ox, int oy, RelativeFace face) {
@@ -345,34 +345,34 @@ public final class SideConfigWidget {
         return new int[] { ox + col * STEP, oy + row * STEP };
     }
 
-    private static String faceLabel(RelativeFace face) {
-        return switch (face) {
-            case FRONT -> "Ft";
-            case BACK -> "Bk";
-            case LEFT -> "Lf";
-            case RIGHT -> "Rt";
-            case TOP -> "Tp";
-            case BOTTOM -> "Bm";
-        };
+    private static Component faceLabel(RelativeFace face) {
+        return Component.translatable(switch (face) {
+            case FRONT -> "gui.nerolandcore.side_config.face.front";
+            case BACK -> "gui.nerolandcore.side_config.face.back";
+            case LEFT -> "gui.nerolandcore.side_config.face.left";
+            case RIGHT -> "gui.nerolandcore.side_config.face.right";
+            case TOP -> "gui.nerolandcore.side_config.face.top";
+            case BOTTOM -> "gui.nerolandcore.side_config.face.bottom";
+        });
     }
 
-    private static String modeLabel(SideMode mode) {
-        return switch (mode) {
-            case DISABLED -> "Off";
-            case INPUT -> "Input";
-            case OUTPUT -> "Output";
-            case IO -> "In/Out";
-            case PUSH -> "Push";
-        };
+    private static Component modeLabel(SideMode mode) {
+        return Component.translatable(switch (mode) {
+            case DISABLED -> "gui.nerolandcore.side_config.mode.off";
+            case INPUT -> "gui.nerolandcore.side_config.mode.input";
+            case OUTPUT -> "gui.nerolandcore.side_config.mode.output";
+            case IO -> "gui.nerolandcore.side_config.mode.io";
+            case PUSH -> "gui.nerolandcore.side_config.mode.push";
+        });
     }
 
-    private static String channelLabel(Channel channel) {
-        return switch (channel) {
-            case ITEM -> "Items";
-            case FLUID -> "Fluid";
-            case GAS -> "Gas";
-            case ENERGY -> "Power";
-        };
+    private static Component channelLabel(Channel channel) {
+        return Component.translatable(switch (channel) {
+            case ITEM -> "gui.nerolandcore.side_config.channel.items";
+            case FLUID -> "gui.nerolandcore.side_config.channel.fluid";
+            case GAS -> "gui.nerolandcore.side_config.channel.gas";
+            case ENERGY -> "gui.nerolandcore.side_config.channel.power";
+        });
     }
 
     private static int channelColor(Channel channel) {
@@ -392,14 +392,14 @@ public final class SideConfigWidget {
         g.fill(x, y, x + w, y + h, color);
     }
 
-    private static void labelledButton(GuiGraphicsExtractor g, Font font, int x, int y, int w, String label, int bg, int fg) {
+    private static void labelledButton(GuiGraphicsExtractor g, Font font, int x, int y, int w, Component label, int bg, int fg) {
         g.fill(x, y, x + w, y + 14, bg);
         outline(g, x, y, w, 14, BORDER);
         center(g, font, label, x + w / 2, y + 3, fg);
     }
 
-    private static void center(GuiGraphicsExtractor g, Font font, String s, int cx, int topY, int color) {
-        g.text(font, Component.literal(s), cx - font.width(s) / 2, topY, color, false);
+    private static void center(GuiGraphicsExtractor g, Font font, Component s, int cx, int topY, int color) {
+        g.text(font, s, cx - font.width(s) / 2, topY, color, false);
     }
 
     private static void outline(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {

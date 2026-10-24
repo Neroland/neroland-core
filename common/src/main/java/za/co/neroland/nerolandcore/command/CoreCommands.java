@@ -56,7 +56,7 @@ public final class CoreCommands {
                                         CoreNetwork.syncAll(ctx.getSource().getServer());
                                     }
                                     ctx.getSource().sendSuccess(
-                                            () -> Component.literal("[Neroland] Config reloaded and re-synced to clients."), true);
+                                            () -> Component.translatable("commands.nerolandcore.config.reloaded"), true);
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(Commands.literal("list")
@@ -102,7 +102,7 @@ public final class CoreCommands {
     private static void listMeteor(CommandSourceStack source) {
         MinecraftServer server = source.getServer();
         if (server == null) {
-            source.sendFailure(Component.literal("No server context."));
+            source.sendFailure(Component.translatable("commands.nerolandcore.no_server"));
             return;
         }
         for (MeteorMaterialEntry e : MeteorMaterials.all(server)) {
@@ -118,13 +118,13 @@ public final class CoreCommands {
     private static int reloadMeteor(CommandContext<CommandSourceStack> ctx) {
         MinecraftServer server = ctx.getSource().getServer();
         if (server == null) {
-            ctx.getSource().sendFailure(Component.literal("No server context."));
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.no_server"));
             return 0;
         }
         MeteorMaterials.reload(server);
         int count = MeteorMaterials.all(server).size();
         ctx.getSource().sendSuccess(
-                () -> Component.literal("[Neroland] Reloaded meteor materials (" + count + " registered)."), true);
+                () -> Component.translatable("commands.nerolandcore.meteor.reloaded", count), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -142,25 +142,26 @@ public final class CoreCommands {
     private static void listGates(CommandSourceStack source) {
         ServerPlayer player = source.getPlayer();
         for (Gate gate : GateDefinitions.current().values()) {
-            String state = player != null
-                    ? (ProgressionGates.isOpen(player, gate.id()) ? " §a[open]§r" : " §8[closed]§r")
-                    : "";
-            String line = "  " + gate.id() + " §7(" + gate.scope().name().toLowerCase() + ")§r" + state;
-            source.sendSuccess(() -> Component.literal(line), false);
+            Component line = Component.literal("  " + gate.id() + " §7(" + gate.scope().name().toLowerCase() + ")§r");
+            if (player != null) {
+                line = line.copy().append(" ").append(Component.translatable(ProgressionGates.isOpen(player, gate.id())
+                        ? "commands.nerolandcore.gate.state.open" : "commands.nerolandcore.gate.state.closed"));
+            }
+            Component finalLine = line;
+            source.sendSuccess(() -> finalLine, false);
         }
     }
 
     private static int setGate(CommandContext<CommandSourceStack> ctx, boolean open) {
         ServerPlayer player = ctx.getSource().getPlayer();
         if (player == null) {
-            ctx.getSource().sendFailure(Component.literal("Run this as a player."));
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.player_only"));
             return 0;
         }
         Identifier gate = parseGateId(StringArgumentType.getString(ctx, "gate"));
         boolean changed = open ? ProgressionGates.open(player, gate) : ProgressionGates.close(player, gate);
-        ctx.getSource().sendSuccess(() -> Component.literal(
-                "[Neroland] Gate " + gate + (open ? " opened" : " closed")
-                        + (changed ? "." : " (no change).")), true);
+        String gateKey = "commands.nerolandcore.gate." + (open ? "opened" : "closed") + (changed ? "" : ".unchanged");
+        ctx.getSource().sendSuccess(() -> Component.translatable(gateKey, gate.toString()), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -175,7 +176,7 @@ public final class CoreCommands {
     private static int eraseSelf(CommandContext<CommandSourceStack> ctx) {
         ServerPlayer player = ctx.getSource().getPlayer();
         if (player == null) {
-            ctx.getSource().sendFailure(Component.literal("Run this as a player."));
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.player_only"));
             return 0;
         }
         MinecraftServer server = player.level().getServer();
@@ -183,7 +184,7 @@ public final class CoreCommands {
             PlayerDataErasure.erase(server, player.getUUID());
         }
         ctx.getSource().sendSuccess(
-                () -> Component.literal("[Neroland] Your stored Neroland data has been erased."), false);
+                () -> Component.translatable("commands.nerolandcore.data.erased_self"), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -193,18 +194,18 @@ public final class CoreCommands {
         try {
             player = UUID.fromString(StringArgumentType.getString(ctx, "uuid"));
         } catch (IllegalArgumentException e) {
-            ctx.getSource().sendFailure(Component.literal("Not a valid UUID."));
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.data.invalid_uuid"));
             return 0;
         }
         PlayerDataErasure.erase(server, player);
-        ctx.getSource().sendSuccess(() -> Component.literal("[Neroland] Erased stored data for that player."), true);
+        ctx.getSource().sendSuccess(() -> Component.translatable("commands.nerolandcore.data.erased_player"), true);
         return Command.SINGLE_SUCCESS;
     }
 
     private static int purgeInactive(CommandContext<CommandSourceStack> ctx) {
         int purged = PlayerDataErasure.purgeInactive(ctx.getSource().getServer());
         ctx.getSource().sendSuccess(
-                () -> Component.literal("[Neroland] Retention sweep purged " + purged + " inactive record(s)."), true);
+                () -> Component.translatable("commands.nerolandcore.data.purged", purged), true);
         return Command.SINGLE_SUCCESS;
     }
 }
