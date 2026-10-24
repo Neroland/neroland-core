@@ -96,12 +96,12 @@ public final class ModItems {
     }
 
     /**
-     * Adds every Core item to the shared Neroland creative tab as <b>lazy</b> suppliers: they resolve at
+     * Adds every Core item to Core's own Neroland creative tab as <b>lazy</b> suppliers: they resolve at
      * tab-build time (after registration), so this is safe to call during init on the deferred-registration
      * (NeoForge / Forge) loaders. Called from {@link CoreRegistries#init()}.
      */
     public static void addToCreativeTab() {
-        creativeOrder().forEach(entry -> CoreCreativeTab.add(entry::get));
+        creativeOrder().forEach(entry -> CoreCreativeTab.addCore(entry::get));
     }
 
     private ModItems() {

@@ -9,7 +9,7 @@ Core is a **library, not a content mod**. It provides the shared materials, tags
 other Neroland mods rely on, so the whole ecosystem behaves consistently. By itself Core adds:
 
 - a handful of crafting materials and their blocks (see [Materials](Materials.md)),
-- a shared **Neroland** creative tab,
+- a **Neroland** creative tab holding Core's own items (each Nero mod has its own tab),
 - a `/neroland …` command tree (see [Commands](Commands.md)).
 
 The real gameplay — machines, planets, quests, economy — lives in the mods that build on Core

@@ -7,6 +7,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -14,6 +15,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
 import za.co.neroland.nerolandcore.entity.NeoForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
+import za.co.neroland.nerolandcore.recipe.RecipeViewerSync;
 import za.co.neroland.nerolandcore.registry.NeoForgeRegistrationFactory;
 import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
 
@@ -49,5 +51,9 @@ public final class NerolandCoreNeoForge {
                 CoreNetwork.onPlayerJoin(serverPlayer);
             }
         });
+        // Send the vanilla recipe types to clients so JEI lists every Nero crafting/smelting recipe even
+        // when the server does not run JEI (26.x clients hold no recipe list of their own).
+        NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) ->
+                event.sendRecipes(RecipeViewerSync.vanillaTypes()));
     }
 }

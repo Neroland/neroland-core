@@ -73,7 +73,9 @@ major:
   and the `neroland:` finish ids), the dashboard content contract
   (`link.display.DisplaySurface`, `DisplaySurfaces`, `DisplayAddress`, `DisplayPayload`),
   the `neroland:decor/*` block-tag ids (`decor.DecorTags`), and the decor creative-tab seam
-  (`CoreCreativeTab.NEROLAND_DECOR` / `CoreCreativeTab.addDecor`). Cosmetic-only.
+  (`CoreCreativeTab.NEROLAND_DECOR` / `CoreCreativeTab.addDecor`). Cosmetic-only. **The
+  creative-tab seam (`add`, `addDecor`, `addStack`, `NEROLAND_DECOR`) is deprecated since 1.16.0 and
+  scheduled for removal in 2.0**: Core's tabs list only Core items, and each mod registers its own tab.
 - **NeroLink link API** (`za.co.neroland.nerolandcore.link`, added in 1.4.0) — the provider SPI
   the NeroLink Bridge and mods integrate against: `NeroLinkRegistry`, `LinkModuleInfo`,
   `LinkSnapshotProvider`, `LinkActionHandler`, `LinkActionResult` (+ `LinkActionResult.Error`),

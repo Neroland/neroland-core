@@ -83,9 +83,10 @@ only — purely tag-mediated, dormant until they port to 26.1+.
 
 ## 4. Seams NeroDecor reuses (no Core change needed)
 
-- **Creative tab** — `CoreCreativeTab.addDecor(Supplier)` appends into the separate
-  **Neroland Decor** tab (`itemGroup.nerolandcore.decor`, id `nerolandcore:neroland_decor`),
-  added in 1.9.0 so a large decor kit doesn't swamp the main Neroland tab.
+- **Creative tab** — *deprecated since 1.16.0.* `CoreCreativeTab.addDecor(Supplier)` used to append
+  into the separate **Neroland Decor** tab (`itemGroup.nerolandcore.decor`, id
+  `nerolandcore:neroland_decor`, added in 1.9.0). Core's tabs now list only Core items, so a decor mod
+  registers its own creative tab instead.
 - **Progression (read-only)** — `ProgressionGates.isOpen(player, gate)` /
   `isServerOpen(server, gate)` and the `CoreGates` ids (`REACHED_ORBIT`, `FIRST_COLONY`,
   `DEEP_SPACE`, …); client mirror via `ClientGates`. NeroDecor **reads** these to
