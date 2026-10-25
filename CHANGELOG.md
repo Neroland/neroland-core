@@ -39,6 +39,11 @@ Version bumped to 1.16.0.
   modifiers (explosion survival, door/slab block-state checks, drop counts, random chances) were skipped.
   The 26.3 builds now ship every loot table in the new format. 26.1.2 and 26.2 were not affected.
 - Plasma Glass blocks and panes now mine at pickaxe speed.
+- **Rain, snow, mob spawning and world generation treat Neroland Core blocks as solid on Minecraft 26.3.**
+  Minecraft 26.3 builds its height maps from a fixed block tag instead of asking each block, so Core's
+  material blocks, Plasma Glass, storage blocks and Trash Can were see-through to them: rain and snow
+  fell through roofs built from them and features placed on them could be skipped. The 26.3 builds now
+  add every Core block to that tag. 26.1.2 and 26.2 were not affected.
 
 ## [1.15.0] - 2026-10-11
 

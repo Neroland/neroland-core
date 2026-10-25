@@ -91,3 +91,25 @@ Everything below is plain data in `common/src/main/resources` and is fully
 
 No code path hard-codes a material item; Core resolves everything through the tags
 above, which is what makes the whole set retunable from a datapack.
+
+## Minecraft 26.3: tag your solid blocks for heightmaps
+
+From Minecraft 26.3 the `MOTION_BLOCKING`, `MOTION_BLOCKING_NO_LEAVES`, `OCEAN_FLOOR`
+and `OCEAN_FLOOR_WG` heightmaps no longer ask each block whether it blocks motion.
+They only count blocks in `#minecraft:blocks_motion_in_heightmap`, which resolves to
+`#minecraft:blocks_motion` and then to `#minecraft:blocks_motion_no_leaves`, a fixed
+vanilla list. A modded block missing from that tag is see-through to the heightmap:
+rain and snow fall through roofs made of it, mobs spawn at the wrong height, and
+worldgen features placed by heightmap (including ores under modded ground) are
+silently skipped. 26.1.2 and 26.2 are not affected.
+
+**Every Nero mod must list each of its collidable blocks** in
+`data/minecraft/tags/block/blocks_motion_no_leaves.json` with `"replace": false`,
+shipped **only to 26.3 builds** (in Core: the `common/src/main/resources-26.3`
+overlay). The tag does not exist before 26.3, so do not put the file in the shared
+resources. Follow vanilla's lead on what counts: full blocks, glass and glass panes,
+slabs, stairs, fences, walls, chests, machines and other blocks with a collision box
+belong in the tag; blocks you can walk through (torches, flowers, carpets, rails,
+buttons) do not. Core tags all of its own blocks, and a unit test
+(`HeightmapTagCoverageTest`) fails the build if a new Core block is neither tagged
+nor explicitly excluded with a reason; copy that test into your mod.

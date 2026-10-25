@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "nerolandcore:nero_alloy_block",
+    "nerolandcore:starsteel_block",
+    "nerolandcore:void_crystal_block",
+    "nerolandcore:plasma_glass_block",
+    "nerolandcore:plasma_glass_pane",
+    "nerolandcore:sentry_test",
+    "nerolandcore:battery",
+    "nerolandcore:fluid_tank",
+    "nerolandcore:gas_tank",
+    "nerolandcore:item_store",
+    "nerolandcore:creative_battery",
+    "nerolandcore:creative_fluid_tank",
+    "nerolandcore:creative_gas_tank",
+    "nerolandcore:creative_item_store",
+    "nerolandcore:trash_can"
+  ]
+}
