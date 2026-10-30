@@ -6,11 +6,16 @@ import java.util.Objects;
 
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+//? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+//?} else {
+/*import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+*///?}
 
 import za.co.neroland.nerolandcore.fluid.GatedFluidView;
 import za.co.neroland.nerolandcore.fluid.NeroFluidStorage;
@@ -34,21 +39,20 @@ public final class NeoForgeFluidHandlers {
     private NeoForgeFluidHandlers() {
     }
 
-    /** Expose a Nero tank on NeoForge's standard fluid capability, ungated. */
+   //? if >=1.21.9 {
+    // Expose a Nero tank on NeoForge's standard fluid capability, ungated.
     public static ResourceHandler<FluidResource> asResourceHandler(NeroFluidStorage store) {
         return asResourceHandler(GatedFluidView.open(store));
     }
 
-    /** Expose a Nero tank on NeoForge's standard fluid capability, honouring a face's permissions. */
+   // Expose a Nero tank on NeoForge's standard fluid capability, honouring a face's permissions.
     public static ResourceHandler<FluidResource> asResourceHandler(GatedFluidView view) {
         return new NeroToStandard(view);
     }
 
-    /**
-     * Expose several Nero tanks as one multi-tank handler — index {@code i} is {@code stores.get(i)}.
-     * A machine with both a fluid tank and a gas tank riding a transport fluid needs this: one block
-     * can carry only one fluid capability, but that capability may have many tanks.
-     */
+    // Expose several Nero tanks as one multi-tank handler — index {@code i} is {@code stores.get(i)}.
+    // A machine with both a fluid tank and a gas tank riding a transport fluid needs this: one block
+    // can carry only one fluid capability, but that capability may have many tanks.
     public static ResourceHandler<FluidResource> asResourceHandler(List<GatedFluidView> views) {
         List<ResourceHandler<FluidResource>> parts = new ArrayList<>(views.size());
         for (GatedFluidView view : views) {
@@ -57,7 +61,7 @@ public final class NeoForgeFluidHandlers {
         return new Composite(List.copyOf(parts));
     }
 
-    /** Adapt a third-party standard fluid handler to Core's {@link NeroFluidStorage} contract. */
+   // Adapt a third-party standard fluid handler to Core's {@link NeroFluidStorage} contract.
     public static NeroFluidStorage asNeroFluid(ResourceHandler<FluidResource> handler) {
         return new StandardToNero(handler);
     }
@@ -66,18 +70,16 @@ public final class NeoForgeFluidHandlers {
         return (int) Math.max(0, Math.min(Integer.MAX_VALUE, value));
     }
 
-    /** The state a transaction rolls back to: the tank's fluid and amount before the mutation. */
+   // The state a transaction rolls back to: the tank's fluid and amount before the mutation.
     private record Snapshot(Fluid fluid, long amount) {
     }
 
-    /**
-     * Nero tank seen as a one-slot {@link ResourceHandler}. Mutations are applied immediately and
-     * undone by {@link #revertToSnapshot(Snapshot)} if the transaction aborts, which is the
-     * {@link SnapshotJournal} contract for storage that is not itself transactional.
-     *
-     * <p>Permissions are checked here, against {@link GatedFluidView}, while the snapshot and its
-     * rollback speak to the raw storage — an undo must never be refused by the gate it just passed.
-     */
+    // Nero tank seen as a one-slot {@link ResourceHandler}. Mutations are applied immediately and
+    // undone by {@link #revertToSnapshot(Snapshot)} if the transaction aborts, which is the
+    // {@link SnapshotJournal} contract for storage that is not itself transactional.
+    //
+    // <p>Permissions are checked here, against {@link GatedFluidView}, while the snapshot and its
+    // rollback speak to the raw storage — an undo must never be refused by the gate it just passed.
     private static final class NeroToStandard extends SnapshotJournal<Snapshot>
             implements ResourceHandler<FluidResource> {
 
@@ -176,7 +178,7 @@ public final class NeoForgeFluidHandlers {
         }
     }
 
-    /** Several single-tank handlers seen as one handler with a tank per index. */
+   // Several single-tank handlers seen as one handler with a tank per index.
     private record Composite(List<ResourceHandler<FluidResource>> parts)
             implements ResourceHandler<FluidResource> {
 
@@ -221,17 +223,15 @@ public final class NeoForgeFluidHandlers {
         }
     }
 
-    /**
-     * Third-party standard fluid handler seen as a Nero tank. Multi-tank handlers are flattened:
-     * the reported fluid is the first non-empty one and amounts/capacities are summed, which is the
-     * same lossy-but-useful view Core's FE adapter takes of a multi-slot energy handler.
-     *
-     * <p>Two things to know about it. A handler that reports no capacity for an empty resource reads
-     * as capacity 0 here until something is in it — harmless for transfer, visible only on a gauge.
-     * And {@code fill}/{@code drain} open a root transaction, which throws if one is already open on
-     * this thread, so this adapter belongs at the START of a transfer (Core's lookups, side-config
-     * push/pull, machine ticks) and never inside another handler's transaction.
-     */
+    // Third-party standard fluid handler seen as a Nero tank. Multi-tank handlers are flattened:
+    // the reported fluid is the first non-empty one and amounts/capacities are summed, which is the
+    // same lossy-but-useful view Core's FE adapter takes of a multi-slot energy handler.
+    //
+    // <p>Two things to know about it. A handler that reports no capacity for an empty resource reads
+    // as capacity 0 here until something is in it — harmless for transfer, visible only on a gauge.
+    // And {@code fill}/{@code drain} open a root transaction, which throws if one is already open on
+    // this thread, so this adapter belongs at the START of a transfer (Core's lookups, side-config
+    // push/pull, machine ticks) and never inside another handler's transaction.
     private static final class StandardToNero implements NeroFluidStorage {
 
         private final ResourceHandler<FluidResource> handler;
@@ -299,4 +299,244 @@ public final class NeoForgeFluidHandlers {
             }
         }
     }
+
+   //?} else {
+    /*// Pre-1.21.9 NeoForge has no transfer API: the standard fluid surface is
+    // Capabilities.FluidHandler.BLOCK, an IFluidHandler of FluidStacks. Same contract as above
+    // (millibuckets both ways, component-carrying stacks rejected); the method names are kept so
+    // downstream call sites stay identical, only the handler type differs per version.
+
+   // Expose a Nero tank on NeoForge's standard fluid capability, ungated.
+    public static IFluidHandler asResourceHandler(NeroFluidStorage store) {
+        return asResourceHandler(GatedFluidView.open(store));
+    }
+
+   // Expose a Nero tank on NeoForge's standard fluid capability, honouring a face's permissions.
+    public static IFluidHandler asResourceHandler(GatedFluidView view) {
+        return new NeroToStandard(view);
+    }
+
+   // Expose several Nero tanks as one multi-tank handler - tank i is views.get(i).
+    public static IFluidHandler asResourceHandler(List<GatedFluidView> views) {
+        List<IFluidHandler> parts = new ArrayList<>(views.size());
+        for (GatedFluidView view : views) {
+            parts.add(asResourceHandler(view));
+        }
+        return new Composite(List.copyOf(parts));
+    }
+
+   // Adapt a third-party standard fluid handler to Core's NeroFluidStorage contract.
+    public static NeroFluidStorage asNeroFluid(IFluidHandler handler) {
+        return new StandardToNero(handler);
+    }
+
+    private static int clampToInt(long value) {
+        return (int) Math.max(0, Math.min(Integer.MAX_VALUE, value));
+    }
+
+    private static IFluidHandler.FluidAction action(boolean simulate) {
+        return simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE;
+    }
+
+   // Nero tank seen as a one-tank IFluidHandler. Permissions are checked against the GatedFluidView.
+    private static final class NeroToStandard implements IFluidHandler {
+
+        private final GatedFluidView view;
+        private final NeroFluidStorage store;
+
+        private NeroToStandard(GatedFluidView view) {
+            this.view = view;
+            this.store = view.storage();
+        }
+
+        @Override
+        public int getTanks() {
+            return 1;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            Objects.checkIndex(tank, getTanks());
+            Fluid held = this.store.getFluid();
+            long amount = this.store.getAmount();
+            return held == Fluids.EMPTY || amount <= 0 ? FluidStack.EMPTY : new FluidStack(held, clampToInt(amount));
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            Objects.checkIndex(tank, getTanks());
+            return clampToInt(this.store.getCapacity());
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            Objects.checkIndex(tank, getTanks());
+            return accepts(stack);
+        }
+
+        private boolean accepts(FluidStack stack) {
+            if (stack.isEmpty() || !stack.isComponentsPatchEmpty() || !this.view.insertable()) {
+                return false;
+            }
+            Fluid held = this.store.getFluid();
+            return held == Fluids.EMPTY || held == stack.getFluid();
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            if (!accepts(resource)) {
+                return 0;
+            }
+            return clampToInt(this.store.fill(resource.getFluid(), resource.getAmount(), action.simulate()));
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            if (resource.isEmpty() || !resource.isComponentsPatchEmpty()
+                    || this.store.getFluid() != resource.getFluid()) {
+                return FluidStack.EMPTY;
+            }
+            return drain(resource.getAmount(), action);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            Fluid held = this.store.getFluid();
+            if (maxDrain <= 0 || !this.view.extractable() || held == Fluids.EMPTY) {
+                return FluidStack.EMPTY;
+            }
+            long drained = this.store.drain(maxDrain, action.simulate());
+            return drained <= 0 ? FluidStack.EMPTY : new FluidStack(held, clampToInt(drained));
+        }
+    }
+
+   // Several single-tank handlers seen as one handler with a tank per index.
+    private record Composite(List<IFluidHandler> parts) implements IFluidHandler {
+
+        @Override
+        public int getTanks() {
+            return this.parts.size();
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return part(tank).getFluidInTank(0);
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return part(tank).getTankCapacity(0);
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            return part(tank).isFluidValid(0, stack);
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            if (resource.isEmpty()) {
+                return 0;
+            }
+            int filled = 0;
+            for (IFluidHandler part : this.parts) {
+                int remaining = resource.getAmount() - filled;
+                if (remaining <= 0) {
+                    break;
+                }
+                filled += part.fill(resource.copyWithAmount(remaining), action);
+            }
+            return filled;
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            if (resource.isEmpty()) {
+                return FluidStack.EMPTY;
+            }
+            int drained = 0;
+            for (IFluidHandler part : this.parts) {
+                int remaining = resource.getAmount() - drained;
+                if (remaining <= 0) {
+                    break;
+                }
+                drained += part.drain(resource.copyWithAmount(remaining), action).getAmount();
+            }
+            return drained <= 0 ? FluidStack.EMPTY : resource.copyWithAmount(drained);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            for (IFluidHandler part : this.parts) {
+                FluidStack probe = part.drain(maxDrain, FluidAction.SIMULATE);
+                if (!probe.isEmpty()) {
+                    return drain(probe.copyWithAmount(maxDrain), action);
+                }
+            }
+            return FluidStack.EMPTY;
+        }
+
+        private IFluidHandler part(int index) {
+            Objects.checkIndex(index, getTanks());
+            return this.parts.get(index);
+        }
+    }
+
+   // Third-party standard fluid handler seen as a Nero tank. Multi-tank handlers are flattened: the
+    // reported fluid is the first non-empty one and amounts/capacities are summed.
+    private static final class StandardToNero implements NeroFluidStorage {
+
+        private final IFluidHandler handler;
+
+        private StandardToNero(IFluidHandler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public Fluid getFluid() {
+            for (int i = 0; i < this.handler.getTanks(); i++) {
+                FluidStack stack = this.handler.getFluidInTank(i);
+                if (!stack.isEmpty()) {
+                    return stack.getFluid();
+                }
+            }
+            return Fluids.EMPTY;
+        }
+
+        @Override
+        public long getAmount() {
+            long total = 0;
+            for (int i = 0; i < this.handler.getTanks(); i++) {
+                total += this.handler.getFluidInTank(i).getAmount();
+            }
+            return total;
+        }
+
+        @Override
+        public long getCapacity() {
+            long total = 0;
+            for (int i = 0; i < this.handler.getTanks(); i++) {
+                total += this.handler.getTankCapacity(i);
+            }
+            return total;
+        }
+
+        @Override
+        public long fill(Fluid fluid, long amount, boolean simulate) {
+            if (fluid == Fluids.EMPTY || amount <= 0) {
+                return 0;
+            }
+            return this.handler.fill(new FluidStack(fluid, clampToInt(amount)), action(simulate));
+        }
+
+        @Override
+        public long drain(long amount, boolean simulate) {
+            Fluid held = getFluid();
+            if (amount <= 0 || held == Fluids.EMPTY) {
+                return 0;
+            }
+            return this.handler.drain(new FluidStack(held, clampToInt(amount)), action(simulate)).getAmount();
+        }
+    }
+    *///?}
 }

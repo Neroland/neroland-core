@@ -17,6 +17,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 /** Persistent server-authoritative material milestone values across player/team/server scopes. */
@@ -26,7 +27,7 @@ public final class MaterialMilestoneState extends SavedData {
     public static final Identifier ID =
             Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "material_milestones");
     public static final SavedDataType<MaterialMilestoneState> TYPE =
-            new SavedDataType<>(ID, MaterialMilestoneState::new, codec(), null);
+            SavedDataCompat.type(ID, MaterialMilestoneState::new, codec());
 
     private final Map<String, Set<String>> server = new LinkedHashMap<>();
     private final Map<UUID, Map<String, Set<String>>> players = new LinkedHashMap<>();

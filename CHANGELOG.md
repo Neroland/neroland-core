@@ -8,7 +8,42 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
-Version bumped to 1.16.0.
+## [1.17.0] - 2026-10-30
+
+Adds Minecraft 1.21.x builds next to the 26.x ones. Additive only on 26.x: no existing public
+signature, id, tag, capability or config key changes, and 26.x worlds load unchanged.
+
+### Added
+
+- **Minecraft 1.21.x builds.** Core now also builds for Minecraft **1.21.1, 1.21.4, 1.21.5, 1.21.8,
+  1.21.10 and 1.21.11** on NeoForge, Fabric and Forge (18 new jars, next to the nine 26.x ones). The
+  1.21.8 jar also runs on 1.21.7 and the 1.21.10 jar on 1.21.9; each jar refuses any other version.
+  1.21.x jars target Java 21. Nothing changes on 26.x.
+- Compatibility seams so mods built on Core can follow it onto 1.21.x from the same source:
+  `data.SavedDataCompat` (declare and load saved data on every version: use
+  `SavedDataCompat.type(id, constructor, codec)` instead of `new SavedDataType<>(..)`), stand-ins for
+  `SavedDataType`/`SavedData` (1.21.1–1.21.4) and `ValueInput`/`ValueOutput` (1.21.1–1.21.5) in
+  `data.compat`, and `registry.PropertiesCompat` / `registry.BlockEntityTypeCompat` for 1.21.1
+  registration. On 26.x these are thin pass-throughs.
+
+### Fixed
+
+- **Rain, snow, mob spawning and world generation treat Neroland Core blocks as solid on Minecraft 26.3.**
+  Minecraft 26.3 builds its height maps from a fixed block tag instead of asking each block, so Core's
+  material blocks, Plasma Glass, storage blocks and Trash Can were see-through to them: rain and snow
+  fell through roofs built from them and features placed on them could be skipped. The 26.3 builds now
+  add every Core block to that tag. 26.1.2 and 26.2 were not affected.
+
+### Known limitations
+
+- On Fabric 1.21.4–1.21.8 there is no Fabric API recipe sync, so a client-only JEI on a server without
+  JEI shows only vanilla recipes. 1.21.1 is unaffected
+  because the game still sends every recipe to the client.
+- The 1.21.x builds compile and pass the unit tests but have not yet been play-tested in game.
+
+[1.17.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.0
+
+## [1.16.0] - 2026-10-24
 
 ### Changed
 
@@ -39,11 +74,8 @@ Version bumped to 1.16.0.
   modifiers (explosion survival, door/slab block-state checks, drop counts, random chances) were skipped.
   The 26.3 builds now ship every loot table in the new format. 26.1.2 and 26.2 were not affected.
 - Plasma Glass blocks and panes now mine at pickaxe speed.
-- **Rain, snow, mob spawning and world generation treat Neroland Core blocks as solid on Minecraft 26.3.**
-  Minecraft 26.3 builds its height maps from a fixed block tag instead of asking each block, so Core's
-  material blocks, Plasma Glass, storage blocks and Trash Can were see-through to them: rain and snow
-  fell through roofs built from them and features placed on them could be skipped. The 26.3 builds now
-  add every Core block to that tag. 26.1.2 and 26.2 were not affected.
+
+[1.16.0]: https://github.com/Neroland/neroland-core/releases/tag/v1.16.0
 
 ## [1.15.0] - 2026-10-11
 

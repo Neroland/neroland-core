@@ -53,15 +53,15 @@ public final class ModBlocks {
     public static final RegistryEntry<Block> PLASMA_GLASS_BLOCK = block("plasma_glass_block",
             p -> p.mapColor(MapColor.COLOR_CYAN).strength(0.3F).sound(SoundType.GLASS).lightLevel(s -> 4).noOcclusion());
     public static final RegistryEntry<IronBarsBlock> PLASMA_GLASS_PANE = BLOCKS.register("plasma_glass_pane",
-            key -> new IronBarsBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(0.3F)
+            key -> new IronBarsBlock(PropertiesCompat.block(key)
+                    .mapColor(MapColor.COLOR_CYAN).strength(0.3F)
                     .sound(SoundType.GLASS).lightLevel(s -> 4).noOcclusion()));
 
     // --- Hidden Sentry diagnostic block (give-only: /give @s nerolandcore:sentry_test) ---
     public static final RegistryEntry<za.co.neroland.nerolandcore.telemetry.SentryTestBlock> SENTRY_TEST =
             BLOCKS.register("sentry_test",
-                    key -> new za.co.neroland.nerolandcore.telemetry.SentryTestBlock(BlockBehaviour.Properties.of()
-                            .setId(key).mapColor(MapColor.COLOR_ORANGE).strength(1.0F, 1.0F).sound(SoundType.METAL)));
+                    key -> new za.co.neroland.nerolandcore.telemetry.SentryTestBlock(PropertiesCompat.block(key)
+                            .mapColor(MapColor.COLOR_ORANGE).strength(1.0F, 1.0F).sound(SoundType.METAL)));
 
     // --- Storage blocks (moved from Nerospace; usable by every Nero mod) -----
     // Passive endpoints that buffer a single resource and expose it via Core's
@@ -87,26 +87,26 @@ public final class ModBlocks {
     public static final RegistryEntry<CreativeItemStoreBlock> CREATIVE_ITEM_STORE =
             BLOCKS.register("creative_item_store", key -> new CreativeItemStoreBlock(creativeStorageProps(key)));
     public static final RegistryEntry<TrashCanBlock> TRASH_CAN =
-            BLOCKS.register("trash_can", key -> new TrashCanBlock(BlockBehaviour.Properties.of().setId(key)
+            BLOCKS.register("trash_can", key -> new TrashCanBlock(PropertiesCompat.block(key)
                     .mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     /** Properties for the regular (mineable) storage blocks. */
     private static BlockBehaviour.Properties storageProps(ResourceKey<Block> key) {
-        return BlockBehaviour.Properties.of().setId(key)
+        return PropertiesCompat.block(key)
                 .mapColor(MapColor.METAL).strength(3.0F, 6.0F)
                 .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion();
     }
 
     /** Properties for the unbreakable Creative storage variants. */
     private static BlockBehaviour.Properties creativeStorageProps(ResourceKey<Block> key) {
-        return BlockBehaviour.Properties.of().setId(key)
+        return PropertiesCompat.block(key)
                 .mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
                 .sound(SoundType.METAL).noOcclusion();
     }
 
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
-        return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));
+        return BLOCKS.register(name, key -> new Block(props.apply(PropertiesCompat.block(key))));
     }
 
     private ModBlocks() {

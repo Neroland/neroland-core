@@ -15,7 +15,9 @@ def mc = stonecutter.current.version
 // Upper bound of this cell's Minecraft range: the next minor line (26.1.2 -> 26.2, 26.2 -> 26.3).
 // Without it a jar built for one line loads on the next and dies on a changed signature at runtime
 // (Sentry MC-NEROLAND-CORE-2: a 26.2 jar on 26.3 hit NoSuchMethodError in ResourceManager.listResources).
-def mcCeiling = mc.tokenize('.').with { "${it[0]}.${it[1].toInteger() + 1}" }
+def mcCeiling = project.findProperty("mc_ceiling_${mc}") ?: mc.tokenize('.').with { "${it[0]}.${it[1].toInteger() + 1}" }
+// Lowest Minecraft this jar accepts: the compiled version, or an older hotfix sibling (gradle.properties).
+def mcFloor = project.findProperty("mc_floor_${mc}") ?: mc
 def neoVersion = project.findProperty("neo_version_${mc}")
 def jeiVersion = project.findProperty("jei_version_${mc}")
 def emiFile = project.findProperty("emi_file_neoforge_${mc}")
@@ -131,7 +133,7 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
         mod_authors            : rootProject.mod_authors,
         mod_license            : rootProject.mod_license,
         mod_logo_entry         : modLogoEntry,
-        minecraft_version_range: "[${mc},${mcCeiling})",
+        minecraft_version_range: "[${mcFloor},${mcCeiling})",
     ]
     inputs.properties(props)
     expand(props)
@@ -213,7 +215,7 @@ tasks.register('ecjCheck', JavaExec) {
                 .join(File.pathSeparator)
         def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
         args = [
-                '--release', '25',
+                '--release', "${project.javaRelease}",
                 '-proc:none',
                 '-d', 'none',
                 '-properties', rootProject.file('tools/ecj.prefs').absolutePath,

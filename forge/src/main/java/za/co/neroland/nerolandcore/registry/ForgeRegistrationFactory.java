@@ -8,7 +8,11 @@ import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+//? if >=1.21.6 {
 import net.minecraftforge.eventbus.api.bus.BusGroup;
+//?} else {
+/*import net.minecraftforge.eventbus.api.IEventBus;
+*///?}
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -27,7 +31,11 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
     private static int attachedRegisters;
 
     /** Attach every DeferredRegister created so far to the mod bus group. */
+    //? if >=1.21.6 {
     public static synchronized void registerAll(BusGroup modBusGroup) {
+    //?} else {
+    /*public static synchronized void registerAll(IEventBus modBusGroup) {
+    *///?}
         while (attachedRegisters < REGISTERS.size()) {
             REGISTERS.get(attachedRegisters++).register(modBusGroup);
         }
@@ -35,7 +43,11 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
 
     @Override
     public void attach(Object loaderEventBus) {
+        //? if >=1.21.6 {
         registerAll((BusGroup) loaderEventBus);
+        //?} else {
+        /*registerAll((IEventBus) loaderEventBus);
+        *///?}
     }
 
     @Override

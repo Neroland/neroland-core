@@ -14,6 +14,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+//? if <1.21.6 {
+/*import net.minecraftforge.common.MinecraftForge;
+*///?}
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -55,10 +58,18 @@ public final class ForgeCoreCapabilities {
     }
 
     public static void register() {
+        //? if >=1.21.6 {
         AttachCapabilitiesEvent.BlockEntities.BUS.addListener(ForgeCoreCapabilities::onAttachBlockEntity);
+        //?} else {
+        /*MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, ForgeCoreCapabilities::onAttachBlockEntity);
+        *///?}
     }
 
+    //? if >=1.21.6 {
     private static void onAttachBlockEntity(AttachCapabilitiesEvent.BlockEntities event) {
+    //?} else {
+    /*private static void onAttachBlockEntity(AttachCapabilitiesEvent<BlockEntity> event) {
+    *///?}
         StorageCaps caps = createCaps(event.getObject());
         if (caps != null) {
             event.addCapability(STORAGE_CAPS, caps);

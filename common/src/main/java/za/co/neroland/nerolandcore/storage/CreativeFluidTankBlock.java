@@ -45,11 +45,21 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
         return new CreativeFluidTankBlockEntity(pos, state);
     }
 
+    //? if >=1.21.2 {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+            Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?}
         if (stack.getItem() instanceof BucketItem bucket) {
+            //? if >=1.21.9 {
             Fluid contained = bucket.getContent();
+            //?} else {
+            /*Fluid contained = bucketContent(bucket);
+            *///?}
             if (contained != Fluids.EMPTY) {
                 if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                         && level.getBlockEntity(pos) instanceof CreativeFluidTankBlockEntity tank) {
@@ -57,7 +67,11 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
                     serverPlayer.sendSystemMessage(Component.translatable(
                             "block.nerolandcore.creative_tank.set", fluidName(contained)));
                 }
+                //? if >=1.21.2 {
                 return InteractionResult.SUCCESS;
+                //?} else {
+                /*return net.minecraft.world.ItemInteractionResult.SUCCESS;
+                *///?}
             }
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
@@ -84,4 +98,16 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
     private static Component fluidName(Fluid fluid) {
         return Component.literal(BuiltInRegistries.FLUID.getKey(fluid).getPath());
     }
+
+    //? if <1.21.9 {
+    /*// BucketItem.getContent() is public only from 1.21.9: resolve the bucket's source fluid via the registry.
+    private static Fluid bucketContent(BucketItem bucket) {
+        for (Fluid fluid : BuiltInRegistries.FLUID) {
+            if (fluid.getBucket() == bucket && fluid.defaultFluidState().isSource()) {
+                return fluid;
+            }
+        }
+        return Fluids.EMPTY;
+    }
+    *///?}
 }

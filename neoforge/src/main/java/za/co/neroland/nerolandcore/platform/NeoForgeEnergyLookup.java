@@ -6,8 +6,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
+//? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+//?} else {
+/*import net.neoforged.neoforge.energy.IEnergyStorage;
+*///?}
 
 import org.jetbrains.annotations.Nullable;
 
@@ -43,14 +47,17 @@ public final class NeoForgeEnergyLookup implements EnergyLookup {
             return nero;
         }
         // Standard-FE fallback: adapt any third-party Forge Energy block to the Nero surface.
+        //? if >=1.21.9 {
         EnergyHandler forgeEnergy = Capabilities.Energy.BLOCK.getCapability(level, pos, null, null, side);
+        //?} else {
+        /*IEnergyStorage forgeEnergy = Capabilities.EnergyStorage.BLOCK.getCapability(level, pos, null, null, side);
+        *///?}
         return forgeEnergy == null ? null : new EnergyHandlerAdapter(forgeEnergy);
     }
 
-    /**
-     * Adapts a standard NeoForge {@link EnergyHandler} (FE) to {@link NeroEnergyStorage} (NE).
-     * Amounts convert via {@link EnergyConversions}; simulation maps to an uncommitted transaction.
-     */
+    //? if >=1.21.9 {
+    // Adapts a standard NeoForge EnergyHandler (FE) to NeroEnergyStorage (NE).
+    // Amounts convert via EnergyConversions; simulation maps to an uncommitted transaction.
     private static final class EnergyHandlerAdapter implements NeroEnergyStorage {
 
         private final EnergyHandler handler;
@@ -103,4 +110,48 @@ public final class NeoForgeEnergyLookup implements EnergyLookup {
             return (int) Math.max(0, Math.min(Integer.MAX_VALUE, value));
         }
     }
+    //?} else {
+    /*// Adapts a standard (pre-1.21.9) NeoForge IEnergyStorage (FE) to NeroEnergyStorage (NE). Amounts
+    // convert via EnergyConversions; simulation maps straight onto IEnergyStorage's simulate flag.
+    private static final class EnergyHandlerAdapter implements NeroEnergyStorage {
+
+        private final IEnergyStorage handler;
+
+        private EnergyHandlerAdapter(IEnergyStorage handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public long getAmount() {
+            return EnergyConversions.forgeToNero(this.handler.getEnergyStored());
+        }
+
+        @Override
+        public long getCapacity() {
+            return EnergyConversions.forgeToNero(this.handler.getMaxEnergyStored());
+        }
+
+        @Override
+        public long insert(long maxAmount, boolean simulate) {
+            int fe = clampToInt(EnergyConversions.neroToForge(maxAmount));
+            if (fe <= 0) {
+                return 0;
+            }
+            return EnergyConversions.forgeToNero(this.handler.receiveEnergy(fe, simulate));
+        }
+
+        @Override
+        public long extract(long maxAmount, boolean simulate) {
+            int fe = clampToInt(EnergyConversions.neroToForge(maxAmount));
+            if (fe <= 0) {
+                return 0;
+            }
+            return EnergyConversions.forgeToNero(this.handler.extractEnergy(fe, simulate));
+        }
+
+        private static int clampToInt(long value) {
+            return (int) Math.max(0, Math.min(Integer.MAX_VALUE, value));
+        }
+    }
+    *///?}
 }

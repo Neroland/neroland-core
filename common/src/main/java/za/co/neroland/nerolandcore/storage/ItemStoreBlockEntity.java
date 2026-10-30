@@ -40,17 +40,39 @@ public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContaine
         super(ModBlockEntities.ITEM_STORE.get(), pos, state);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+    //?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ValueOutput output = ValueOutput.of(tag, registries);
+    *///?}
+        //? if >=1.21.6 {
         ContainerHelper.saveAllItems(output, this.items);
+        //?} else {
+        /*ContainerHelper.saveAllItems(output.tag(), this.items, output.registries());
+        *///?}
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+    //?} else {
+    /*@Override
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ValueInput input = ValueInput.of(tag, registries);
+    *///?}
         this.items.clear();
+        //? if >=1.21.6 {
         ContainerHelper.loadAllItems(input, this.items);
+        //?} else {
+        /*ContainerHelper.loadAllItems(input.tag(), this.items, input.registries());
+        *///?}
     }
 
     // --- MenuProvider (vanilla chest GUI — no custom MenuType needed) ---------

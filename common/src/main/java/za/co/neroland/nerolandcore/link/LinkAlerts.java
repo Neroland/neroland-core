@@ -20,6 +20,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.config.CoreConfig;
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 /**
@@ -64,7 +65,7 @@ public final class LinkAlerts extends SavedData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "link_alerts");
 
     public static final SavedDataType<LinkAlerts> TYPE =
-            new SavedDataType<>(ID, LinkAlerts::new, codec(), null);
+            SavedDataCompat.type(ID, LinkAlerts::new, codec());
 
     /** Per-player alerts, keyed by owning UUID, each ordered by insertion (id → alert). */
     private final Map<UUID, Map<String, LinkAlert>> byPlayer = new LinkedHashMap<>();

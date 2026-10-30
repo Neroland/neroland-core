@@ -6,8 +6,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
+//? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+//?} else {
+/*import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+*///?}
 
 import org.jetbrains.annotations.Nullable;
 
@@ -45,8 +49,12 @@ public final class NeoForgeFluidLookup implements FluidLookup {
             return nero;
         }
         // Standard-fluid fallback: adapt any third-party fluid handler to the Nero surface.
+        //? if >=1.21.9 {
         ResourceHandler<FluidResource> standard =
                 Capabilities.Fluid.BLOCK.getCapability(level, pos, null, null, side);
+        //?} else {
+        /*IFluidHandler standard = Capabilities.FluidHandler.BLOCK.getCapability(level, pos, null, null, side);
+        *///?}
         return standard == null ? null : NeoForgeFluidHandlers.asNeroFluid(standard);
     }
 }

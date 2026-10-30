@@ -133,7 +133,7 @@ public final class SavedDataRecovery {
         }
         T instance;
         try {
-            instance = level.getDataStorage().computeIfAbsent(type);
+            instance = SavedDataCompat.computeIfAbsent(level, type);
         } catch (Exception failure) {
             instance = recover(level, type, fallback, name, failure);
         }
@@ -199,7 +199,7 @@ public final class SavedDataRecovery {
             String name) {
         Exception failure;
         try {
-            Path primary = primaryFile(level, type.id());
+            Path primary = primaryFile(level, SavedDataCompat.fileStem(type));
             if (primary == null) {
                 return instance; // nothing on disk yet: a genuinely new store
             }
@@ -214,7 +214,7 @@ public final class SavedDataRecovery {
             if (data == null) {
                 return instance; // not the layout this check understands; do not judge it
             }
-            DataResult<T> parsed = type.codec().parse(ops(level, null), data);
+            DataResult<T> parsed = SavedDataCompat.codec(type, level).parse(ops(level, null), data);
             if (parsed.error().isEmpty()) {
                 return instance;
             }
@@ -234,7 +234,7 @@ public final class SavedDataRecovery {
         T restored = readBackup(level, type, name, failure);
         if (restored != null) {
             try {
-                level.getDataStorage().set(type, restored);
+                SavedDataCompat.set(level, type, restored);
                 restored.setDirty();
             } catch (Exception installationFailure) {
                 failure.addSuppressed(installationFailure);
@@ -259,14 +259,14 @@ public final class SavedDataRecovery {
      * probed under {@code dimensions/<dim namespace>/<dim path>/} in case the storage folder resolves
      * to the world root.
      */
-    private static Path primaryFile(ServerLevel level, Identifier id) {
+    private static Path primaryFile(ServerLevel level, String stem) {
         Path worldRoot = level.getServer().getWorldPath(LevelResource.ROOT);
         Path storage = DimensionType.getStorageFolder(level.dimension(), worldRoot);
         Identifier dim = level.dimension().identifier();
         Path[] candidates = {
-                storage.resolve("data").resolve(id.getNamespace()).resolve(id.getPath() + ".dat"),
+                storage.resolve("data").resolve(stem + ".dat"),
                 worldRoot.resolve("dimensions").resolve(dim.getNamespace()).resolve(dim.getPath())
-                        .resolve("data").resolve(id.getNamespace()).resolve(id.getPath() + ".dat"),
+                        .resolve("data").resolve(stem + ".dat"),
         };
         for (Path candidate : candidates) {
             if (Files.isRegularFile(candidate)) {
@@ -307,7 +307,7 @@ public final class SavedDataRecovery {
         try {
             // Install into the storage cache (stops the per-tick re-read of the bad file) and mark
             // dirty so the next level save replaces the corrupt primary with a clean one.
-            level.getDataStorage().set(type, instance);
+            SavedDataCompat.set(level, type, instance);
             instance.setDirty();
         } catch (Exception installationFailure) {
             if (failure != null) {
@@ -344,7 +344,7 @@ public final class SavedDataRecovery {
             if (data == null) {
                 return null;
             }
-            return type.codec().parse(ops(level, null), data).result().orElse(null);
+            return SavedDataCompat.codec(type, level).parse(ops(level, null), data).result().orElse(null);
         } catch (Exception backupFailure) {
             if (primaryFailure != null) {
                 primaryFailure.addSuppressed(backupFailure); // backup unreadable too (same failing disk?)
@@ -370,7 +370,7 @@ public final class SavedDataRecovery {
         try {
             Path file = backupFile(level, name);
             CompoundTag tag = new CompoundTag();
-            tag.put("data", type.codec().encodeStart(ops(level, registries), instance).getOrThrow());
+            tag.put("data", SavedDataCompat.codec(type, level).encodeStart(ops(level, registries), instance).getOrThrow());
             int hash = tag.hashCode();
             if (state.written && state.lastWrittenHash == hash && Files.isRegularFile(file)) {
                 return; // unchanged since the last written backup, and that backup is still there

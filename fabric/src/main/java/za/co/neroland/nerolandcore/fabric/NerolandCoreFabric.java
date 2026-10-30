@@ -3,7 +3,9 @@ package za.co.neroland.nerolandcore.fabric;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+//? if >=1.21.9 {
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
+//?}
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -48,11 +50,15 @@ public final class NerolandCoreFabric implements ModInitializer {
             if (id == null || !RecipeViewerSync.isVanillaSerializer(id)) {
                 continue;
             }
+            // Fabric API's recipe-sync module only exists from 1.21.9. Below 1.21.2 vanilla still sends
+            // every recipe to the client; on 1.21.2-1.21.8 a client-only recipe viewer cannot see them.
+            //? if >=1.21.9 {
             try {
                 RecipeSynchronization.synchronizeRecipeSerializer(serializer);
             } catch (RuntimeException e) {
                 NerolandCoreCommon.LOGGER.warn("[Neroland Core] Could not sync recipe serializer {}", id, e);
             }
+            //?}
         }
     }
 }

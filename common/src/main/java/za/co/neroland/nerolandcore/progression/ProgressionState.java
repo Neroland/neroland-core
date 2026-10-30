@@ -17,6 +17,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 /**
@@ -35,7 +36,7 @@ public final class ProgressionState extends SavedData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "progression");
 
     public static final SavedDataType<ProgressionState> TYPE =
-            new SavedDataType<>(ID, ProgressionState::new, codec(), null);
+            SavedDataCompat.type(ID, ProgressionState::new, codec());
 
     private final Set<String> server = new LinkedHashSet<>();
     private final Map<UUID, Set<String>> players = new LinkedHashMap<>();

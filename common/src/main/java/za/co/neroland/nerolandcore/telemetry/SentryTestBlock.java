@@ -43,9 +43,15 @@ public class SentryTestBlock extends Block {
         boolean dispatched = NerolandCoreTelemetry.sendTestEvent(
                 "sentry test block placed in " + level.dimension().identifier());
         if (placer instanceof Player player) {
+            //? if >=26.1 {
             player.sendSystemMessage(Component.translatable(dispatched
                     ? "message.nerolandcore.sentry_test.sent"
                     : "message.nerolandcore.sentry_test.disabled"));
+            //?} else {
+            /*player.displayClientMessage(Component.translatable(dispatched
+                    ? "message.nerolandcore.sentry_test.sent"
+                    : "message.nerolandcore.sentry_test.disabled"), false);
+            *///?}
         }
     }
 }

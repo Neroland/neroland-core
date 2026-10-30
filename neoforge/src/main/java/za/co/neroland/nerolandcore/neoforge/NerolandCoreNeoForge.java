@@ -7,7 +7,9 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
+//? if >=1.21.2 {
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+//?}
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -15,7 +17,9 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
 import za.co.neroland.nerolandcore.entity.NeoForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
+//? if >=1.21.2 {
 import za.co.neroland.nerolandcore.recipe.RecipeViewerSync;
+//?}
 import za.co.neroland.nerolandcore.registry.NeoForgeRegistrationFactory;
 import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
 
@@ -40,7 +44,11 @@ public final class NerolandCoreNeoForge {
         NeoForgeNetwork.register(modEventBus);
         // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
         NeoForgeCoreCapabilities.register(modEventBus);
+        //? if >=1.21.9 {
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
+        //?} else {
+        /*if (FMLEnvironment.dist == Dist.CLIENT) {
+        *///?}
             NeoForgeClientSetup.init(modEventBus);
         }
 
@@ -52,8 +60,11 @@ public final class NerolandCoreNeoForge {
             }
         });
         // Send the vanilla recipe types to clients so JEI lists every Nero crafting/smelting recipe even
-        // when the server does not run JEI (26.x clients hold no recipe list of their own).
+        // when the server does not run JEI (26.x clients hold no recipe list of their own). Before 1.21.2
+        // vanilla still syncs every recipe, and the event has no sendRecipes.
+        //? if >=1.21.2 {
         NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) ->
                 event.sendRecipes(RecipeViewerSync.vanillaTypes()));
+        //?}
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import net.minecraft.server.MinecraftServer;
 
@@ -45,11 +46,20 @@ public final class CoreCommands {
     private CoreCommands() {
     }
 
+    /** Requirement for the operator-only subcommands (permission level 2, "gamemasters"). */
+    private static Predicate<CommandSourceStack> gamemasters() {
+        //? if >=1.21.6 {
+        return Commands.hasPermission(Commands.LEVEL_GAMEMASTERS);
+        //?} else {
+        /*return source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS);
+        *///?}
+    }
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("neroland")
                 .then(Commands.literal("config")
                         .then(Commands.literal("reload")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .requires(gamemasters())
                                 .executes(ctx -> {
                                     ConfigManager.reloadAll();
                                     if (ctx.getSource().getServer() != null) {
@@ -71,22 +81,22 @@ public final class CoreCommands {
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(Commands.literal("open")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .requires(gamemasters())
                                 .then(Commands.argument("gate", StringArgumentType.string())
                                         .executes(ctx -> setGate(ctx, true))))
                         .then(Commands.literal("close")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .requires(gamemasters())
                                 .then(Commands.argument("gate", StringArgumentType.string())
                                         .executes(ctx -> setGate(ctx, false)))))
                 .then(Commands.literal("data")
                         .then(Commands.literal("eraseme")
                                 .executes(ctx -> eraseSelf(ctx)))
                         .then(Commands.literal("erase")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .requires(gamemasters())
                                 .then(Commands.argument("uuid", StringArgumentType.string())
                                         .executes(ctx -> eraseByUuid(ctx))))
                         .then(Commands.literal("purge-inactive")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .requires(gamemasters())
                                 .executes(ctx -> purgeInactive(ctx))))
                 .then(Commands.literal("meteor")
                         .then(Commands.literal("list")
@@ -95,7 +105,7 @@ public final class CoreCommands {
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(Commands.literal("reload")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                                .requires(gamemasters())
                                 .executes(ctx -> reloadMeteor(ctx)))));
     }
 

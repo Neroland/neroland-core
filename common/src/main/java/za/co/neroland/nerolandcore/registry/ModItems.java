@@ -65,14 +65,14 @@ public final class ModItems {
     public static final RegistryEntry<Item> PLASMA_GLASS = item("plasma_glass");
 
     private static RegistryEntry<Item> item(String name) {
-        return ITEMS.register(name, key -> new Item(new Item.Properties().setId(key)));
+        return ITEMS.register(name, key -> new Item(PropertiesCompat.item(key)));
     }
 
     private static RegistryEntry<BlockItem> blockItem(String name, RegistryEntry<? extends Block> block) {
         // 26.x: Item.getDescriptionId() is final and resolves to item.nerolandcore.<id>; BlockItem no
         // longer delegates to the block's key, so each block item needs a mirrored item.nerolandcore.<id>
         // lang entry alongside block.nerolandcore.<id> (see en_us.json).
-        return ITEMS.register(name, key -> new BlockItem(block.get(), new Item.Properties().setId(key)));
+        return ITEMS.register(name, key -> new BlockItem(block.get(), PropertiesCompat.item(key)));
     }
 
     /** Every Core item entry, in display order, for the shared {@link CoreCreativeTab}. */

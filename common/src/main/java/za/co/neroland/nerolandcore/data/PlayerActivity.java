@@ -31,7 +31,7 @@ public final class PlayerActivity extends SavedData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "player_activity");
 
     public static final SavedDataType<PlayerActivity> TYPE =
-            new SavedDataType<>(ID, PlayerActivity::new, codec(), null);
+            SavedDataCompat.type(ID, PlayerActivity::new, codec());
 
     private static final long MILLIS_PER_DAY = 86_400_000L;
 

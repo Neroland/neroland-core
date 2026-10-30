@@ -39,22 +39,41 @@ public class CreativeItemStoreBlock extends AbstractStorageBlock {
         return new CreativeItemStoreBlockEntity(pos, state);
     }
 
+    //? if >=1.21.2 {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                          Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?}
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CreativeItemStoreBlockEntity store) {
             store.setSource(stack);
+            //? if >=26.1 {
             player.sendSystemMessage(Component.translatable(
                     "block.nerolandcore.creative_item_store.set", stack.getHoverName()));
+            //?} else {
+            /*player.displayClientMessage(Component.translatable(
+                    "block.nerolandcore.creative_item_store.set", stack.getHoverName()), false);
+            *///?}
         }
+        //? if >=1.21.2 {
         return InteractionResult.SUCCESS;
+        //?} else {
+        /*return net.minecraft.world.ItemInteractionResult.SUCCESS;
+        *///?}
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CreativeItemStoreBlockEntity store) {
             store.setSource(ItemStack.EMPTY);
+            //? if >=26.1 {
             player.sendSystemMessage(Component.translatable("block.nerolandcore.creative_item_store.cleared"));
+            //?} else {
+            /*player.displayClientMessage(Component.translatable("block.nerolandcore.creative_item_store.cleared"), false);
+            *///?}
         }
         return InteractionResult.SUCCESS;
     }

@@ -28,8 +28,20 @@ public class TrashCanScreen extends AbstractContainerScreen<TrashCanMenu> {
         super(menu, playerInventory, title);
     }
 
+    //? if >=26.1 {
     @Override
     public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    //?} else {
+    /*@Override
+    public void render(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        // Before 26.1 AbstractContainerScreen.render does not draw the hovered-slot tooltip itself.
+        super.render(extractor, mouseX, mouseY, partialTick);
+        this.renderTooltip(extractor, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphicsExtractor extractor, float partialTick, int mouseX, int mouseY) {
+    *///?}
         int x = this.leftPos;
         int y = this.topPos;
         int w = this.imageWidth;
@@ -50,6 +62,8 @@ public class TrashCanScreen extends AbstractContainerScreen<TrashCanMenu> {
             extractor.fill(sx, sy, sx + 16, sy + 16, CELL_FILL);
         }
 
+        //? if >=26.1 {
         super.extractContents(extractor, mouseX, mouseY, partialTick);
+        //?}
     }
 }

@@ -248,7 +248,12 @@ public final class ProgressionGates {
     @Nullable
     private static String offlineTeamKey(MinecraftServer server, UUID playerId) {
         try {
+            //? if >=1.21.9 {
             String name = server.services().nameToIdCache().get(playerId).map(profile -> profile.name()).orElse(null);
+            //?} else {
+            /*net.minecraft.server.players.GameProfileCache cache = server.getProfileCache();
+            String name = cache == null ? null : cache.get(playerId).map(profile -> profile.getName()).orElse(null);
+            *///?}
             if (name == null) {
                 return null;
             }

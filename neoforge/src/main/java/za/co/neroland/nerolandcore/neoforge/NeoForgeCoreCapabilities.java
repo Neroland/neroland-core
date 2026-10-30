@@ -3,9 +3,15 @@ package za.co.neroland.nerolandcore.neoforge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+//? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.energy.InfiniteEnergyHandler;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
+//?} else {
+/*import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+*///?}
 
 import za.co.neroland.nerolandcore.platform.NeoForgeEnergyLookup;
 import za.co.neroland.nerolandcore.platform.NeoForgeFluidHandlers;
@@ -26,6 +32,42 @@ public final class NeoForgeCoreCapabilities {
     private NeoForgeCoreCapabilities() {
     }
 
+    //? if <1.21.9 {
+    /*// Pre-1.21.9 stand-in for the transfer API's InfiniteEnergyHandler: an endless FE source that
+    // accepts no insertion and grants every extraction in full.
+    private static final IEnergyStorage INFINITE_ENERGY = new IEnergyStorage() {
+        @Override
+        public int receiveEnergy(int toReceive, boolean simulate) {
+            return 0;
+        }
+
+        @Override
+        public int extractEnergy(int toExtract, boolean simulate) {
+            return Math.max(0, toExtract);
+        }
+
+        @Override
+        public int getEnergyStored() {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public int getMaxEnergyStored() {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public boolean canExtract() {
+            return true;
+        }
+
+        @Override
+        public boolean canReceive() {
+            return false;
+        }
+    };
+    *///?}
+
     public static void register(IEventBus modEventBus) {
         modEventBus.addListener(NeoForgeCoreCapabilities::onRegisterCapabilities);
     }
@@ -40,8 +82,13 @@ public final class NeoForgeCoreCapabilities {
         // third-party cables (e.g. Energized Power) connect to and draw from it directly. The regular
         // Battery reaches third-party blocks the other way round — it pushes into them each tick via
         // the EnergyLookup FE fallback (see BatteryBlockEntity#serverTick).
+        //? if >=1.21.9 {
         event.registerBlockEntity(Capabilities.Energy.BLOCK,
                 ModBlockEntities.CREATIVE_BATTERY.get(), (be, side) -> InfiniteEnergyHandler.INSTANCE);
+        //?} else {
+        /*event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,
+                ModBlockEntities.CREATIVE_BATTERY.get(), (be, side) -> INFINITE_ENERGY);
+        *///?}
 
         // Fluid — Fluid Tank + Creative Fluid Tank.
         event.registerBlockEntity(NeoForgeFluidLookup.FLUID,
@@ -50,10 +97,17 @@ public final class NeoForgeCoreCapabilities {
                 ModBlockEntities.CREATIVE_FLUID_TANK.get(), (be, side) -> be.getTank());
         // Also expose both tanks on the STANDARD fluid capability so third-party fluid pipes and
         // machines fill and drain them directly, the way the Item Store rides Capabilities.Item.BLOCK.
+        //? if >=1.21.9 {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FLUID_TANK.get(),
                 (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CREATIVE_FLUID_TANK.get(),
                 (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));
+        //?} else {
+        /*event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.FLUID_TANK.get(),
+                (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.CREATIVE_FLUID_TANK.get(),
+                (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getTank()));
+        *///?}
 
         // Gas — Gas Tank + Creative Gas Tank.
         event.registerBlockEntity(NeoForgeGasLookup.GAS,
@@ -62,22 +116,39 @@ public final class NeoForgeCoreCapabilities {
                 ModBlockEntities.CREATIVE_GAS_TANK.get(), (be, side) -> be.getTank());
 
         // Items — Item Store (worldly, all faces) + Creative Item Store (endless source).
+        //? if >=1.21.9 {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ITEM_STORE.get(),
                 (be, side) -> side != null
                         ? new WorldlyContainerWrapper(be, side)
                         : VanillaContainerWrapper.of(be));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CREATIVE_ITEM_STORE.get(),
                 (be, side) -> VanillaContainerWrapper.of(be));
+        //?} else {
+        /*event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.ITEM_STORE.get(),
+                (be, side) -> side != null ? new SidedInvWrapper(be, side) : new InvWrapper(be));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CREATIVE_ITEM_STORE.get(),
+                (be, side) -> new InvWrapper(be));
+        *///?}
 
         // Trash Can — bottomless void sink for items / fluid / gas.
+        //? if >=1.21.9 {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.TRASH_CAN.get(),
                 (be, side) -> side != null
                         ? new WorldlyContainerWrapper(be, side)
                         : VanillaContainerWrapper.of(be));
+        //?} else {
+        /*event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> side != null ? new SidedInvWrapper(be, side) : new InvWrapper(be));
+        *///?}
         event.registerBlockEntity(NeoForgeFluidLookup.FLUID,
                 ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getFluid());
+        //? if >=1.21.9 {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.TRASH_CAN.get(),
                 (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getFluid()));
+        //?} else {
+        /*event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> NeoForgeFluidHandlers.asResourceHandler(be.getFluid()));
+        *///?}
         event.registerBlockEntity(NeoForgeGasLookup.GAS,
                 ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getGas());
     }

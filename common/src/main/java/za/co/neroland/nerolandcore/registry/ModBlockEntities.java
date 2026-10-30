@@ -1,7 +1,5 @@
 package za.co.neroland.nerolandcore.registry;
 
-import java.util.Set;
-
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -33,39 +31,39 @@ public final class ModBlockEntities {
 
     public static final RegistryEntry<BlockEntityType<BatteryBlockEntity>> BATTERY =
             BLOCK_ENTITIES.register("battery",
-                    key -> new BlockEntityType<>(BatteryBlockEntity::new, Set.of(ModBlocks.BATTERY.get())));
+                    key -> BlockEntityTypeCompat.create(BatteryBlockEntity::new, ModBlocks.BATTERY.get()));
 
     public static final RegistryEntry<BlockEntityType<FluidTankBlockEntity>> FLUID_TANK =
             BLOCK_ENTITIES.register("fluid_tank",
-                    key -> new BlockEntityType<>(FluidTankBlockEntity::new, Set.of(ModBlocks.FLUID_TANK.get())));
+                    key -> BlockEntityTypeCompat.create(FluidTankBlockEntity::new, ModBlocks.FLUID_TANK.get()));
 
     public static final RegistryEntry<BlockEntityType<GasTankBlockEntity>> GAS_TANK =
             BLOCK_ENTITIES.register("gas_tank",
-                    key -> new BlockEntityType<>(GasTankBlockEntity::new, Set.of(ModBlocks.GAS_TANK.get())));
+                    key -> BlockEntityTypeCompat.create(GasTankBlockEntity::new, ModBlocks.GAS_TANK.get()));
 
     public static final RegistryEntry<BlockEntityType<ItemStoreBlockEntity>> ITEM_STORE =
             BLOCK_ENTITIES.register("item_store",
-                    key -> new BlockEntityType<>(ItemStoreBlockEntity::new, Set.of(ModBlocks.ITEM_STORE.get())));
+                    key -> BlockEntityTypeCompat.create(ItemStoreBlockEntity::new, ModBlocks.ITEM_STORE.get()));
 
     public static final RegistryEntry<BlockEntityType<CreativeBatteryBlockEntity>> CREATIVE_BATTERY =
             BLOCK_ENTITIES.register("creative_battery",
-                    key -> new BlockEntityType<>(CreativeBatteryBlockEntity::new, Set.of(ModBlocks.CREATIVE_BATTERY.get())));
+                    key -> BlockEntityTypeCompat.create(CreativeBatteryBlockEntity::new, ModBlocks.CREATIVE_BATTERY.get()));
 
     public static final RegistryEntry<BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
             BLOCK_ENTITIES.register("creative_fluid_tank",
-                    key -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, Set.of(ModBlocks.CREATIVE_FLUID_TANK.get())));
+                    key -> BlockEntityTypeCompat.create(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
 
     public static final RegistryEntry<BlockEntityType<CreativeGasTankBlockEntity>> CREATIVE_GAS_TANK =
             BLOCK_ENTITIES.register("creative_gas_tank",
-                    key -> new BlockEntityType<>(CreativeGasTankBlockEntity::new, Set.of(ModBlocks.CREATIVE_GAS_TANK.get())));
+                    key -> BlockEntityTypeCompat.create(CreativeGasTankBlockEntity::new, ModBlocks.CREATIVE_GAS_TANK.get()));
 
     public static final RegistryEntry<BlockEntityType<CreativeItemStoreBlockEntity>> CREATIVE_ITEM_STORE =
             BLOCK_ENTITIES.register("creative_item_store",
-                    key -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, Set.of(ModBlocks.CREATIVE_ITEM_STORE.get())));
+                    key -> BlockEntityTypeCompat.create(CreativeItemStoreBlockEntity::new, ModBlocks.CREATIVE_ITEM_STORE.get()));
 
     public static final RegistryEntry<BlockEntityType<TrashCanBlockEntity>> TRASH_CAN =
             BLOCK_ENTITIES.register("trash_can",
-                    key -> new BlockEntityType<>(TrashCanBlockEntity::new, Set.of(ModBlocks.TRASH_CAN.get())));
+                    key -> BlockEntityTypeCompat.create(TrashCanBlockEntity::new, ModBlocks.TRASH_CAN.get()));
 
     private ModBlockEntities() {
     }
