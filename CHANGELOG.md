@@ -28,6 +28,9 @@ signature, id, tag, capability or config key changes, and 26.x worlds load uncha
 
 ### Fixed
 
+- **Forge:** the Forge jar now embeds Sentry 8.60.0, the version Core is built against and the one the
+  NeoForge and Fabric jars already embed (it embedded 8.45.0). Mods that depend on Core can start a Forge
+  development run again: Core's Maven jar no longer asks Forge for an embedded Sentry it does not contain.
 - **Rain, snow, mob spawning and world generation treat Neroland Core blocks as solid on Minecraft 26.3.**
   Minecraft 26.3 builds its height maps from a fixed block tag instead of asking each block, so Core's
   material blocks, Plasma Glass, storage blocks and Trash Can were see-through to them: rain and snow
