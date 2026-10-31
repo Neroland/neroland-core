@@ -58,7 +58,7 @@ gpr.key=<a personal access token with read:packages>
 
 ### CI
 
-Each consumer's `multiloader.yml` and `publish.yml` grant `packages: read` and pass
+Each consumer's `publish.yml` grants `packages: read` and passes
 `GITHUB_ACTOR` / `GITHUB_TOKEN` to Gradle. For the automatic `GITHUB_TOKEN` to read a package
 that lives in **another** repo of the org, the package must be reachable from the consumer
 repo. Pick one:
