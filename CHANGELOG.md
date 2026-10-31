@@ -8,6 +8,17 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.17.1] - 2026-10-31
+
+### Fixed
+
+- **Forge creative-tab crash (`Registry Object not present: nerolandcore:nero_alloy_block`).**
+  Provider creation and deferred-register attachment now share a lock, preventing parallel mod
+  constructors from losing registrations in the shared queue. Applied the same fix on NeoForge.
+  Failed attachments remain pending instead of being marked as attached.
+
+[1.17.1]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.1
+
 ## [1.17.0] - 2026-10-30
 
 Adds Minecraft 1.21.x builds next to the 26.x ones. Additive only on 26.x: no existing public

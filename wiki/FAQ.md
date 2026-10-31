@@ -10,6 +10,12 @@ Neroland mods build on. Install it because a mod you want requires it. See
 
 Minecraft **26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**. On Fabric you also need Fabric API.
 
+## Why does Forge crash with `Registry Object not present: nerolandcore:nero_alloy_block`?
+
+Update Neroland Core to **1.17.1** or newer for your Minecraft version and loader. This patch fixes
+a race during parallel mod loading that could leave Core's items unregistered and crash when the
+Neroland creative tab builds its contents. The same registration fix also applies to NeoForge.
+
 ## What materials does Core add?
 
 Nero Alloy, Starsteel, Void Crystal, and Plasma Glass, plus their forms (ingots, nuggets, dusts,

@@ -1,7 +1,5 @@
 package za.co.neroland.nerolandcore.registry;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -23,14 +21,11 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  */
 public final class NeoForgeRegistrationFactory implements RegistrationProvider.Factory {
 
-    private static final List<DeferredRegister<?>> REGISTERS = new ArrayList<>();
-    private static int attachedRegisters;
+    private static final PendingRegistrations<DeferredRegister<?>> REGISTERS = new PendingRegistrations<>();
 
     /** Attach every DeferredRegister created so far to the mod event bus. */
     public static synchronized void registerAll(IEventBus modEventBus) {
-        while (attachedRegisters < REGISTERS.size()) {
-            REGISTERS.get(attachedRegisters++).register(modEventBus);
-        }
+        REGISTERS.attachAll(register -> register.register(modEventBus));
     }
 
     @Override

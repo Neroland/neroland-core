@@ -1,7 +1,5 @@
 package za.co.neroland.nerolandcore.registry;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,8 +25,8 @@ import net.minecraftforge.registries.RegistryObject;
  */
 public final class ForgeRegistrationFactory implements RegistrationProvider.Factory {
 
-    private static final List<DeferredRegister<?>> REGISTERS = new ArrayList<>();
-    private static int attachedRegisters;
+    // Mod constructors create providers concurrently; additions and attachment must share a lock.
+    private static final PendingRegistrations<DeferredRegister<?>> REGISTERS = new PendingRegistrations<>();
 
     /** Attach every DeferredRegister created so far to the mod bus group. */
     //? if >=1.21.6 {
@@ -36,9 +34,7 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
     //?} else {
     /*public static synchronized void registerAll(IEventBus modBusGroup) {
     *///?}
-        while (attachedRegisters < REGISTERS.size()) {
-            REGISTERS.get(attachedRegisters++).register(modBusGroup);
-        }
+        REGISTERS.attachAll(register -> register.register(modBusGroup));
     }
 
     @Override
