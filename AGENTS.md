@@ -1,5 +1,7 @@
 # Project context for AI coding agents — nerolandcore
 
+> Modrinth is temporarily being removed from the upload and is no longer being referenced. Avoid making references to modrinth.
+
 > This and `CLAUDE.md` are kept identical; update both together.
 
 ## The mod
@@ -10,7 +12,7 @@
   build on it. Add shared content under `common/` and wire it through each loader entry point.
 - Mod id: **`nerolandcore`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerolandcore`. Author: **Neroland**.
-- Version: **1.15.0** — the V1 foundation is complete and additive 1.x APIs continue to land. Treat the
+- Version: **1.17.2** — the V1 foundation is complete and additive 1.x APIs continue to land. Treat the
   public API as **frozen between majors**; see [`docs/API-STABILITY.md`](docs/API-STABILITY.md).
 - Targets **MC 26.1.2, 26.2 AND 26.3** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"9 cells"**.
   **Java 25.** Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).

@@ -8,6 +8,14 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.17.2] - 2026-10-31
+
+### Changed
+
+- Release uploads now target CurseForge and GitHub Releases only.
+- Removed automatic project description and gallery uploads.
+- Renamed the website overview source to `art/description.md` and refreshed public documentation links.
+
 ## [1.17.1] - 2026-10-31
 
 ### Fixed
@@ -16,6 +24,8 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
   Provider creation and deferred-register attachment now share a lock, preventing parallel mod
   constructors from losing registrations in the shared queue. Applied the same fix on NeoForge.
   Failed attachments remain pending instead of being marked as attached.
+
+[1.17.2]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.2
 
 [1.17.1]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.1
 
