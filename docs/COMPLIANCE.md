@@ -62,6 +62,12 @@ refresh right after purging the player, instead of leaving the erased rows there
 periodic pass. **Any downstream mod that adopts `SavedDataRecovery` must do the same in its
 `PlayerDataEraser`.**
 
+When a primary `.dat` cannot be read at all (truncated or corrupt), `SavedDataRecovery` moves it
+aside as `<file>.dat.corrupt` before vanilla reads it, so the store loads from the backup (or
+starts fresh) and the broken file does not trip recovery again on every load. Only one
+quarantined copy is kept per store. It can still hold player-keyed rows, so the same forced backup
+refresh (`SavedDataRecovery.backupNow`) also deletes it, and fails the erasure if it cannot.
+
 ### Proving it — the erasure conformance harness
 
 `data.ErasureConformance` is a reusable harness in Core's **main** source set, so any mod can run

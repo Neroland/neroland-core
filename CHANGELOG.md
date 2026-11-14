@@ -8,6 +8,27 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.17.6] - 2026-11-14
+
+### Fixed
+
+- **A damaged save file no longer causes an error on every world load.** If one of Core's saved-data files can
+  no longer be read (for example after a crash part-way through a save), Core now moves it aside as
+  `<name>.dat.corrupt` before the game tries to read it, then restores the last good backup or starts that data
+  fresh. Before, the damaged file stayed in place and failed again on every load. One `.corrupt` copy is kept per
+  store; a newer one replaces it.
+- **A successful restore from backup is no longer reported as an error.** Crash reporting now sends it as a
+  warning. Losing data with no backup to restore is still reported as an error.
+- **Forge: Core no longer reports a crash that another mod caused.** When another mod's mixin stops Minecraft's
+  menu screens from loading, Core now logs a warning that points at the earlier error instead of sending a crash
+  report against Core. The game still cannot start in that case; the other mod needs fixing or removing.
+
+### Changed
+
+- Data erasure (`/neroland data eraseme`) also deletes a store's `.corrupt` copy, so damaged files are covered by
+  erasure requests too.
+- Handled errors that Core reports are now grouped by where they happened, so related reports land in one issue.
+
 ## [1.17.5] - 2026-11-08
 
 ### Fixed
@@ -54,6 +75,7 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
   constructors from losing registrations in the shared queue. Applied the same fix on NeoForge.
   Failed attachments remain pending instead of being marked as attached.
 
+[1.17.6]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.6
 [1.17.5]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.5
 
 [1.17.3]: https://github.com/Neroland/neroland-core/releases/tag/v1.17.3

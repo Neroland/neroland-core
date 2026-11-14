@@ -90,6 +90,16 @@ import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
  * overwritten until the store genuinely changes) and the failure is still reported. A primary file
  * that is absent, or not in the {@code {"data": ...}} layout, is not judged.
  *
+ * <p><b>Unreadable primaries are checked before vanilla reads them (MC-NERODECOR-1/2).</b> The primary file
+ * is read once <em>before</em> the first {@code computeIfAbsent}. A file that cannot even be read
+ * (truncated or corrupt gzip/NBT) is moved aside to {@code <file>.dat.corrupt} (one copy, replaced
+ * each time) so vanilla never reads it: no vanilla read-error log line, and the same broken file does
+ * not trip recovery again on every world load. The store then comes from the backup or starts fresh.
+ * The quarantined copy can still hold player-keyed rows, so {@link #backupNow} (the erasure hook)
+ * deletes it. A successful restore from backup is reported as a warning; only an unrecoverable loss
+ * (no usable backup) is reported as an error. Nothing is reported from a GameTest server, where
+ * corrupt files are written on purpose.
+ *
  * @see PlayerDataErasure
  */
 public final class SavedDataRecovery {
@@ -132,20 +142,26 @@ public final class SavedDataRecovery {
         if (level == null || type == null || fallback == null || name == null || name.isBlank()) {
             throw new IllegalArgumentException("SavedData recovery arguments must be present");
         }
+        // First access in this storage: read the primary ourselves before vanilla does, so an
+        // unreadable file is moved aside instead of being read (and logged as an error) by vanilla.
+        Preflight preflight = firstAccess(level, name) ? preflight(level, type, name) : null;
         T instance;
         try {
             instance = SavedDataCompat.computeIfAbsent(level, type);
         } catch (Exception failure) {
             instance = recover(level, type, fallback, name, failure);
+            preflight = null; // already recovered and reported
         }
         if (instance == null) {
             // computeIfAbsent's generic return is unannotated; a null here would NPE the caller
             // mid-tick just as surely as a thrown exception, so it takes the same recovery path.
             instance = recover(level, type, fallback, name, null);
-        } else if (firstAccess(level, name)) {
+        } else if (preflight != null) {
             // Must run before the first backup pass: vanilla 26.x returns a fresh store for an
             // undecodable file, and backing that up would overwrite the last-known-good copy.
-            instance = verifyPrimary(level, type, instance, name);
+            instance = preflight.unreadable() != null
+                    ? recoverDecode(level, type, instance, name, preflight.unreadable(), preflight.quarantined())
+                    : verifyDecode(level, type, instance, name, preflight.tag());
         }
         maybeBackup(level, type, instance, name, false, null);
         return instance;
@@ -170,6 +186,7 @@ public final class SavedDataRecovery {
         if (level == null || type == null || instance == null || name == null || name.isBlank()) {
             throw new IllegalArgumentException("SavedData backup arguments must be present");
         }
+        discardQuarantine(level, type);
         maybeBackup(level, type, instance, name, true, null);
     }
 
@@ -186,6 +203,7 @@ public final class SavedDataRecovery {
         if (level == null || type == null || instance == null || name == null || name.isBlank()) {
             throw new IllegalArgumentException("SavedData backup arguments must be present");
         }
+        discardQuarantine(level, type);
         maybeBackup(level, type, instance, name, true, registries);
     }
 
@@ -198,21 +216,43 @@ public final class SavedDataRecovery {
         }
     }
 
-    private static <T extends SavedData> T verifyPrimary(ServerLevel level, SavedDataType<T> type, T instance,
-            String name) {
-        Exception failure;
+    /**
+     * What the first-access read of the primary file found: its tag (readable), or the read failure
+     * and whether the bad file was moved aside. {@code null} from {@link #preflight} means there is
+     * nothing to judge (no file, or the check itself could not run).
+     */
+    private record Preflight(CompoundTag tag, Exception unreadable, boolean quarantined) {
+    }
+
+    /**
+     * Reads the primary file before vanilla does. An unreadable file is moved aside to
+     * {@code <file>.corrupt} so vanilla starts from no file (no read-error log line from vanilla, and
+     * the same broken file does not trip recovery again on the next world load).
+     */
+    private static Preflight preflight(ServerLevel level, SavedDataType<?> type, String name) {
+        Path primary;
         try {
-            Path primary = primaryFile(level, SavedDataCompat.fileStem(type));
-            if (primary == null) {
-                return instance; // nothing on disk yet: a genuinely new store
-            }
-            CompoundTag tag;
-            try {
-                tag = NbtIo.readCompressed(primary, NbtAccounter.unlimitedHeap());
-            } catch (Exception unreadable) {
-                failure = new SavedDataDecodeException("primary file is unreadable", unreadable);
-                return recoverDecode(level, type, instance, name, failure);
-            }
+            primary = primaryFile(level, SavedDataCompat.fileStem(type));
+        } catch (Exception lookupFailure) {
+            // Verification is best-effort: never let the check itself break the load.
+            NerolandCoreCommon.LOGGER.debug("[Neroland Core] Could not locate saved data '{}'", name, lookupFailure);
+            return null;
+        }
+        if (primary == null) {
+            return null; // nothing on disk yet: a genuinely new store
+        }
+        try {
+            return new Preflight(NbtIo.readCompressed(primary, NbtAccounter.unlimitedHeap()), null, false);
+        } catch (Exception unreadable) {
+            return new Preflight(null, new SavedDataDecodeException("primary file is unreadable", unreadable),
+                    quarantine(primary, name));
+        }
+    }
+
+    /** Codec-checks a readable primary (vanilla 26.x silently hands back a fresh store on a codec error). */
+    private static <T extends SavedData> T verifyDecode(ServerLevel level, SavedDataType<T> type, T instance,
+            String name, CompoundTag tag) {
+        try {
             Tag data = tag.get("data");
             if (data == null) {
                 return instance; // not the layout this check understands; do not judge it
@@ -221,19 +261,56 @@ public final class SavedDataRecovery {
             if (parsed.error().isEmpty()) {
                 return instance;
             }
-            // The DataResult message is deliberately dropped: it can quote stored values (UUIDs).
-            failure = new SavedDataDecodeException("primary file failed codec decode", null);
         } catch (Exception verificationFailure) {
             // Verification is best-effort: never let the check itself break the load.
             NerolandCoreCommon.LOGGER.debug("[Neroland Core] Could not verify saved data '{}'", name,
                     verificationFailure);
             return instance;
         }
-        return recoverDecode(level, type, instance, name, failure);
+        // The DataResult message is deliberately dropped: it can quote stored values (UUIDs).
+        return recoverDecode(level, type, instance, name,
+                new SavedDataDecodeException("primary file failed codec decode", null), false);
+    }
+
+    /** Moves an unreadable primary to {@code <file>.corrupt} (replacing an older one). Best-effort. */
+    static boolean quarantine(Path primary, String name) {
+        try {
+            Files.move(primary, quarantineFile(primary), StandardCopyOption.REPLACE_EXISTING);
+            return true;
+        } catch (Exception moveFailure) {
+            NerolandCoreCommon.LOGGER.debug("[Neroland Core] Could not move aside unreadable saved data '{}'", name,
+                    moveFailure);
+            return false;
+        }
+    }
+
+    static Path quarantineFile(Path primary) {
+        return primary.resolveSibling(primary.getFileName() + ".corrupt");
+    }
+
+    /**
+     * Deletes this store's quarantined {@code .corrupt} copy, if any. Called from {@link #backupNow}
+     * (the erasure hook): the copy may still hold the erased player's rows.
+     *
+     * @throws IllegalStateException if a quarantined copy exists but could not be deleted
+     */
+    private static void discardQuarantine(ServerLevel level, SavedDataType<?> type) {
+        try {
+            for (Path candidate : primaryCandidates(level, SavedDataCompat.fileStem(type))) {
+                Files.deleteIfExists(quarantineFile(candidate));
+            }
+        } catch (Exception deleteFailure) {
+            throw new IllegalStateException("Could not delete a quarantined saved-data copy", deleteFailure);
+        }
+    }
+
+    /** True on a GameTest server, where corrupt files are written on purpose: log, but do not report. */
+    private static boolean isGameTest(ServerLevel level) {
+        return level.getServer() instanceof net.minecraft.gametest.framework.GameTestServer;
     }
 
     private static <T extends SavedData> T recoverDecode(ServerLevel level, SavedDataType<T> type, T vanilla,
-            String name, Exception failure) {
+            String name, Exception failure, boolean quarantined) {
         T restored = readBackup(level, type, name, failure);
         if (restored != null) {
             try {
@@ -245,14 +322,19 @@ public final class SavedDataRecovery {
             }
         }
         boolean fromBackup = restored != null;
+        String outcome = fromBackup
+                ? "restored the last-known-good backup; a clean file will be rewritten at the next save"
+                : quarantined ? "no usable backup, started with a fresh store"
+                        : "no usable backup, kept the store vanilla loaded (it may be empty or partial)";
         NerolandCoreCommon.LOGGER.warn(
-                "[Neroland Core] Saved data '{}' in {} could not be decoded ({}): {}.",
-                name, level.dimension(), failure.getMessage(),
-                fromBackup ? "restored the last-known-good backup; a clean file will be rewritten at the next save"
-                        : "no usable backup, kept the store vanilla loaded (it may be empty or partial)");
-        NerolandCoreTelemetry.breadcrumb("saved_data_recovery", name);
-        NerolandCoreTelemetry.captureHandledException(failure, "saved_data_recovery",
-                name + (fromBackup ? "|decode_backup_restored" : "|decode_no_backup"));
+                "[Neroland Core] Saved data '{}' in {} could not be decoded ({}): {}.{}",
+                name, level.dimension(), failure.getMessage(), outcome,
+                quarantined ? " The unreadable file was kept beside it with a .corrupt suffix." : "");
+        if (!isGameTest(level)) {
+            NerolandCoreTelemetry.breadcrumb("saved_data_recovery", name);
+            NerolandCoreTelemetry.captureHandledException(failure, "saved_data_recovery",
+                    name + (fromBackup ? "|decode_backup_restored" : "|decode_no_backup"), fromBackup);
+        }
         return fromBackup ? restored : vanilla;
     }
 
@@ -263,20 +345,24 @@ public final class SavedDataRecovery {
      * to the world root.
      */
     private static Path primaryFile(ServerLevel level, String stem) {
-        Path worldRoot = level.getServer().getWorldPath(LevelResource.ROOT);
-        Path storage = DimensionType.getStorageFolder(level.dimension(), worldRoot);
-        Identifier dim = level.dimension().identifier();
-        Path[] candidates = {
-                storage.resolve("data").resolve(stem + ".dat"),
-                worldRoot.resolve("dimensions").resolve(dim.getNamespace()).resolve(dim.getPath())
-                        .resolve("data").resolve(stem + ".dat"),
-        };
-        for (Path candidate : candidates) {
+        for (Path candidate : primaryCandidates(level, stem)) {
             if (Files.isRegularFile(candidate)) {
                 return candidate;
             }
         }
         return null;
+    }
+
+    /** Every location {@link #primaryFile} probes, whether or not a file exists there. */
+    private static Path[] primaryCandidates(ServerLevel level, String stem) {
+        Path worldRoot = level.getServer().getWorldPath(LevelResource.ROOT);
+        Path storage = DimensionType.getStorageFolder(level.dimension(), worldRoot);
+        Identifier dim = level.dimension().identifier();
+        return new Path[] {
+                storage.resolve("data").resolve(stem + ".dat"),
+                worldRoot.resolve("dimensions").resolve(dim.getNamespace()).resolve(dim.getPath())
+                        .resolve("data").resolve(stem + ".dat"),
+        };
     }
 
     /** Registry-aware NBT ops: the explicit provider if given, else the level's registry access. */
@@ -327,10 +413,12 @@ public final class SavedDataRecovery {
                 name, level.dimension(),
                 fromBackup ? "restored the last-known-good backup" : "started with a fresh store",
                 failure);
-        NerolandCoreTelemetry.breadcrumb("saved_data_recovery", name);
-        if (failure != null) {
-            NerolandCoreTelemetry.captureHandledException(failure, "saved_data_recovery",
-                    name + (fromBackup ? "|backup_restored" : "|fresh_start"));
+        if (!isGameTest(level)) {
+            NerolandCoreTelemetry.breadcrumb("saved_data_recovery", name);
+            if (failure != null) {
+                NerolandCoreTelemetry.captureHandledException(failure, "saved_data_recovery",
+                        name + (fromBackup ? "|backup_restored" : "|fresh_start"), fromBackup);
+            }
         }
         return instance;
     }

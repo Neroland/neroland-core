@@ -293,14 +293,27 @@ public final class NerolandCoreTelemetry {
 
     /** Capture a handled exception with a non-identifying source label for triage. */
     public static void captureHandledException(Throwable t, String source, String operation) {
+        captureHandledException(t, source, operation, false);
+    }
+
+    /**
+     * Capture a handled exception with a non-identifying source label for triage.
+     *
+     * @param recovered {@code true} when the guard fully recovered (for example saved data restored from
+     *                  its backup): reported at WARNING instead of ERROR, so it stays out of the crash queue
+     */
+    public static void captureHandledException(Throwable t, String source, String operation, boolean recovered) {
         if (!active || t == null || !touchesNeroland(t)) {
             return;
         }
-        Sentry.withScope(scope -> {
+        // The (Throwable, ScopeCallback) overload: with Sentry 8.x, tags set inside withScope(...) do not
+        // reliably reach an event captured there.
+        Sentry.captureException(t, scope -> {
+            scope.setLevel(recovered ? SentryLevel.WARNING : SentryLevel.ERROR);
             scope.setTag("handled", "true");
             scope.setTag("source", source);
             scope.setExtra("operation", operation);
-            Sentry.captureException(t);
+            scope.setFingerprint(List.of("nerolandcore-handled", String.valueOf(source), String.valueOf(operation)));
         });
     }
 

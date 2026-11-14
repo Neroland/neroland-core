@@ -2,9 +2,16 @@ package za.co.neroland.nerolandcore.data;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Argument guards for the shared saved-data recovery helper.
@@ -42,5 +49,24 @@ class SavedDataRecoveryTest {
                 () -> SavedDataRecovery.reportBackupFailure("test", true, cause));
         assertSame(cause, failure.getCause());
         assertDoesNotThrow(() -> SavedDataRecovery.reportBackupFailure("test", false, cause));
+    }
+
+    @Test
+    void anUnreadablePrimaryIsMovedAsideSoVanillaNeverReadsItAgain(@TempDir Path dir) throws Exception {
+        Path primary = dir.resolve("store.dat");
+        Files.write(primary, new byte[] {0x1f, (byte) 0x8b, 0x08, 0x00, 't', 'r', 'u', 'n', 'c'});
+        assertTrue(SavedDataRecovery.quarantine(primary, "test"));
+        assertFalse(Files.exists(primary));
+        assertTrue(Files.isRegularFile(dir.resolve("store.dat.corrupt")));
+
+        // A later corruption replaces the single quarantined copy instead of piling up copies.
+        Files.write(primary, new byte[] {0x01});
+        assertTrue(SavedDataRecovery.quarantine(primary, "test"));
+        assertEquals(1L, Files.size(SavedDataRecovery.quarantineFile(primary)));
+    }
+
+    @Test
+    void aMissingPrimaryIsNotQuarantined(@TempDir Path dir) {
+        assertFalse(SavedDataRecovery.quarantine(dir.resolve("absent.dat"), "test"));
     }
 }

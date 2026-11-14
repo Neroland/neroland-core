@@ -35,6 +35,11 @@ every downstream mod that stores player data registers an eraser at init.
 | `/neroland data eraseme` | Any player | Erase your own Neroland data (opt-out / reset) |
 | `/neroland data erase <uuid>` | Admin (op level 2) | Erase a specific player |
 
+Erasure also reaches Core's save-file safety copies: the `_backup.dat` last-known-good
+copy of each store, and any `.dat.corrupt` file. A `.dat.corrupt` file is a save file
+that could not be read and was moved aside so the world could load from the backup;
+only one is kept per store, and it is deleted when a player's data is erased.
+
 ## Known gap: team-scoped progression
 
 Gates and material milestones declared with `scope: team` are stored against the
