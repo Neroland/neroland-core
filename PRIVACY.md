@@ -52,10 +52,30 @@ save. Installed providers can also store currency and reputation. These records 
 from telemetry. `/neroland data eraseme` requests erasure across registered systems; if any
 system reports a failure, the command reports that the request was incomplete.
 
+Since 1.18.0 an erasure request also saves the affected data files before it reports success, so a
+crash straight afterwards cannot bring the erased data back.
+
+**Erasure tombstones (1.18.0).** A pet, drone or companion in a part of the world that is not loaded
+cannot be reached during an erasure, and it still names its owner. So that it can be released when it
+next loads, Core keeps a minimal record in `erasure_tombstones.dat` (and its backup):
+
+- a **salted one-way hash** of the erased player's UUID (128 bits of SHA-256 over a random per-world
+  salt), with the time it was written. This is pseudonymised personal data: it cannot be reversed, but
+  someone with the salt and a list of UUIDs could test them. It is kept only to finish the erasure
+  you asked for, for `max(dataRetentionDays, 365)` days, and is then deleted (checked at server start
+  and daily); the salt is deleted with the last one;
+- the **entity UUIDs** of owned creatures a mod could not reach, until each one loads and is released.
+  These name no player.
+
+It is never logged, never listed, and appears in your own data export at most as "yes/no". Legal
+basis: complying with your erasure request (GDPR art. 6(1)(c) with art. 17; POPIA s 11(1)(c) with
+s 24). It is removed if you play again and a mod records a new pet for you.
+
 `dataRetentionDays` defaults to `0`, which disables inactivity purging. When a server operator
-enables it and runs a retention sweep, a partially failed erasure retains the original activity
-timestamp so a later sweep can retry. The world save and recovery backups remain under the server
-operator's control.
+enables it, Core runs the retention sweep at server start and once a day
+(`dataRetentionScheduledPurge`, on by default), and `/neroland data purge-inactive` runs it on demand.
+A partially failed erasure retains the original activity timestamp so a later sweep can retry. Sweeps
+log counts only. The world save and recovery backups remain under the server operator's control.
 
 ## How to opt out
 

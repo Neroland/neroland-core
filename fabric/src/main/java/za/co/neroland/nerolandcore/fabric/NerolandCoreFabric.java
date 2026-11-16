@@ -2,6 +2,7 @@ package za.co.neroland.nerolandcore.fabric;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 //? if >=1.21.9 {
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
+import za.co.neroland.nerolandcore.data.RetentionSchedule;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.recipe.RecipeViewerSync;
 import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
@@ -35,6 +37,9 @@ public final class NerolandCoreFabric implements ModInitializer {
         // Push server-authoritative config + the player's open gates as they join.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
                 CoreNetwork.onPlayerJoin(handler.player));
+
+        // Scheduled data-retention housekeeping (server start, then daily).
+        ServerTickEvents.END_SERVER_TICK.register(RetentionSchedule::onServerTick);
 
         syncVanillaRecipes();
     }

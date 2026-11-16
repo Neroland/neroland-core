@@ -85,6 +85,7 @@ import za.co.neroland.nerolandcore.reputation.ReputationProvider;
 public final class ErasureConformance {
 
     private final Map<String, Probe> probes = new LinkedHashMap<>();
+    private final List<TombstoneCheck> tombstoneChecks = new ArrayList<>();
 
     private ErasureConformance() {
     }
@@ -115,6 +116,27 @@ public final class ErasureConformance {
      */
     public ErasureConformance probeAfterErasureOnly(String subsystem, Predicate<UUID> retainsData) {
         return add(subsystem, retainsData, false);
+    }
+
+    /**
+     * Checks that the erasure leaves {@code entity} releasable through Core's shared
+     * {@link ErasureTombstones} store (Core 1.18.0): after the request,
+     * {@code store.shouldRelease(player, entity)} must be {@code true}, and it must be {@code false}
+     * before (otherwise the check proves nothing). Use it for an owned entity your eraser cannot reach
+     * because it is not loaded: your eraser should call {@link ErasureTombstones#markEntity}.
+     *
+     * <p>In a plain-JVM test (null server) pass a {@code new ErasureTombstones()} that your eraser writes
+     * to; with a live server pass {@code ErasureTombstones.get(server)}, where Core also writes the owner
+     * tombstone.
+     *
+     * @param subsystem a stable name reported back on failure (e.g. {@code "nerocreatures:unloaded_pet"})
+     */
+    public ErasureConformance tombstoneReleases(String subsystem, ErasureTombstones store, UUID entity) {
+        if (subsystem == null || subsystem.isBlank() || store == null || entity == null) {
+            throw new IllegalArgumentException("A tombstone check needs a subsystem name, a store and an entity");
+        }
+        tombstoneChecks.add(new TombstoneCheck(subsystem, store, entity));
+        return this;
     }
 
     private ErasureConformance add(String subsystem, Predicate<UUID> retainsData, boolean seedRequired) {
@@ -155,7 +177,7 @@ public final class ErasureConformance {
         List<String> failures = new ArrayList<>();
         List<String> retained = new ArrayList<>();
 
-        if (probes.isEmpty()) {
+        if (probes.isEmpty() && tombstoneChecks.isEmpty()) {
             failures.add("no probes were registered — this run cannot prove anything was erased");
         }
 
@@ -168,6 +190,13 @@ public final class ErasureConformance {
             if (Boolean.FALSE.equals(before)) {
                 failures.add(probe.subsystem() + ": reported no data BEFORE erasure — the probe proves "
                         + "nothing; seed the store first, or use probeAfterErasureOnly(...)");
+            }
+        }
+
+        for (TombstoneCheck check : tombstoneChecks) {
+            if (check.store().shouldRelease(player, check.entity())) {
+                failures.add(check.subsystem() + ": entity was already releasable BEFORE erasure — the "
+                        + "tombstone check proves nothing");
             }
         }
 
@@ -219,6 +248,14 @@ public final class ErasureConformance {
             if (Boolean.TRUE.equals(after)) {
                 retained.add(probe.subsystem());
                 failures.add(probe.subsystem() + ": STILL HOLDS DATA after erasure");
+            }
+        }
+
+        for (TombstoneCheck check : tombstoneChecks) {
+            if (!check.store().shouldRelease(player, check.entity())) {
+                retained.add(check.subsystem());
+                failures.add(check.subsystem() + ": entity would NOT be released when it next loads — "
+                        + "the eraser did not call ErasureTombstones.markEntity");
             }
         }
 
@@ -312,6 +349,9 @@ public final class ErasureConformance {
 
     private static String className(Object o) {
         return o == null ? "<none bound>" : o.getClass().getName();
+    }
+
+    private record TombstoneCheck(String subsystem, ErasureTombstones store, UUID entity) {
     }
 
     private record Probe(String subsystem, Predicate<UUID> retainsData, boolean seedRequired) {

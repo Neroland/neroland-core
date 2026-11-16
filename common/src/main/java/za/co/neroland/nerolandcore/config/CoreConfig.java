@@ -69,6 +69,12 @@ public final class CoreConfig {
     public static final ConfigValue<Integer> DATA_RETENTION_DAYS = SCHEMA.intRange(
             "dataRetentionDays", 0, 0, 3650, false,
             "Days of inactivity after which a player's stored data is purged (0 = never; opt-in).");
+    // Core 1.18.0: run the dataRetentionDays sweep automatically (at server start, then daily) instead of
+    // only via /neroland data purge-inactive. Does nothing while dataRetentionDays is 0.
+    public static final ConfigValue<Boolean> DATA_RETENTION_SCHEDULED = SCHEMA.bool(
+            "dataRetentionScheduledPurge", true, false,
+            "Run the dataRetentionDays inactivity purge automatically at server start and once a day "
+                    + "(has no effect while dataRetentionDays is 0). Logs counts only.");
 
     // --- NeroLink alert store caps (server-side) ------------------------------
     // Bound the per-player alert store so a chatty module cannot grow link_alerts.dat without limit

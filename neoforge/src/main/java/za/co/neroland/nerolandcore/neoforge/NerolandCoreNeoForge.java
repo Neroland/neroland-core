@@ -12,9 +12,11 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 //?}
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
+import za.co.neroland.nerolandcore.data.RetentionSchedule;
 import za.co.neroland.nerolandcore.entity.NeoForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 //? if >=1.21.2 {
@@ -59,6 +61,9 @@ public final class NerolandCoreNeoForge {
                 CoreNetwork.onPlayerJoin(serverPlayer);
             }
         });
+        // Scheduled data-retention housekeeping (server start, then daily).
+        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) ->
+                RetentionSchedule.onServerTick(event.getServer()));
         // Send the vanilla recipe types to clients so JEI lists every Nero crafting/smelting recipe even
         // when the server does not run JEI (26.x clients hold no recipe list of their own). Before 1.21.2
         // vanilla still syncs every recipe, and the event has no sendRecipes.

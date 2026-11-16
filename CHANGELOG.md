@@ -8,6 +8,55 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.18.0] - 2026-11-16
+
+### Added
+
+- **Erasure tombstones (`data.ErasureTombstones`).** A shared, minimal record that lets mods release an
+  owned entity (pet, drone, companion) that was in an unloaded chunk when its owner's data was erased.
+  Core writes a salted one-way hash of the erased player inside every erasure, before any mod's eraser
+  runs; mods mark the entities they could not free (`markEntity`), check `shouldRelease(owner, entity)`
+  when an unindexed entity loads, and report it freed (`entityFreed`). `ownerReturned` clears the hash
+  when a returning player gets a new pet. Owner hashes are kept `max(dataRetentionDays, 365)` days and
+  the salt is deleted with the last one; entity markers live until freed. No listing API, never logged,
+  hard cap with a WARN count. Documented in `PRIVACY.md` and `docs/COMPLIANCE.md`.
+- `ErasureConformance.tombstoneReleases(subsystem, store, entity)` — conformance check that an eraser
+  leaves its unloaded entities releasable.
+- **Scheduled retention sweep.** The `dataRetentionDays` inactivity purge now runs by itself at server
+  start and once a day while `dataRetentionDays` is above 0. New config key `dataRetentionScheduledPurge`
+  (default `true`) turns the schedule off; `/neroland data purge-inactive` still runs it on demand. The
+  same daily pass expires old erasure tombstones. Logs counts only.
+- `SavedDataCompat.saveNow(level)` — writes a level's changed saved data now and waits.
+
+### Changed
+
+- **Erasure is saved to disk before it reports success.** `PlayerDataErasure.eraseAndReport` (both erase
+  commands and the retention sweep use it) now backs up the tombstones and saves the overworld's saved
+  data at the end of the request, so a crash right after an erasure cannot load the erased rows back from
+  the old file. A failed save reports the request as incomplete. The retention sweep saves once per sweep.
+
+### Dependencies
+
+- Updated Fabric Loader from 0.19.5 to 0.20.1.
+- Updated Fabric API (Minecraft 1.21.1) from 0.116.17+1.21.1 to 0.116.18+1.21.1.
+- Updated Fabric API (Minecraft 26.3) from 0.162.0+26.3 to 0.166.2+26.3.
+- Updated NeoForge (Minecraft 1.21.1) from 21.1.265 to 21.1.266.
+- Updated NeoForge (Minecraft 26.1.2) from 26.1.2.116 to 26.1.2.126.
+- Updated NeoForge (Minecraft 26.2) from 26.2.0.90 to 26.2.0.93.
+- Updated NeoForge (Minecraft 26.3) from 26.3.0.76 to 26.3.0.103.
+- Updated Forge (Minecraft 1.21.1) from 1.21.1-52.1.20 to 1.21.1-52.1.21.
+- Updated Forge (Minecraft 1.21.11) from 1.21.11-61.2.4 to 1.21.11-61.2.5.
+- Updated Forge (Minecraft 26.1.2) from 26.1.2-64.1.4 to 26.1.2-64.1.6.
+- Updated Forge (Minecraft 26.2) from 26.2-65.1.4 to 26.2-65.1.6.
+- Updated Forge (Minecraft 26.3) from 26.3-66.0.11 to 26.3-66.1.8.
+- Updated JEI (Minecraft 26.1.2) from 29.47.0.109 to 29.53.0.115.
+- Updated JEI (Minecraft 26.2) from 30.42.0.236 to 30.48.0.244.
+- Updated JEI (Minecraft 26.3) from 31.12.0.65 to 31.17.0.113.
+- Updated the EMI port for Minecraft 26.3 to build+62 on Fabric and NeoForge.
+- Updated Stonecutter from 0.9.8 to 0.10.
+- Updated the Gradle distribution from 9.8.1 to 9.9.1.
+- Updated the Sentry Java SDK from 8.60.0 to 8.64.0.
+
 ## [1.17.6] - 2026-11-14
 
 ### Fixed

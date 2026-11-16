@@ -40,6 +40,19 @@ copy of each store, and any `.dat.corrupt` file. A `.dat.corrupt` file is a save
 that could not be read and was moved aside so the world could load from the backup;
 only one is kept per store, and it is deleted when a player's data is erased.
 
+Since 1.18.0 an erasure saves the affected data files before it reports success, so a
+crash straight afterwards cannot bring the erased data back.
+
+### Pets and drones in unloaded chunks
+
+A tamed creature or owned drone in a chunk that is not loaded cannot be reached during
+an erasure. Core keeps a small **erasure tombstone** record so mods can release it
+when it next loads: a salted one-way hash of the erased player (kept for
+`max(dataRetentionDays, 365)` days, then deleted with its salt) and the UUIDs of the
+creatures a mod could not reach (kept until each is released). It is never logged or
+listed; a player's own export shows it only as yes/no. Mods use the
+`ErasureTombstones` API — see `docs/COMPLIANCE.md` in the Core repository.
+
 ## Known gap: team-scoped progression
 
 Gates and material milestones declared with `scope: team` are stored against the
@@ -70,8 +83,10 @@ admin command for team-scoped rows.
 
 The `dataRetentionDays` config (0 = never, opt-in) sets how long an inactive
 player's data is kept. `/neroland data purge-inactive` erases everyone past the
-threshold through the same shared hook — run it on a schedule for hands-off
-retention. See [Configuration](Configuration.md).
+threshold through the same shared hook. Since 1.18.0 Core also runs it by itself at
+server start and once a day while `dataRetentionDays` is above 0
+(`dataRetentionScheduledPurge`, on by default). The same daily pass deletes expired
+erasure tombstones. See [Configuration](Configuration.md).
 
 ## Crash reporting (Sentry)
 

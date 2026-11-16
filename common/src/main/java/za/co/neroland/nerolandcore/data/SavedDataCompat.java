@@ -78,6 +78,18 @@ public final class SavedDataCompat {
         *///?}
     }
 
+    /**
+     * Writes every changed store in {@code level}'s data storage to disk now and waits for the write
+     * (Core 1.18.0). Used at the end of an erasure so it is durable before the next autosave.
+     */
+    public static void saveNow(ServerLevel level) {
+        //? if >=1.21.2 {
+        level.getDataStorage().saveAndJoin();
+        //?} else {
+        /*level.getDataStorage().save();
+        *///?}
+    }
+
     /** Replaces the store in {@code level}'s data storage (used when recovery installs a restored copy). */
     public static <T extends SavedData> void set(ServerLevel level, SavedDataType<T> type, T instance) {
         //? if >=1.21.5 {

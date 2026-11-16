@@ -3,6 +3,7 @@ package za.co.neroland.nerolandcore.forge;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 //? if >=1.21.6 {
 import net.minecraftforge.eventbus.api.bus.BusGroup;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
+import za.co.neroland.nerolandcore.data.RetentionSchedule;
 import za.co.neroland.nerolandcore.entity.ForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.registry.ForgeRegistrationFactory;
@@ -69,6 +71,20 @@ public final class NerolandCoreForge {
                 CoreNetwork.onPlayerJoin(serverPlayer);
             }
         });
+        *///?}
+        // Scheduled data-retention housekeeping (server start, then daily).
+        registerRetentionTick();
+    }
+
+    /** End-of-server-tick hook for {@link RetentionSchedule}; the tick event's shape differs by Forge line. */
+    private static void registerRetentionTick() {
+        //? if >=1.21.9 {
+        TickEvent.ServerTickEvent.Post.BUS.addListener(event -> RetentionSchedule.onServerTick(event.server()));
+        //?} else if >=1.21.6 {
+        /*TickEvent.ServerTickEvent.Post.BUS.addListener(event -> RetentionSchedule.onServerTick(event.getServer()));
+        *///?} else {
+        /*MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent.Post event) ->
+                RetentionSchedule.onServerTick(event.getServer()));
         *///?}
     }
 }

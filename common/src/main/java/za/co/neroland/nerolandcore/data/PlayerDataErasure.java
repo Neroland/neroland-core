@@ -25,6 +25,32 @@ public final class PlayerDataErasure {
 
     private static final List<PlayerDataEraser> ERASERS = new CopyOnWriteArrayList<>();
 
+    /**
+     * The two durability steps around the fan-out (Core 1.18.0). A seam so the plain-JVM tests, which
+     * have no server, can check the order (tombstone, erasers, save) and the failure handling.
+     */
+    interface Durability {
+        /** Writes the owner tombstone before any eraser runs. */
+        boolean tombstone(MinecraftServer server, UUID player);
+
+        /** Backs up the tombstones and saves the overworld data storage after the erasers. */
+        boolean flush(MinecraftServer server);
+    }
+
+    static final Durability LIVE = new Durability() {
+        @Override
+        public boolean tombstone(MinecraftServer server, UUID player) {
+            return server == null || writeOwnerTombstone(server, player);
+        }
+
+        @Override
+        public boolean flush(MinecraftServer server) {
+            return server == null || (backupTombstones(server) & saveToDisk(server));
+        }
+    };
+
+    static Durability durability = LIVE;
+
     private PlayerDataErasure() {
     }
 
@@ -69,8 +95,29 @@ public final class PlayerDataErasure {
         eraseAndReport(server, player);
     }
 
-    /** Attempts every eraser and returns whether all of them succeeded. */
+    /**
+     * Attempts every eraser and returns whether all of them succeeded and the result reached the disk.
+     *
+     * <p>Since Core 1.18.0 a request with a live server also:
+     * <ol>
+     *   <li>writes the player's {@linkplain ErasureTombstones owner tombstone} <em>before</em> any eraser
+     *       runs, so mods can release entities that are unloaded right now when they next load;</li>
+     *   <li>refreshes the tombstone backup and then <b>saves the overworld's data storage</b> (every
+     *       changed store there, which is where Core and every Nero mod keep theirs) before it returns,
+     *       so a crash straight after the request cannot bring the erased rows back from the old main
+     *       file. Off the server thread the save is handed to the server thread instead.</li>
+     * </ol>
+     * A failure in either step makes the result {@code false} (incomplete), as a failing eraser does.
+     */
     public static boolean eraseAndReport(MinecraftServer server, UUID player) {
+        boolean complete = eraseAll(server, player);
+        boolean durable = durability.flush(server);
+        return complete && durable;
+    }
+
+    /** The fan-out: tombstone first, then every eraser. Logs the summary; does not save. */
+    private static boolean eraseAll(MinecraftServer server, UUID player) {
+        boolean tombstoned = durability.tombstone(server, player);
         int failed = 0;
         for (PlayerDataEraser eraser : ERASERS) {
             try {
@@ -90,7 +137,51 @@ public final class PlayerDataErasure {
         } else {
             NerolandCoreCommon.LOGGER.info("[Neroland Core] Player data erased on request ({} systems).", total);
         }
-        return failed == 0;
+        return failed == 0 && tombstoned;
+    }
+
+    private static boolean writeOwnerTombstone(MinecraftServer server, UUID player) {
+        try {
+            ErasureTombstones.get(server).markOwner(player);
+            return true;
+        } catch (RuntimeException failure) {
+            NerolandCoreCommon.LOGGER.warn("[Neroland Core] Could not write the erasure tombstone ({}); entities in "
+                    + "unloaded chunks may not be released.", failure.getClass().getName());
+            return false;
+        }
+    }
+
+    private static boolean backupTombstones(MinecraftServer server) {
+        try {
+            ErasureTombstones.get(server).backupNow(server);
+            return true;
+        } catch (RuntimeException failure) {
+            NerolandCoreCommon.LOGGER.warn("[Neroland Core] Could not back up the erasure tombstones ({}).",
+                    failure.getClass().getName());
+            return false;
+        }
+    }
+
+    /**
+     * Saves the overworld's data storage now, so an erasure is on disk before the next autosave. On the
+     * server thread the write happens before this returns; from another thread it is queued on the server
+     * thread (the storage is not thread-safe).
+     *
+     * @return {@code false} if the save failed (logged with the exception class only)
+     */
+    static boolean saveToDisk(MinecraftServer server) {
+        if (!server.isSameThread()) {
+            server.execute(() -> saveToDisk(server));
+            return true;
+        }
+        try {
+            SavedDataCompat.saveNow(server.overworld());
+            return true;
+        } catch (RuntimeException failure) {
+            NerolandCoreCommon.LOGGER.warn("[Neroland Core] Erased data could not be saved to disk yet ({}); it will "
+                    + "be written at the next world save.", failure.getClass().getName());
+            return false;
+        }
     }
 
     /**
@@ -110,14 +201,22 @@ public final class PlayerDataErasure {
         }
         PlayerActivity activity = PlayerActivity.get(server);
         List<UUID> stale = activity.stalerThan(days);
-        int purged = purgeStale(activity, stale, player -> eraseAndReport(server, player),
+        if (stale.isEmpty()) {
+            return new PurgeResult(0, 0);
+        }
+        // Erase without a save per player, then back up and save once for the whole sweep (Core 1.18.0).
+        int purged = purgeStale(activity, stale, player -> eraseAll(server, player),
                 () -> SavedDataRecovery.backupNow(server.overworld(), PlayerActivity.TYPE, activity,
                         PlayerActivity.ID.toString()));
+        // A failed save is logged (count-free) by saveToDisk; the erasure itself stands and the next world
+        // save writes it.
+        durability.flush(server);
+        int failed = stale.size() - purged;
         if (purged > 0) {
             NerolandCoreCommon.LOGGER.info("[Neroland Core] Retention sweep purged {} inactive player record(s).",
                     purged);
         }
-        return new PurgeResult(purged, stale.size() - purged);
+        return new PurgeResult(purged, failed);
     }
 
     static int purgeStale(PlayerActivity activity, List<UUID> stale, Predicate<UUID> erase, Runnable backup) {

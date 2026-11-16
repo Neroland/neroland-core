@@ -11,6 +11,8 @@ Keyed by player **UUID**, gameplay state only:
 - progression gate flags (`ProgressionState`),
 - typed material milestones (`MaterialMilestoneState`),
 - last-login timestamp for retention (`PlayerActivity`),
+- erasure tombstones (`ErasureTombstones`, since 1.18.0) — see
+  [Erasure tombstones](#erasure-tombstones--entities-in-unloaded-chunks) below,
 - NeroLink alerts (`LinkAlerts`) — per-player gameplay notifications (module id,
   severity, short non-personal text, timestamps), keyed by owning UUID.
   Capped per player (`linkAlertsMaxPerPlayer`, default 50) and per module
@@ -67,6 +69,60 @@ aside as `<file>.dat.corrupt` before vanilla reads it, so the store loads from t
 starts fresh) and the broken file does not trip recovery again on every load. Only one
 quarantined copy is kept per store. It can still hold player-keyed rows, so the same forced backup
 refresh (`SavedDataRecovery.backupNow`) also deletes it, and fails the erasure if it cannot.
+
+### Erasure reaches the disk before the request returns (1.18.0)
+
+Stores marked changed are written to their main `.dat` file only at the next autosave, so a crash
+between an erasure and that save would load the old main file and bring the erased rows back. Since
+1.18.0 `PlayerDataErasure.eraseAndReport` (which `erase`, both erase commands and the retention sweep
+use) ends by refreshing the tombstone backup and **saving the overworld's data storage** — every
+changed store there, which is where Core and every Nero mod keep their `SavedData` — before it
+returns. Called from another thread, the save is queued on the server thread. A failed save is logged
+(exception class only) and makes the request report "incomplete"; the next world save writes it. The
+retention sweep saves once at the end of the sweep, not once per player.
+
+### Erasure tombstones — entities in unloaded chunks
+
+Vanilla keeps an owner UUID on the entity (tamed animals, owned drones, companions). An erasure cannot
+reach an entity in an unloaded chunk, so when it next loads it still names the erased player. Core
+keeps one shared record so each mod's load-time check can release it (`data/nerolandcore/erasure_tombstones.dat`
+on 26.x, `data/nerolandcore_erasure_tombstones.dat` before; plus its `SavedDataRecovery` backup):
+
+| Kind | Content | Written by | Kept for |
+| --- | --- | --- | --- |
+| Owner tombstone | 128-bit truncation of SHA-256 over a random per-world salt and the erased UUID, plus the time | Core, inside `eraseAndReport`, before any mod eraser runs | `max(dataRetentionDays, 365)` days; the salt is deleted with the last one |
+| Entity tombstone | the UUID of an entity the mod could not free (names no player), plus the time | the mod's eraser (`markEntity`) | until the mod reports it freed (`entityFreed`) |
+
+**Necessity.** Without the record an erased player's pet, sitting in a chunk nobody has loaded since,
+would load later and write the erased UUID back into the mod's index. The record is what finishes the
+erasure the player asked for (GDPR art. 6(1)(c) with art. 17; POPIA s 11(1)(c) with s 24).
+
+**Is it personal data?** The owner tombstone is **pseudonymised** personal data: it cannot be
+reversed, but an operator holding the salt (same file) and a list of UUIDs could test each one. It is
+minimised: never the UUID or a name; no listing API; never logged (only `count()` for diagnostics and
+the number expired); a player's own export may carry it only as a yes/no (`isOwnerErased`). Entity
+tombstones name only a game object. A hard cap of 65,536 per kind bounds the file; reaching it drops
+the oldest and logs a WARN with the count — never silently.
+
+**Retention.** Owner tombstones are expired at server start and daily (see [Retention](#retention));
+`isOwnerErased` already ignores an expired one. A year minimum, because a tombstone that expired with
+a short retention period would defeat itself. Entity tombstones do not expire: the entity loading and
+being freed is what ends them.
+
+**API** (`za.co.neroland.nerolandcore.data.ErasureTombstones`):
+
+```java
+ErasureTombstones t = ErasureTombstones.get(server);
+t.markEntity(entityUuid);           // in your PlayerDataEraser, for each owned entity you could not free
+t.shouldRelease(owner, entityUuid); // on load, only for an entity your own index does not hold
+t.entityFreed(entityUuid);          // after releasing it
+t.ownerReturned(owner);             // when recording a NEW ownership for a player (fresh taming)
+t.isOwnerErased(owner);             // yes/no, e.g. in that player's own export
+t.count();                          // diagnostics
+```
+
+Release silently: nothing may be sent to or about the erased player. Conformance:
+`ErasureConformance.create().tombstoneReleases("mymod:unloaded_pet", store, entityUuid)`.
 
 ### Proving it — the erasure conformance harness
 
@@ -134,8 +190,12 @@ their own one-person teams are precisely where this happens.
 `dataRetentionDays` (config; `0` = never, opt-in) sets how long an inactive player's
 data is kept. `PlayerActivity` records last login; `/neroland data purge-inactive`
 (or `PlayerDataErasure.purgeInactive(server)`) erases everyone past the threshold
-through the same shared hook. Run it on a schedule (e.g. a scheduled command) for
-hands-off retention.
+through the same shared hook.
+
+Since 1.18.0 Core runs the sweep itself: once when the server starts and once a day while it runs,
+when `dataRetentionDays > 0` and `dataRetentionScheduledPurge` is on (the default; set it to `false`
+to purge only by command). The same daily pass expires owner tombstones older than
+`max(dataRetentionDays, 365)` days, whatever `dataRetentionDays` is. Both log counts only.
 
 ## For downstream mods
 
