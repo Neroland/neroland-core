@@ -16,6 +16,12 @@ Neroland Core follows semantic versioning on its **public API**:
 
 Downstream mods should depend on a Core major (e.g. `[1.0,2.0)`).
 
+### 1.19.0 — additive minor
+
+`1.19.0` adds the **map layer API** (`za.co.neroland.nerolandcore.map`), all additive: nothing
+existing changed. Map mods consume it through `MapLayerRegistry.query`; Core never calls a provider
+itself and stores no map data. See the *Map layers* section of [`../USING-CORE.md`](../USING-CORE.md).
+
 ### 1.9.0 — additive minor
 
 `1.9.0` adds the **decor contracts** (see [`DECOR-CONTRACTS.md`](DECOR-CONTRACTS.md)),
@@ -81,6 +87,13 @@ major:
   `LinkSnapshotProvider`, `LinkActionHandler`, `LinkActionResult` (+ `LinkActionResult.Error`),
   `LinkEvent`, `LinkEventBus`, `LinkAlert` (+ `LinkAlert.Severity`). `LinkAlerts` (the `SavedData`
   store) is `@ApiStatus.Internal` — reach it only through `LinkAlerts.get(server)`.
+
+- **Map layer API** (`za.co.neroland.nerolandcore.map`, added in 1.19.0) — `MapLayerProvider`,
+  `MapLayerRegistry`, `MapLayerInfo`, `MapScope`, `MapMarker` (+ `Builder`), `MapArea` (`Rect`, `Circle`,
+  `Chunks`, `Polygon`), `MapAreaStyle`, `MapLabel`, `MapBounds`, `MapViewer`, `MapLayerSink`
+  (+ `Reject`), `MapQueryResult`, `MapDimensionBadge`, `MapEvents` (+ `LayerChanged`) and the
+  `MapLayerConformance` fixture (+ `Report`). `MapViewer.forTest` and `MapLayerRegistry.clearForTest`
+  are `@ApiStatus.Internal`.
 
 ## What is internal (may change any time)
 

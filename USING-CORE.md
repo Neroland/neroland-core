@@ -108,6 +108,92 @@ floor loads happily against a Core that is too old and then fails at runtime):
 | --- | ----- |
 | Palette export, dashboard surfaces, `neroland:decor/*` tags | `1.9.0` |
 | `SpaceTags` (`neroland:space/*`) and `EntityRegistrationSupport` | `1.10.0` |
+| Map layer API (`za.co.neroland.nerolandcore.map`) | `1.19.0` |
+
+## Map layers
+
+Since **1.19.0** any Nero mod can put its things on a map (NeroMaps, the companion app) by depending only
+on Core. Pin `nerolandcore_version=1.19.0` or later. Core renders nothing, stores nothing and never calls
+your provider itself; the map mod calls it through `MapLayerRegistry.query`.
+
+**1. Declare layers and implement the provider** (common code, in a `map` package of your mod):
+
+```java
+public final class MyMapLayers implements MapLayerProvider {
+    static final Identifier BASES = Identifier.fromNamespaceAndPath("mymod", "bases");
+    static final Identifier PADS = Identifier.fromNamespaceAndPath("mymod", "pads_nearby");
+
+    @Override public String modId() { return "mymod"; }
+
+    @Override public List<MapLayerInfo> layers() {
+        return List.of(
+                MapLayerInfo.of(BASES, "map.layer.mymod.bases",
+                        Identifier.fromNamespaceAndPath("mymod", "base"), MapScope.OWNER),
+                MapLayerInfo.proximityBuilt(PADS, "map.layer.mymod.pads_nearby",
+                        Identifier.fromNamespaceAndPath("mymod", "pad")));   // 64 blocks, minimap off
+    }
+
+    @Override public void query(MapViewer viewer, ResourceKey<Level> dim, MapBounds bounds, MapLayerSink sink) {
+        for (Base b : store().basesOwnedBy(viewer.id(), dim)) {            // owner-scoped: the whole rule
+            if (sink.isFull(BASES)) break;
+            sink.marker(MapMarker.builder("base." + b.number(), BASES, dim, b.pos())
+                    .label(MapLabel.literal(b.name())).build());          // the viewer's own base name
+        }
+        for (Pad p : store().unownedPads(dim)) {                         // no owner field at all
+            if (viewer.within(dim, p.x(), p.z(), MapLayerInfo.BUILT_PROXIMITY)) {
+                sink.marker(MapMarker.builder("pad." + p.number(), PADS, dim, p.pos()).build());
+            }
+        }
+    }
+}
+```
+
+**2. Register it once** during common init: `MapLayerRegistry.register(new MyMapLayers());`
+
+**3. Fire a hint when something changes** (not for things that merely move):
+`MapEvents.fire(BASES, dim, MapBounds.around(pos, 16));`, or `MapEvents.fireFor(playerId, ...)` when
+only one player's view changed (for example they were removed from a member list).
+
+**4. Prove the scoping** from your test suite with the fixture that ships in Core's main source set:
+
+```java
+MapLayerConformance.create(new MyMapLayers())
+        .viewers(MapViewer.forTest(owner, null, overworld, new BlockPos(0, 64, 0)),
+                 MapViewer.forTest(stranger, null, overworld, new BlockPos(4, 64, 0)))
+        .dimensions(overworld, someDimensionYouKnowNothingAbout)
+        .bounds(MapBounds.around(0, 0, 512))
+        .farBounds(MapBounds.around(20_000, 20_000, 256))
+        .forbiddenText("ThirdPlayerName").forbiddenIds(thirdPlayer)   // seed a third player's base
+        .expectEntitledSees(MyMapLayers.BASES, 1)
+        .expectEntitledSees(MyMapLayers.PADS, 1)
+        .verify();
+```
+
+**The rule** (it is on `MapLayerProvider`'s javadoc and the fixture enforces it): return only what *that
+viewer* may see. Owner UUID or member list where you record one, and that is the whole rule. Proximity
+(`viewer.within`, from the viewer's own server-side position, never from `bounds`) only for things with
+no owner at all. World features only once that viewer has discovered them. One `MapScope` per layer:
+split a layer that would mix owned and unowned things. Never a server-wide roster, never
+`getNearestPlayer`, and no other player's name, UUID or online state in any id, label, detail or
+colour. Read in-memory state only: never load a chunk or touch disk in `query`.
+
+**Limits.** At most 16 layers per provider; per query each layer holds at most `maxPerQuery` items
+(default 128, hard cap 512) and 8 192 chunks / 2 048 polygon vertices across its areas; areas span at
+most 16 384 blocks per axis. Programmer errors (bad ids, keys, vertex or chunk counts) throw
+`IllegalArgumentException`; data-derived values (label length, extra details, circle radius) clamp.
+
+**Icon ids.** Name an icon id; NeroMaps draws it from its shared atlas and falls back to
+`neromaps:generic`, so your mod ships no map art. Ids the atlas carries for 0.1.0: `neromaps:generic`,
+`neromaps:area`, `neromaps:star_chart`; `nerospace:station`, `nerospace:launch_pad`, `nerospace:rocket`,
+`nerospace:terraform_region`; `nerotech:pollution`; `neropower:reactor`, `neropower:beam_link`,
+`neropower:scorch_zone`; `nerologistics:drone_port`, `nerologistics:train_station`;
+`nerocolonies:colony_border`, `nerocolonies:colony_building`, `nerocolonies:colony_storage`,
+`nerocolonies:outpost`; `nerofactions:outpost` (with the badges `neromaps:badge_hostile`,
+`neromaps:badge_neutral`, `neromaps:badge_friendly`); `neroeconomy:my_shop`;
+`nerosecurity:installation`, `nerosecurity:field`; `neroevents:event`, `neroevents:storm`,
+`neroevents:war_zone`; `neroruins:ruin`, `neroruins:vault_claimed`, `neroruins:expedition_target`;
+`nerocreatures:my_creature`; `nerocompanion:companion`, `nerocompanion:companion_lost`,
+`nerocompanion:home_bay`.
 
 ## What to call once it resolves
 

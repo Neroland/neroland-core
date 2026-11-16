@@ -34,6 +34,7 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 - [Decor Contracts](Decor-Contracts.md) — palette export, dashboard surfaces, and `neroland:decor/*` tags.
 - [Space Tags & Entity Registration](Space-Tags-and-Entities.md) — the `neroland:space/*` biome
   vocabulary and the cross-loader mob-registration seam.
+- [Map Layers](Map-Layers.md) — the API mods use to put their things on a map (1.19.0).
 - [Privacy & Data](Privacy-and-Data.md) — POPIA/GDPR, erasure, and retention.
 
 ## For developers

@@ -8,6 +8,29 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.19.0] - 2026-11-16
+
+### Added
+
+- **Map layer API (`za.co.neroland.nerolandcore.map`).** A purely additive contract through which any Nero
+  mod can offer map layers (markers and areas) to a map consumer such as NeroMaps without either side
+  depending on the other. Providers implement `MapLayerProvider` and register with
+  `MapLayerRegistry.register`; consumers run them only through `MapLayerRegistry.query`, which builds a
+  per-provider capped `MapLayerSink`, isolates exceptions, discards a failed provider's partial output,
+  seals the sink and returns an immutable `MapQueryResult` (with reject counts by reason and elapsed time).
+  Value types: `MapLayerInfo`, `MapScope`, `MapMarker`, `MapArea` (`Rect`, `Circle`, `Chunks`, `Polygon`),
+  `MapAreaStyle`, `MapLabel` (sanitised), `MapBounds`, `MapViewer` (id and captured position, never the
+  player object), `MapDimensionBadge`. `MapEvents` carries "this layer changed here" hints.
+- **The scoping rule is part of the API**: a provider returns only what that viewer may see (owner or
+  member list where the mod records one; proximity measured from the viewer's own server-side position
+  only for unowned things; discovered-only for world features); never a server-wide roster, never a
+  nearest-player lookup, no other player's identity in any label.
+- `MapLayerConformance` — a reusable fixture in the main source set (like `ErasureConformance`) that runs a
+  provider against an entitled viewer, a stranger beside them, offline and far copies and an absent
+  dimension, and checks scopes, proximity radius per item, caps and payload budgets, and identity leaks.
+- Core renders nothing, stores nothing and never calls a provider on its own initiative; registering a
+  provider costs one map entry. Core holds no map data (see `PRIVACY.md`).
+
 ## [1.18.0] - 2026-11-16
 
 ### Added

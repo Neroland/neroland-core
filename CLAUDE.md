@@ -45,6 +45,11 @@ tags are legitimately empty without a planet mod) and the **entity registration 
 common code, flushed by per-loader plumbing); both in
 [`docs/SPACE-TAGS-AND-ENTITIES.md`](docs/SPACE-TAGS-AND-ENTITIES.md).
 
+In 1.19.0 the **map layer API** (`map/` — `MapLayerProvider` SPI, `MapLayerRegistry` facade with the
+guarded `query`, `MapEvents`, and the `MapLayerConformance` fixture) lets mods offer viewer-scoped
+markers and areas to a map mod; Core renders and stores nothing. See the *Map layers* section of
+[`USING-CORE.md`](USING-CORE.md).
+
 Cross-cutting: ServiceLoader platform seams (`platform/`, `network/`), a unified `event/CoreEvents`
 bus facade, and Sentry telemetry (`telemetry/`, opt-out via `telemetryEnabled`). Commands live under
 `/neroland …` (`command/CoreCommands`).

@@ -33,6 +33,7 @@ Every system is reached through a small facade; the per-loader wiring is Core's 
 | Expose/find energy | `EnergyLookup` + `*EnergyLookup.ENERGY` | [MACHINES-POWER-UPGRADES](MACHINES-POWER-UPGRADES.md) |
 | Ask "is this place off-Earth?" | `SpaceTags` (`isSpace` / `biomeIn`) | [SPACE-TAGS-AND-ENTITIES](SPACE-TAGS-AND-ENTITIES.md) |
 | Register mob attributes / spawn placement | `EntityRegistrationSupport.get(modId)` | [SPACE-TAGS-AND-ENTITIES](SPACE-TAGS-AND-ENTITIES.md) |
+| Put your things on a map | `map.MapLayerRegistry.register(provider)`; prove it with `MapLayerConformance` | [../USING-CORE.md#map-layers](../USING-CORE.md#map-layers) |
 | Store player data | register a `PlayerDataEraser` | [COMPLIANCE](COMPLIANCE.md) |
 | Count/draw a player's items across mods | `item.ItemSources` (register an `ItemSource`) | [ECONOMY-REPUTATION](ECONOMY-REPUTATION.md) |
 | Publish/observe a threshold crossing | `event.ThresholdEvents` (`fire(sourceModId, crossing)`) | [ECONOMY-REPUTATION](ECONOMY-REPUTATION.md) |

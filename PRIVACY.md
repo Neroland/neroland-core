@@ -71,6 +71,12 @@ It is never logged, never listed, and appears in your own data export at most as
 basis: complying with your erasure request (GDPR art. 6(1)(c) with art. 17; POPIA s 11(1)(c) with
 s 24). It is removed if you play again and a mod records a new pet for you.
 
+**Map layers (1.19.0).** Core holds no map data. The map layer API (`map` package) is a contract only:
+Core renders nothing, stores nothing, logs nothing about a map query and never calls a map provider on
+its own. Mods that offer map layers answer each query from data they already hold, scoped to the
+viewer, and a map mod such as NeroMaps decides what (if anything) it keeps; their own privacy notices
+cover that.
+
 `dataRetentionDays` defaults to `0`, which disables inactivity purging. When a server operator
 enables it, Core runs the retention sweep at server start and once a day
 (`dataRetentionScheduledPurge`, on by default), and `/neroland data purge-inactive` runs it on demand.
