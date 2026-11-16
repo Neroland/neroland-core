@@ -25,9 +25,10 @@ import net.minecraft.world.level.Level;
  * No marker id, label, detail line or colour may carry another player's name, UUID or online state; owner
  * text appears only on the viewer's own things.
  *
- * <p>A direction-only target (for example an expedition target the in-game tool shows only as a bearing) is
- * a marker placed {@code min(distance, 96)} blocks from the viewer along the bearing; the true position never
- * leaves the provider.
+ * <p>A direction-only target (for example an expedition target the in-game tool shows only as a compass point
+ * and a range band) is a marker placed a fixed 96 blocks from the viewer along the centre of the direction
+ * sector the in-game tool reports, with the band as a detail; a target in the viewer's own spot is drawn at the
+ * viewer. Never the true bearing or distance: the true position never leaves the provider.
  *
  * <p><b>Cost.</b> Called on the server thread by a consumer, at most once per viewer per layer refresh. Read
  * existing in-memory state only: never load or generate a chunk, never touch disk, never block. Stop as soon
