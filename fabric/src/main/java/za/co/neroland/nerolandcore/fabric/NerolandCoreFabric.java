@@ -41,6 +41,12 @@ public final class NerolandCoreFabric implements ModInitializer {
         // Scheduled data-retention housekeeping (server start, then daily).
         ServerTickEvents.END_SERVER_TICK.register(RetentionSchedule::onServerTick);
 
+        // Nero Mods Demo (26.3+): build a new demo world's hub and exhibits once the server has started.
+        //? if >=26.3 {
+        /*net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(
+                za.co.neroland.nerolandcore.demo.DemoWorlds::onServerStarted);
+        *///?}
+
         syncVanillaRecipes();
     }
 

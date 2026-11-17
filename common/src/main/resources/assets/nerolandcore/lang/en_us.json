@@ -99,5 +99,19 @@
   "commands.nerolandcore.data.erased_player": "[Neroland] Erased stored data for that player.",
   "commands.nerolandcore.data.erase_incomplete": "[Neroland] Data erasure was incomplete. Contact a server administrator and retry.",
   "commands.nerolandcore.data.purge_incomplete": "[Neroland] Retention sweep erased %s record(s); %s need another attempt. Check the server log.",
-  "commands.nerolandcore.data.purged": "[Neroland] Retention sweep purged %s inactive record(s)."
+  "commands.nerolandcore.data.purged": "[Neroland] Retention sweep purged %s inactive record(s).",
+  "demo.nerolandcore.button": "Nero Mods Demo",
+  "demo.nerolandcore.button.tooltip": "Create a creative showroom world with an exhibit for each installed Nero mod.",
+  "demo.nerolandcore.picker.title": "Nero Mods Demo",
+  "demo.nerolandcore.picker.subtitle": "Pick the mods to show. A new creative world is made with one exhibit each.",
+  "demo.nerolandcore.picker.empty": "No installed mod has a demo exhibit yet.",
+  "demo.nerolandcore.picker.create": "Create Demo World",
+  "demo.nerolandcore.hub.title": "Nero Mods Demo",
+  "demo.nerolandcore.hub.walk": "Walk east along the path to visit each exhibit",
+  "demo.nerolandcore.hub.count": "Exhibits: %s",
+  "demo.nerolandcore.core.name": "Neroland Core",
+  "demo.nerolandcore.core.guide.1": "The shared foundation of every Nero mod",
+  "demo.nerolandcore.core.guide.2": "Common materials and storage blocks",
+  "demo.nerolandcore.core.label.materials": "Shared materials",
+  "demo.nerolandcore.core.label.storage": "Shared storage"
 }

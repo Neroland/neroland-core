@@ -36,6 +36,7 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
   vocabulary and the cross-loader mob-registration seam.
 - [Map Layers](Map-Layers.md) — the API mods use to put their things on a map (1.19.0).
 - [Trophies](Trophies.md) — data-driven trophy definitions and the award API (1.20.0).
+- [Nero Mods Demo](Nero-Mods-Demo.md) — a ready-made creative showroom of your installed Nero mods (1.20.0).
 - [Privacy & Data](Privacy-and-Data.md) — POPIA/GDPR, erasure, and retention.
 
 ## For developers

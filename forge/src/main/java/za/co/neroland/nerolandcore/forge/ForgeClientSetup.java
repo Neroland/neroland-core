@@ -34,6 +34,11 @@ public final class ForgeClientSetup {
 
     private static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(ForgeClientSetup::registerScreens);
+        // Nero Mods Demo (26.3+): the button on the singleplayer world list.
+        //? if >=26.3 {
+        /*net.minecraftforge.client.event.ScreenEvent.Init.Post.BUS.addListener(e ->
+                za.co.neroland.nerolandcore.demo.DemoClient.afterScreenInit(e.getScreen(), e::addListener));
+        *///?}
     }
 
     private static void registerScreens() {

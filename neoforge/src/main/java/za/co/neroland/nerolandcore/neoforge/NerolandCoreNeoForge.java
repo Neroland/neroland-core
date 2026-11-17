@@ -64,6 +64,11 @@ public final class NerolandCoreNeoForge {
         // Scheduled data-retention housekeeping (server start, then daily).
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) ->
                 RetentionSchedule.onServerTick(event.getServer()));
+        // Nero Mods Demo (26.3+): build a new demo world's hub and exhibits once the server has started.
+        //? if >=26.3 {
+        /*NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStartedEvent event) ->
+                za.co.neroland.nerolandcore.demo.DemoWorlds.onServerStarted(event.getServer()));
+        *///?}
         // Send the vanilla recipe types to clients so JEI lists every Nero crafting/smelting recipe even
         // when the server does not run JEI (26.x clients hold no recipe list of their own). Before 1.21.2
         // vanilla still syncs every recipe, and the event has no sendRecipes.

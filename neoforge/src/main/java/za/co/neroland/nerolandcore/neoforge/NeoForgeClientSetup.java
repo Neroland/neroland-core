@@ -18,6 +18,12 @@ public final class NeoForgeClientSetup {
 
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
+        // Nero Mods Demo (26.3+): the button on the singleplayer world list.
+        //? if >=26.3 {
+        /*net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.client.event.ScreenEvent.Init.Post event) ->
+                        za.co.neroland.nerolandcore.demo.DemoClient.afterScreenInit(event.getScreen(), event::addListener));
+        *///?}
     }
 
     private static void onRegisterScreens(RegisterMenuScreensEvent event) {

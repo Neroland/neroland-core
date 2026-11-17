@@ -74,6 +74,11 @@ public final class NerolandCoreForge {
         *///?}
         // Scheduled data-retention housekeeping (server start, then daily).
         registerRetentionTick();
+        // Nero Mods Demo (26.3+): build a new demo world's hub and exhibits once the server has started.
+        //? if >=26.3 {
+        /*net.minecraftforge.event.server.ServerStartedEvent.BUS.addListener(event ->
+                za.co.neroland.nerolandcore.demo.DemoWorlds.onServerStarted(event.getServer()));
+        *///?}
     }
 
     /** End-of-server-tick hook for {@link RetentionSchedule}; the tick event's shape differs by Forge line. */

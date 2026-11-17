@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import za.co.neroland.nerolandcore.config.CoreConfig;
 import za.co.neroland.nerolandcore.data.CoreData;
+import za.co.neroland.nerolandcore.demo.CoreDemoModule;
+import za.co.neroland.nerolandcore.demo.DemoRegistry;
 import za.co.neroland.nerolandcore.meteor.MeteorMaterials;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.palette.PaletteRegistry;
@@ -51,5 +53,8 @@ public final class NerolandCoreCommon {
 
         // Palette export: register Core's built-in finishes so any mod/data pack can match trims.
         PaletteRegistry.init();
+
+        // Nero Mods Demo: Core's own small exhibit (other mods register theirs from their own init).
+        DemoRegistry.register(new CoreDemoModule());
     }
 }

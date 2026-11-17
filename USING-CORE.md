@@ -110,6 +110,7 @@ floor loads happily against a Core that is too old and then fails at runtime):
 | `SpaceTags` (`neroland:space/*`) and `EntityRegistrationSupport` | `1.10.0` |
 | Map layer API (`za.co.neroland.nerolandcore.map`) | `1.19.0` |
 | Trophy API (`za.co.neroland.nerolandcore.trophy`) | `1.20.0` |
+| Demo worlds API (`za.co.neroland.nerolandcore.demo`) | `1.20.0` |
 
 ## Map layers
 
@@ -289,6 +290,14 @@ award. The provider fires `TrophyEvents.fireCollectionCompleted` / `fireRecordEr
 inert while no real provider is bound). Core registers no trophy eraser: the provider stores the
 player data, so it must register its own `PlayerDataEraser` and cover the data in its privacy notice.
 To notice a `/reload`, poll `TrophyApi.definitions(server).generation()`.
+
+## Demo worlds
+
+Since **1.20.0** a mod can add an exhibit to the **Nero Mods Demo** world (a fixed-seed creative
+showroom created from the singleplayer world list) by registering a `DemoModule` with `DemoRegistry`
+(package `za.co.neroland.nerolandcore.demo`). Core lays out the hub and plots, calls each module's `build`
+once, and stores only a build-once marker with no player data. The runtime needs Minecraft 26.3. See
+[`docs/DEMO-WORLDS.md`](docs/DEMO-WORLDS.md).
 
 ## What to call once it resolves
 

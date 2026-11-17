@@ -45,6 +45,7 @@ The sync payload carries only config keys and values — never player identity.
 | `itemHighlightsEnabled` | Coloured slot borders on Nero items (see Item Highlights) |
 | `itemHighlightOpacity` | Highlight border opacity, 0-100 percent |
 | `itemHighlightThickness` | Highlight border thickness in pixels, 1-4 |
+| `demoButtonEnabled` | Show the Nero Mods Demo button on the singleplayer world list (default `true`; client-side) |
 | `debugLogging` | Enables verbose debug logging |
 | `telemetryEnabled` | Anonymous Neroland-Core-only crash reports via Sentry (EU servers); default `true`, set `false` to opt out. Client-local, not synced (see Privacy and Data) |
 | `dataRetentionDays` | Inactive-player retention; 0 = never |

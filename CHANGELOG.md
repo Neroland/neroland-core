@@ -29,10 +29,21 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
   SPI with a no-op default that stores nothing, `AwardSource`, and `TrophyEvents` (awarded, revoked,
   collection completed, record erased).
 - Wiki page "Trophies" and a `USING-CORE.md` section.
+- **Nero Mods Demo (`za.co.neroland.nerolandcore.demo`).** A "Nero Mods Demo" button on the singleplayer world
+  list opens a picker of every registered demo module whose required mods are loaded, then creates a fixed-seed
+  creative world with a void overworld and showroom game rules. On its first start Core builds a hub, a path and
+  one plot per selected module in a fixed order, so the same selection always gives the same world. Mods take part
+  through `DemoModule` (id, name, icon, sort order, required mods, `DemoFootprint`, guide text, `build`) and
+  `DemoRegistry`; `DemoBuildContext` offers labels, guide text and walk-on travel pads. Core registers a small
+  exhibit of its own materials and storage blocks. The runtime is Minecraft 26.3 only; the API types compile on
+  every line. New config option `demoButtonEnabled` (default `true`, client-side) hides the button.
+  `docs/DEMO-WORLDS.md` and the wiki page "Nero Mods Demo".
 
 ### Privacy
 
 - Core stores no trophy data; the trophy provider mod does and handles its own erasure.
+- A demo world stores one marker (`nerolandcore:demo`, through `SavedDataRecovery`): that it is a demo world, the
+  selected module ids and whether the build finished. No player data; other worlds are never touched.
 
 ## [1.19.0] - 2026-11-16
 

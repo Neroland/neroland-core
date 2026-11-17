@@ -100,6 +100,12 @@ public final class CoreConfig {
             "itemHighlightThickness", 3, 1, 4, false,
             "Item highlight border thickness in pixels; rings fade inwards like a glow.");
 
+    // --- Nero Mods Demo (client-side, local-only) ------------------------------
+    // Core 1.20.0: the "Nero Mods Demo" button on the singleplayer world list. Pack authors can hide it.
+    public static final ConfigValue<Boolean> DEMO_BUTTON_ENABLED = SCHEMA.bool(
+            "demoButtonEnabled", true, false,
+            "Show the Nero Mods Demo button on the singleplayer world list (client-side).");
+
     // --- Local-only toggles -------------------------------------------------
     public static final ConfigValue<Boolean> DEBUG_LOGGING = SCHEMA.bool(
             "debugLogging", false, false,
