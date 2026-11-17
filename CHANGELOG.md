@@ -8,6 +8,32 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.20.0] - Unreleased
+
+### Added
+
+- **Trophy API (`za.co.neroland.nerolandcore.trophy`).** A purely additive, data-driven trophy registry.
+  Trophies load from `data/<ns>/neroland_trophies/*.json` and collections from
+  `data/<ns>/neroland_trophy_collections/*.json`, reload-safely (cached on the server and its resource
+  manager, held weakly; no lifecycle hook). Types: `TrophyDefinition` (icon, tier, optional trigger,
+  hidden, lang-key title/description, `requires_mod` as one id or a list, category, order, optional
+  `TrophyReward`, schema), `TrophyTier` (bronze, silver, gold, nero), `TrophyTrigger` with six codecs
+  (`advancement`, `nero_event` with `gate` / `material_milestone` / `reputation` / `currency`, `stat`,
+  `item_obtained`, `block_placed`, `dimension_visited`; `threshold` reserved and rejected),
+  `TrophyCollection` (members, trim, optional completion trophy), `TrophyLoadReport`.
+- Quiet skip rules and hard bounds: absent `requires_mod` and missing icon items skip silently; files over
+  16 KiB, more than 8 192 files per folder, 4 096 trophies, 512 collections or 256 members are rejected;
+  malformed files, unknown collection members and collection/trophy id clashes are reported (at most 64
+  issues kept). One summary log line per load, counts only.
+- `TrophyApi` (definitions, `award`, `has`, `earned`, `revoke`; server thread only), the `TrophyProvider`
+  SPI with a no-op default that stores nothing, `AwardSource`, and `TrophyEvents` (awarded, revoked,
+  collection completed, record erased).
+- Wiki page "Trophies" and a `USING-CORE.md` section.
+
+### Privacy
+
+- Core stores no trophy data; the trophy provider mod does and handles its own erasure.
+
 ## [1.19.0] - 2026-11-16
 
 ### Added

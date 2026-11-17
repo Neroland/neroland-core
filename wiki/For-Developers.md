@@ -32,6 +32,7 @@ Every system is reached through a small facade; per-loader wiring is Core's job.
 | Ask "is this place off-Earth?" | `SpaceTags.isSpace(level)` / `SpaceTags.biomeIn(...)` | [Space Tags & Entity Registration](Space-Tags-and-Entities.md) | [SPACE-TAGS-AND-ENTITIES](../docs/SPACE-TAGS-AND-ENTITIES.md) |
 | Register mob attributes / spawn placement | `EntityRegistrationSupport.get(modId)` | [Space Tags & Entity Registration](Space-Tags-and-Entities.md) | [SPACE-TAGS-AND-ENTITIES](../docs/SPACE-TAGS-AND-ENTITIES.md) |
 | Put your things on a map | `MapLayerRegistry.register(provider)` + `MapLayerConformance` in tests | [Map Layers](Map-Layers.md) | [USING-CORE](../USING-CORE.md#map-layers) |
+| Define or award trophies | `neroland_trophies/` JSON; `TrophyApi.award(player, id)` | [Trophies](Trophies.md) | [USING-CORE](../USING-CORE.md#trophies) |
 | Store player data | register a `PlayerDataEraser` | [Privacy & Data](Privacy-and-Data.md) | [COMPLIANCE](../docs/COMPLIANCE.md) |
 | Count/draw a player's items across mods | `ItemSources` + an `ItemSource` | [Economy & Reputation](Economy-and-Reputation.md) | [ECONOMY-REPUTATION](../docs/ECONOMY-REPUTATION.md) |
 

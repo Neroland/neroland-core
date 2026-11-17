@@ -109,6 +109,7 @@ floor loads happily against a Core that is too old and then fails at runtime):
 | Palette export, dashboard surfaces, `neroland:decor/*` tags | `1.9.0` |
 | `SpaceTags` (`neroland:space/*`) and `EntityRegistrationSupport` | `1.10.0` |
 | Map layer API (`za.co.neroland.nerolandcore.map`) | `1.19.0` |
+| Trophy API (`za.co.neroland.nerolandcore.trophy`) | `1.20.0` |
 
 ## Map layers
 
@@ -194,6 +195,100 @@ most 16 384 blocks per axis. Programmer errors (bad ids, keys, vertex or chunk c
 `neroevents:war_zone`; `neroruins:ruin`, `neroruins:vault_claimed`, `neroruins:expedition_target`;
 `nerocreatures:my_creature`; `nerocompanion:companion`, `nerocompanion:companion_lost`,
 `nerocompanion:home_bay`.
+
+## Trophies
+
+Since **1.20.0** trophies are a data-driven registry in Core (package
+`za.co.neroland.nerolandcore.trophy`). Any mod or datapack defines trophies by shipping JSON; any mod
+awards one by calling `TrophyApi.award` with only a Core dependency. Core **evaluates nothing and stores
+nothing**: its default provider is a no-op, so without a trophy mod (NeroTrophies) every award returns
+`false` and no trophy data exists. Pin `nerolandcore_version=1.20.0` or later.
+
+### The JSON
+
+Trophies live at `data/<ns>/neroland_trophies/<path>.json` (id `<ns>:<path>`), collections at
+`data/<ns>/neroland_trophy_collections/<path>.json`. `<path>` may contain `/`.
+
+```json
+{
+  "schema": 1,
+  "icon": "nerospace:rocket_tier_1",
+  "tier": "gold",
+  "trigger": { "type": "advancement", "advancement": "nerospace:worlds/mars/arrive" },
+  "hidden": false,
+  "title": "trophy.mymod.mars.title",
+  "description": "trophy.mymod.mars.desc",
+  "requires_mod": "nerospace",
+  "category": "nerospace",
+  "order": 10,
+  "reward": { "coins": 50 }
+}
+```
+
+- Required: `icon` (item id), `tier` (`bronze` | `silver` | `gold` | `nero`).
+- `trigger` is optional. Without one the trophy is earned only through `TrophyApi.award` (or as a
+  collection's completion `trophy`).
+- `title` / `description` are lang keys (`[a-z0-9_.-]{1,128}`); defaults `trophy.<ns>.<path>.title` /
+  `.desc` with `/` turned into `.`.
+- `requires_mod`: one mod id or a list of up to 8; if any is absent the file is skipped quietly.
+- `category` defaults to the first `requires_mod`, else the namespace. `order` (default 0) sorts within it.
+- `reward.coins` 0 to 10 000. `schema` defaults to 1; unknown keys of any shape are ignored.
+
+Triggers (a flat object dispatched on `type`; target ids are never checked against registries):
+
+```json
+{ "type": "advancement", "advancement": "minecraft:story/enter_the_nether" }
+{ "type": "nero_event", "event": "gate", "gate": "mymod:reactor_online" }
+{ "type": "nero_event", "event": "material_milestone", "milestone": "nerolandcore:material_discovered", "material": "nerospace:mars_iron" }
+{ "type": "nero_event", "event": "reputation", "faction": "nerofactions:traders", "at_least": 500 }
+{ "type": "nero_event", "event": "currency", "currency": "nerolandcore:credits", "at_least": 10000 }
+{ "type": "stat", "stat_type": "minecraft:killed", "stat": "nerocreatures:cinder_tyrant", "at_least": 1 }
+{ "type": "item_obtained", "item": "minecraft:diamond", "count": 64 }
+{ "type": "block_placed", "block": "nerodecor:hull_panel", "count": 500 }
+{ "type": "dimension_visited", "dimension": "minecraft:the_end" }
+```
+
+`gate` and `material_milestone` award only for **player-scope** definitions. `"event": "threshold"` is
+reserved and rejected. New trigger types may be added in a minor version: a consumer that switches over
+`TrophyTrigger` must keep a `default` branch.
+
+A collection:
+
+```json
+{ "schema": 1, "icon": "nerospace:mars_regolith", "trim": "orbital_plasma",
+  "members": ["mymod:luna", "mymod:mars"], "trophy": "mymod:astronaut", "requires_mod": "nerospace" }
+```
+
+Load rules, in sorted id order: files over 16 KiB, beyond 8 192 per folder, 4 096 trophies, 512
+collections or 256 members are rejected (`too_large` / `limit`); unreadable or invalid files are
+rejected (`malformed`); an absent `requires_mod` or unregistered icon is skipped quietly. A collection
+drops members skipped quietly, drops a `trophy` that did not load, is rejected for a member that never
+had a loadable file (`unknown_member`) or an id shared with a trophy (`id_clash`), and is skipped when
+fewer than two members remain. `TrophyDefinitions.report()` returns the counts and up to 64 issues
+(file id + reason token). One summary log line per load; file content is never logged.
+
+### Awarding a trophy from your mod
+
+```java
+// Server thread. False (and nothing happens) if no trophy mod is installed or the id is not loaded.
+boolean newlyEarned = TrophyApi.award(serverPlayer, Identifier.fromNamespaceAndPath("mymod", "first_boss"));
+```
+
+Ship the definition as JSON in your own namespace (usually with no `trigger`) and call `award` where the
+thing happens. `TrophyApi.definitions(server)` / `definition(server, id)` read the loaded data;
+`has` / `earned` are for in-process logic only: never show one player's trophies to another player, a
+link client or a log. `TrophyEvents.onAwarded(...)` (also `onRevoked`, `onCollectionCompleted`,
+`onRecordErased`) lets you react; events carry a UUID in-process only, so never persist or log it.
+
+### Becoming the trophy provider
+
+One mod owns the store. It implements `TrophyProvider` (`award` returning true only when newly earned,
+`has`, `earned`, optionally `revoke`) and registers it at init with `TrophyApi.setProvider(provider)`.
+`TrophyApi` checks the id is a loaded definition, calls the provider and fires `Awarded` only on a new
+award. The provider fires `TrophyEvents.fireCollectionCompleted` / `fireRecordErased` itself (both are
+inert while no real provider is bound). Core registers no trophy eraser: the provider stores the
+player data, so it must register its own `PlayerDataEraser` and cover the data in its privacy notice.
+To notice a `/reload`, poll `TrophyApi.definitions(server).generation()`.
 
 ## What to call once it resolves
 

@@ -77,6 +77,12 @@ its own. Mods that offer map layers answer each query from data they already hol
 viewer, and a map mod such as NeroMaps decides what (if anything) it keeps; their own privacy notices
 cover that.
 
+**Trophies (1.20.0).** Core stores no trophy data; a trophy provider mod does. Core loads trophy
+definitions from datapacks (no player data) and its default trophy provider stores nothing, so without
+a trophy mod no trophy is recorded for anyone. A trophy mod such as NeroTrophies keeps the record,
+registers its own erasure with `/neroland data eraseme` and covers that data in its own privacy notice.
+Core never logs who earned a trophy.
+
 `dataRetentionDays` defaults to `0`, which disables inactivity purging. When a server operator
 enables it, Core runs the retention sweep at server start and once a day
 (`dataRetentionScheduledPurge`, on by default), and `/neroland data purge-inactive` runs it on demand.
