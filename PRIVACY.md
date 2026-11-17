@@ -146,7 +146,7 @@ dispatched or skipped. Regular gameplay can never trigger it.
 
 ---
 
-## CurseForge / Modrinth telemetry blurb
+## CurseForge telemetry blurb
 
 Keep the following (or equivalent) in the project description while telemetry is enabled, as
 required by CurseForge moderation policy:

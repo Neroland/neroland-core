@@ -22,7 +22,7 @@ Core is published to two places:
   remote that CI runners and fresh clones (which have an empty `~/.m2`) resolve from. Core's
   `publish.yml` pushes the six per-loader artifacts here whenever a new `mod_version` is
   released — a publish step in the `build` job, reusing the jars that job just built (no second
-  build). CurseForge / Modrinth / GitHub Releases carry the player-facing
+  build). CurseForge / GitHub Releases carry the player-facing
   jars only — they are **not** Gradle-consumable, which is why GitHub Packages exists.
 
 > Before this was wired up, Core had no remote Maven at all. Consumer CI checked Core out and
