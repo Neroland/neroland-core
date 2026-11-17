@@ -8,7 +8,7 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
-## [1.20.0] - Unreleased
+## [1.20.0] - 2026-11-17
 
 ### Added
 
