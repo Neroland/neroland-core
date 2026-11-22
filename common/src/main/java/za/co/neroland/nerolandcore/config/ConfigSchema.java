@@ -54,7 +54,7 @@ public final class ConfigSchema {
     public ConfigValue<Double> doubleRange(String key, double def, double min, double max,
             boolean serverAuthoritative, String comment) {
         return add(new ConfigValue<>(key, comment, def, serverAuthoritative,
-                Double::parseDouble, d -> Double.toString(d), d -> Math.max(min, Math.min(max, d))));
+                Double::parseDouble, d -> Double.toString(d), d -> d == null || Double.isNaN(d) ? Math.max(min, Math.min(max, def)) : Math.max(min, Math.min(max, d))));
     }
 
     public ConfigValue<String> string(String key, String def, boolean serverAuthoritative, String comment) {

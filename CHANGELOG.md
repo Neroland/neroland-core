@@ -8,6 +8,33 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.20.1] - 2026-11-26
+
+### Added
+
+- **Item energy seam (`energy.ItemEnergyLookup`, `ItemEnergyProvider`).** Mods register a provider for
+  their energy-holding items; any charger or tool finds the stack's `NeroEnergyStorage` through
+  `ItemEnergyLookup.find(stack)`. A plain registry, so it works on Fabric too. First match wins; a
+  throwing provider is skipped and logged once by class name.
+- **Land-protection SPI (`protection.ClaimCheck`, `ClaimChecks`).** Claims mods register a check;
+  `isProtected(level, pos)` for world effects with no player and `mayInteract(player, level, pos)` for
+  player actions. Any protecting check or any denial wins; no checks means open land; a throwing check
+  fails closed.
+- **Per-player data export (`data.PlayerDataExport`, `PlayerDataExporter`).** The access/portability
+  twin of `PlayerDataErasure`: mods register an exporter under their mod id, and
+  `/neroland data exportme` (operators: `/neroland data export <uuid>`) hands the requester one JSON
+  document (schema 1) with a section per mod, the mods that store nothing, any exporter that failed,
+  and a yes/no `erased` answer from the erasure tombstones. Core exports its own records (per-player
+  gates, material milestones, last-seen time, NeroLink alerts). Delivered as click-to-copy chat, capped
+  at 256 KiB, never written to disk or logged.
+- Documented `c:steam` and `c:heavy_water` as ecosystem fluid tags (declared by NeroPower) in
+  `docs/TAGS-AND-DATAPACKS.md`.
+
+### Fixed
+
+- A hand-edited `NaN` in a double config value now falls back to the (clamped) default instead of
+  passing the range clamp.
+
 ## [1.20.0] - 2026-11-17
 
 ### Added

@@ -112,6 +112,13 @@ necessary. The reports are engineered to contain no directly identifying persona
 information, are stored in the EU, and are retained only as long as Sentry's standard
 retention period (90 days) before automatic deletion.
 
+**Getting a copy of your data.** On any server running Neroland Core 1.21.0 or later, run
+`/neroland data exportme` in game. You get a click-to-copy JSON document with the data Core and every
+participating Nero mod stores about you (for Core: your per-player progression gates and material
+milestones, when you were last seen, and your NeroLink alerts), and whether an erasure has been
+recorded for you. The server keeps no copy of the export. Operators can produce the same document for
+a player with `/neroland data export <uuid>`. To have your data erased, run `/neroland data eraseme`.
+
 If you believe a report contains personal data, or wish to exercise any data-subject right
 (access, deletion, objection), contact:
 **[info@neroland.co.za](mailto:info@neroland.co.za)**. Include the approximate date/time of

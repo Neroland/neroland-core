@@ -7,7 +7,10 @@ import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -21,6 +24,7 @@ import za.co.neroland.nerolandcore.config.ConfigManager;
 import za.co.neroland.nerolandcore.config.ConfigSchema;
 import za.co.neroland.nerolandcore.config.ConfigValue;
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
+import za.co.neroland.nerolandcore.data.PlayerDataExport;
 import za.co.neroland.nerolandcore.meteor.MeteorMaterialEntry;
 import za.co.neroland.nerolandcore.meteor.MeteorMaterials;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
@@ -91,6 +95,12 @@ public final class CoreCommands {
                 .then(Commands.literal("data")
                         .then(Commands.literal("eraseme")
                                 .executes(ctx -> eraseSelf(ctx)))
+                        .then(Commands.literal("exportme")
+                                .executes(ctx -> exportSelf(ctx)))
+                        .then(Commands.literal("export")
+                                .requires(gamemasters())
+                                .then(Commands.argument("uuid", StringArgumentType.string())
+                                        .executes(ctx -> exportByUuid(ctx))))
                         .then(Commands.literal("erase")
                                 .requires(gamemasters())
                                 .then(Commands.argument("uuid", StringArgumentType.string())
@@ -196,6 +206,57 @@ public final class CoreCommands {
         }
         ctx.getSource().sendSuccess(
                 () -> Component.translatable("commands.nerolandcore.data.erased_self"), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int exportSelf(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.player_only"));
+            return 0;
+        }
+        return deliverExport(ctx.getSource(), player.getUUID());
+    }
+
+    private static int exportByUuid(CommandContext<CommandSourceStack> ctx) {
+        if (ctx.getSource().getPlayer() == null) {
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.player_only"));
+            return 0;
+        }
+        UUID player;
+        try {
+            player = UUID.fromString(StringArgumentType.getString(ctx, "uuid"));
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendFailure(Component.translatable("commands.nerolandcore.data.invalid_uuid"));
+            return 0;
+        }
+        return deliverExport(ctx.getSource(), player);
+    }
+
+    /**
+     * Builds the export and hands it to the requester as a click-to-copy chat link. Nothing is written to
+     * disk or logged; the document exists only in this message.
+     */
+    private static int deliverExport(CommandSourceStack source, UUID player) {
+        MinecraftServer server = source.getServer();
+        if (server == null) {
+            source.sendFailure(Component.translatable("commands.nerolandcore.no_server"));
+            return 0;
+        }
+        String json = PlayerDataExport.exportJson(server, player);
+        if (json.length() > PlayerDataExport.MAX_CHARS) {
+            source.sendFailure(Component.translatable("commands.nerolandcore.data.export_too_large"));
+            return 0;
+        }
+        MutableComponent copy = Component.translatable("commands.nerolandcore.data.export_copy")
+                .withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true)
+                        //? if >=1.21.5 {
+                        .withClickEvent(new ClickEvent.CopyToClipboard(json)));
+                        //?} else {
+                        /*.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, json)));
+                        *///?}
+        int kib = Math.max(1, json.length() / 1024);
+        source.sendSuccess(() -> Component.translatable("commands.nerolandcore.data.export_ready", kib, copy), false);
         return Command.SINGLE_SUCCESS;
     }
 

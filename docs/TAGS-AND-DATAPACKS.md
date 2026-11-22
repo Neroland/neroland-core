@@ -57,6 +57,20 @@ things other than items:
   planet mods are installed and are legitimately **empty** on a Core-only server. See
   [`SPACE-TAGS-AND-ENTITIES.md`](SPACE-TAGS-AND-ENTITIES.md).
 
+### Fluid tags owned by Nero mods
+
+Core does not register these fluids or ship these tags; the first Nero mod that makes the fluid
+declares the tag, and every other mod (or a third-party mod) refers to it by name. Recorded here so
+the names stay the same across the ecosystem:
+
+| Tag | Fluid | Declared by |
+| --- | --- | --- |
+| `c:steam` | Steam | NeroPower |
+| `c:heavy_water` | Heavy water | NeroPower |
+
+A mod that adds its own steam or heavy water adds it to the same tag with `"replace": false`
+rather than inventing a new name.
+
 **Rule of thumb:** recipe ingredients and external interop → `c:`. "Is this one of
 our materials?" checks inside the ecosystem → `neroland:`.
 

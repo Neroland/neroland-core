@@ -299,6 +299,23 @@ showroom created from the singleplayer world list) by registering a `DemoModule`
 once, and stores only a build-once marker with no player data. The runtime needs Minecraft 26.3. See
 [`docs/DEMO-WORLDS.md`](docs/DEMO-WORLDS.md).
 
+## Item energy, land protection and data export
+
+Since **1.21.0**:
+
+- **Item energy** (`energy.ItemEnergyLookup`): a mod whose items hold Nero energy (cells, batteries,
+  charged tools) registers an `ItemEnergyProvider` once at init; chargers and tools call
+  `ItemEnergyLookup.find(stack)` to fill or drain any of them. It works the same on Fabric, Forge and
+  NeoForge.
+- **Land protection** (`protection.ClaimChecks`): claims mods register a `ClaimCheck`; every other mod
+  asks `ClaimChecks.isProtected(level, pos)` before a world effect with no player (radiation,
+  explosions, spreading) and `ClaimChecks.mayInteract(player, level, pos)` before a player action. With
+  no claims mod installed nothing is protected. A throwing check fails closed.
+- **Data export** (`data.PlayerDataExport`): every mod that registers a `PlayerDataEraser` should also
+  register a `PlayerDataExporter` under its mod id, returning the player's own records as JSON (or
+  `null`). Players run `/neroland data exportme`; operators run `/neroland data export <uuid>`. The
+  document says whether the player has been erased (yes/no only) and is never written to disk or logged.
+
 ## What to call once it resolves
 
 This page is about **getting** Core on the classpath. For the APIs themselves start at
