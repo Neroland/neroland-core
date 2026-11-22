@@ -10,11 +10,16 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 
 import io.sentry.Breadcrumb;
+import io.sentry.IScopes;
 import io.sentry.ITransaction;
-import io.sentry.Sentry;
+import io.sentry.Scope;
+import io.sentry.Scopes;
+import io.sentry.SentryClient;
 import io.sentry.SentryEvent;
 import io.sentry.SentryLevel;
+import io.sentry.SentryOptions;
 import io.sentry.SpanStatus;
+import io.sentry.UncaughtExceptionHandlerIntegration;
 import io.sentry.protocol.Message;
 import io.sentry.protocol.SentryException;
 import io.sentry.protocol.SentryStackFrame;
@@ -41,6 +46,12 @@ import za.co.neroland.nerolandcore.platform.Services;
  *       {@value #MAX_EVENTS_PER_SESSION} events per game session.</li>
  * </ul>
  *
+ * <p><b>Isolated client:</b> every Nero mod embeds the same deduplicated Sentry jar, so the global
+ * {@code Sentry.init} is shared and the last mod to call it replaces everyone else's client (and its
+ * {@code beforeSend} then drops their events). Core therefore never touches the global {@code Sentry}
+ * API: it builds its own {@link SentryOptions}, {@link SentryClient} and {@link Scopes} and reports only
+ * through them, so other mods (Nero or not) calling {@code Sentry.init} cannot silence it.</p>
+ *
  * <p>{@link #init()} is called once per loader at bootstrap and reads loader facts through
  * {@link Services#PLATFORM}. Dev/IDE runs report too, tagged {@code environment=development} so they
  * stay out of release metrics. Full disclosure text: {@code PRIVACY.md}.</p>
@@ -65,6 +76,10 @@ public final class NerolandCoreTelemetry {
             Pattern.compile("(?i)(?:[A-Z]:)?[/\\\\](?:Users|home)[/\\\\][^/\\\\\\s:;,'\"]+");
 
     private static volatile boolean active;
+    /** Core's own, non-global Sentry scopes; {@code null} until {@link #start()} succeeds. */
+    private static volatile IScopes scopes;
+    /** The uncaught-exception integration bound to {@link #scopes}; never closed (process lifetime). */
+    private static UncaughtExceptionHandlerIntegration uncaughtHandler;
     private static final AtomicInteger eventsSent = new AtomicInteger();
     private static final Set<String> seenFingerprints = ConcurrentHashMap.newKeySet();
     private static SentryLogAppender appender;
@@ -107,24 +122,11 @@ public final class NerolandCoreTelemetry {
         }
         String modVersion = Services.PLATFORM.getModVersion();
         boolean dev = Services.PLATFORM.isDevelopmentEnvironment();
-        Sentry.init(options -> {
-            options.setDsn(DSN);
-            options.setRelease("nerolandcore@" + modVersion);
-            // Dev/IDE runs report under a dedicated environment so they never mix with real releases.
-            options.setEnvironment(dev ? "development" : environmentOf(modVersion));
-            // POPIA/GDPR: never store the sender's IP address or identity.
-            options.setSendDefaultPii(false);
-            // The machine's hostname is identifying; never attach it.
-            options.setAttachServerName(false);
-            options.setEnableUncaughtExceptionHandler(true);
-            // Manual session lifecycle (started below, ended on JVM shutdown); random per-launch id, no
-            // user/IP attached, not linked across sessions.
-            options.setEnableAutoSessionTracking(false);
-            // Performance: sample a small fraction of traced operations. Timing data only — no personal data.
-            options.setTracesSampleRate(0.05D);
-            options.setBeforeSend((event, hint) -> ForeignMixinFailure.matches(event) ? null : filterAndScrub(event));
-        });
-        Sentry.configureScope(scope -> {
+        SentryOptions options = baseOptions(modVersion, dev ? "development" : environmentOf(modVersion));
+        options.setBeforeSend((event, hint) -> ForeignMixinFailure.matches(event) ? null : filterAndScrub(event));
+        IScopes own = isolatedScopes(options, "nerolandcore");
+        scopes = own;
+        own.configureScope(scope -> {
             scope.setTag("loader", Services.PLATFORM.getPlatformName().toLowerCase(Locale.ROOT));
             scope.setTag("dist", Services.PLATFORM.isClient() ? "client" : "dedicated_server");
             scope.setTag("runtime", dev ? "development" : "production");
@@ -153,11 +155,11 @@ public final class NerolandCoreTelemetry {
             }
         });
         // Manual release-health session for this play session; closed on a clean JVM shutdown.
-        Sentry.startSession();
+        own.startSession();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                Sentry.endSession();
-                Sentry.flush(2000L);
+                own.endSession();
+                own.flush(2000L);
             } catch (RuntimeException ignored) {
                 // best-effort flush on shutdown
             }
@@ -187,7 +189,10 @@ public final class NerolandCoreTelemetry {
         crumb.setCategory(category);
         crumb.setLevel(SentryLevel.INFO);
         crumb.setMessage(scrub(message));
-        Sentry.addBreadcrumb(crumb);
+        IScopes s = scopes;
+        if (s != null) {
+            s.addBreadcrumb(crumb);
+        }
     }
 
     /**
@@ -196,10 +201,11 @@ public final class NerolandCoreTelemetry {
      * recorded — never personal data.
      */
     public static <T> T trace(String operation, String name, java.util.function.Supplier<T> body) {
-        if (!active) {
+        IScopes s = scopes;
+        if (!active || s == null) {
             return body.get();
         }
-        ITransaction tx = Sentry.startTransaction(name, operation);
+        ITransaction tx = s.startTransaction(name, operation);
         try {
             return body.get();
         } catch (RuntimeException | Error e) {
@@ -217,6 +223,52 @@ public final class NerolandCoreTelemetry {
             body.run();
             return null;
         });
+    }
+
+    /**
+     * The privacy-preserving options every Core report is sent with, before the {@code beforeSend} gate
+     * is attached. Package-private for tests.
+     */
+    static SentryOptions baseOptions(String modVersion, String environment) {
+        SentryOptions options = new SentryOptions();
+        options.setDsn(DSN);
+        options.setRelease("nerolandcore@" + modVersion);
+        // Dev/IDE runs report under a dedicated environment so they never mix with real releases.
+        options.setEnvironment(environment);
+        // POPIA/GDPR: never store the sender's IP address or identity.
+        options.setSendDefaultPii(false);
+        // The machine's hostname is identifying; never attach it.
+        options.setAttachServerName(false);
+        options.setEnableUncaughtExceptionHandler(true);
+        // The global shutdown-hook integration is never registered for isolated scopes; Core flushes in
+        // its own hook instead.
+        options.setEnableShutdownHook(false);
+        // Manual session lifecycle (started in start(), ended on JVM shutdown); random per-launch id, no
+        // user/IP attached, not linked across sessions.
+        options.setEnableAutoSessionTracking(false);
+        // Performance: sample a small fraction of traced operations. Timing data only — no personal data.
+        options.setTracesSampleRate(0.05D);
+        return options;
+    }
+
+    /**
+     * Builds non-global scopes bound to their own {@link SentryClient}: nothing here reads or writes the
+     * static {@code Sentry} hub, so another mod's {@code Sentry.init} cannot replace or silence Core's
+     * client. Package-private for tests.
+     */
+    static IScopes isolatedScopes(SentryOptions options, String creator) {
+        // What Sentry.init would do for the options: start the executors it uses for lazy work and timers.
+        options.activate();
+        Scopes own = new Scopes(new Scope(options), new Scope(options), new Scope(options), creator);
+        own.bindClient(new SentryClient(options));
+        if (options.isEnableUncaughtExceptionHandler()) {
+            // Chains to the previous default handler (each mod's own global scope keeps the chain intact),
+            // and the beforeSend gate keeps only events that touch this mod's package.
+            // Kept for the life of the JVM: it is the process-wide handler, so it is never closed.
+            uncaughtHandler = new UncaughtExceptionHandlerIntegration();
+            uncaughtHandler.register(own, options);
+        }
+        return own;
     }
 
     /** Formats a config value as a short, stable tag value. */
@@ -278,10 +330,11 @@ public final class NerolandCoreTelemetry {
 
     /** Capture an exception already known to touch Neroland Core code. */
     static void capture(Throwable t) {
-        if (!active || t == null) {
+        IScopes s = scopes;
+        if (!active || s == null || t == null) {
             return;
         }
-        Sentry.captureException(t);
+        s.captureException(t);
     }
 
     /** Capture a handled exception if it is still clearly from Neroland Core code. */
@@ -303,12 +356,13 @@ public final class NerolandCoreTelemetry {
      *                  its backup): reported at WARNING instead of ERROR, so it stays out of the crash queue
      */
     public static void captureHandledException(Throwable t, String source, String operation, boolean recovered) {
-        if (!active || t == null || !touchesNeroland(t)) {
+        IScopes s = scopes;
+        if (!active || s == null || t == null || !touchesNeroland(t)) {
             return;
         }
         // The (Throwable, ScopeCallback) overload: with Sentry 8.x, tags set inside withScope(...) do not
         // reliably reach an event captured there.
-        Sentry.captureException(t, scope -> {
+        s.captureException(t, scope -> {
             scope.setLevel(recovered ? SentryLevel.WARNING : SentryLevel.ERROR);
             scope.setTag("handled", "true");
             scope.setTag("source", source);
@@ -319,7 +373,8 @@ public final class NerolandCoreTelemetry {
 
     /** Capture a (scrubbed, truncated) FATAL log line that names Neroland Core without a throwable. */
     static void captureMessage(String message) {
-        if (!active) {
+        IScopes s = scopes;
+        if (!active || s == null) {
             return;
         }
         String scrubbed = scrub(message);
@@ -331,7 +386,7 @@ public final class NerolandCoreTelemetry {
         Message msg = new Message();
         msg.setFormatted(scrubbed);
         event.setMessage(msg);
-        Sentry.captureEvent(event);
+        s.captureEvent(event);
     }
 
     /**

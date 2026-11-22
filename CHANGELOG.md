@@ -8,6 +8,16 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.20.2] - 2026-11-26
+
+### Fixed
+
+- **Telemetry no longer goes silent when another mod starts Sentry.** Every Nero mod ships the same
+  deduplicated Sentry jar, so each mod's global `Sentry.init` replaced the previous one and only the last
+  mod to start kept reporting. Core now reports through its own isolated Sentry client and scopes and never
+  touches the global `Sentry` API. Same opt-out (`telemetryEnabled`), same filtering and scrubbing, no new
+  data.
+
 ## [1.20.1] - 2026-11-26
 
 ### Added
