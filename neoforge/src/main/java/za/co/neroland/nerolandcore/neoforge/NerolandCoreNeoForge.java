@@ -7,7 +7,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-//? if >=1.21.2 {
+//? if >=1.21.4 {
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 //?}
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -19,7 +19,7 @@ import za.co.neroland.nerolandcore.command.CoreCommands;
 import za.co.neroland.nerolandcore.data.RetentionSchedule;
 import za.co.neroland.nerolandcore.entity.NeoForgeEntityRegistrationPlumbing;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
-//? if >=1.21.2 {
+//? if >=1.21.4 {
 import za.co.neroland.nerolandcore.recipe.RecipeViewerSync;
 //?}
 import za.co.neroland.nerolandcore.registry.NeoForgeRegistrationFactory;
@@ -70,9 +70,8 @@ public final class NerolandCoreNeoForge {
                 za.co.neroland.nerolandcore.demo.DemoWorlds.onServerStarted(event.getServer()));
         *///?}
         // Send the vanilla recipe types to clients so JEI lists every Nero crafting/smelting recipe even
-        // when the server does not run JEI (26.x clients hold no recipe list of their own). Before 1.21.2
-        // vanilla still syncs every recipe, and the event has no sendRecipes.
-        //? if >=1.21.2 {
+        // when the server does not run JEI. NeoForge 1.21.3 and earlier lack the sendRecipes hook.
+        //? if >=1.21.4 {
         NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) ->
                 event.sendRecipes(RecipeViewerSync.vanillaTypes()));
         //?}

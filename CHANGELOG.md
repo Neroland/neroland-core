@@ -8,6 +8,12 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-11-26
+
+### Added
+
+- Minecraft 1.21.3, 26.1 and 26.1.1 builds for Fabric, Forge and NeoForge.
+
 ## [1.20.2] - 2026-11-26
 
 ### Fixed
