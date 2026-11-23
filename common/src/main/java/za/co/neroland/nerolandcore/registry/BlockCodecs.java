@@ -68,14 +68,18 @@ public final class BlockCodecs {
 
     /** Equivalent of {@code Block.propertiesCodec()}; an inert placeholder field on 26.3+. */
     public static <B extends Block> RecordCodecBuilder<B, BlockBehaviour.Properties> properties() {
+        //? if <1.20.5 {
+        /*return MapCodec.<BlockBehaviour.Properties>unit(BlockCodecs::removed).forGetter(block -> removed());
+        *///?} else {
         if (PROPERTIES_CODEC == null) {
             return MapCodec.<BlockBehaviour.Properties>unit(BlockCodecs::removed).forGetter(BlockBehaviour::properties);
         }
         return PROPERTIES_CODEC.fieldOf("properties").forGetter(BlockBehaviour::properties);
+        //?}
     }
 
     private static <T> T removed() {
-        throw new UnsupportedOperationException("Block-type codecs were removed in Minecraft 26.3");
+        throw new UnsupportedOperationException("Block-type codecs are unavailable on this Minecraft version");
     }
 
     // Resolved with MethodHandles, NOT Class#getMethod / #getField. Class#getMethod builds the full

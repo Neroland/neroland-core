@@ -49,10 +49,15 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            InteractionHand hand, BlockHitResult hit) {
+        ItemStack stack = player.getItemInHand(hand);
     *///?}
         if (stack.getItem() instanceof BucketItem bucket) {
             //? if >=1.21.9 {
@@ -67,17 +72,23 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
                     serverPlayer.sendSystemMessage(Component.translatable(
                             "block.nerolandcore.creative_tank.set", fluidName(contained)));
                 }
-                //? if >=1.21.2 {
-                return InteractionResult.SUCCESS;
-                //?} else {
+                //? if >=1.20.5 && <1.21.2 {
                 /*return net.minecraft.world.ItemInteractionResult.SUCCESS;
-                *///?}
+                *///?} else {
+                return InteractionResult.SUCCESS;
+                //?}
             }
         }
+        //? if >=1.20.5 {
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
+        //?} else {
+        /*return useWithoutItem(state, level, pos, player, hit);
+        *///?}
     }
 
+    //? if >=1.20.5 {
     @Override
+    //?}
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof CreativeFluidTankBlockEntity tank) {

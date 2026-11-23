@@ -73,6 +73,22 @@ publishing {
 sourceSets.main.java.srcDir rootProject.ext.commonJava
 sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
+if (mc == '1.20') {
+    sourceSets.test.java {
+        srcDir "${rootProject.projectDir}/common/src/test/java"
+        include '**/LegacyNetworkCodecTest.java', '**/TrophyTriggerCodecTest.java'
+    }
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:6.1.3')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+    tasks.named('test', Test) {
+        useJUnitPlatform()
+        workingDir = temporaryDir
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${mc}"
     if (obfuscated) {
@@ -131,6 +147,7 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
         fabric_loader_version: rootProject.fabric_loader_version,
         minecraft_version    : mcFloor,
         minecraft_version_ceiling: mcCeiling,
+        java_version         : stonecutter.eval(mc, '<1.20.5') ? 17 : 21,
     ]
     inputs.properties(props)
     expand(props)

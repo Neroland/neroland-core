@@ -11,8 +11,8 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 
 public final class ValueInput {
 
@@ -77,7 +77,7 @@ public final class ValueInput {
         if (value == null) {
             return Optional.empty();
         }
-        return codec.parse(this.registries.createSerializationContext(NbtOps.INSTANCE), value).result();
+        return codec.parse(SavedDataCompat.nbtOps(this.registries), value).result();
     }
 }
 *///?}

@@ -1,6 +1,8 @@
 package za.co.neroland.nerolandcore.trophy;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.mojang.datafixers.util.Either;
@@ -8,6 +10,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.resources.Identifier;
 
@@ -39,6 +42,41 @@ final class TrophyCodecs {
     static final Codec<Integer> ANY_INT = boundedInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
 
     private TrophyCodecs() {
+    }
+
+    static <A> MapCodec<Optional<A>> optionalField(Codec<A> codec, String name) {
+        //? if >=1.20.5 {
+        return codec.optionalFieldOf(name);
+        //?} else {
+        /*// Legacy DFU drops errors from optional fields, including invalid counts and requirements.
+        return new MapCodec<>() {
+            @Override
+            public <T> DataResult<Optional<A>> decode(DynamicOps<T> ops, com.mojang.serialization.MapLike<T> input) {
+                T value = input.get(name);
+                return value == null ? DataResult.success(Optional.empty()) : codec.parse(ops, value).map(Optional::of);
+            }
+
+            @Override
+            public <T> com.mojang.serialization.RecordBuilder<T> encode(
+                    Optional<A> value, DynamicOps<T> ops, com.mojang.serialization.RecordBuilder<T> prefix) {
+                return value.isPresent() ? prefix.add(name, codec.encodeStart(ops, value.get())) : prefix;
+            }
+
+            @Override
+            public <T> java.util.stream.Stream<T> keys(DynamicOps<T> ops) {
+                return java.util.stream.Stream.of(ops.createString(name));
+            }
+        };
+        *///?}
+    }
+
+    static <A> MapCodec<A> optionalField(Codec<A> codec, String name, A defaultValue) {
+        //? if >=1.20.5 {
+        return codec.optionalFieldOf(name, defaultValue);
+        //?} else {
+        /*return optionalField(codec, name).xmap(value -> value.orElse(defaultValue),
+                value -> Objects.equals(value, defaultValue) ? Optional.empty() : Optional.of(value));
+        *///?}
     }
 
     static boolean isValidLangKey(String key) {

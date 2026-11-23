@@ -74,11 +74,16 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         ValueOutput output = ValueOutput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag) {
+        super.saveAdditional(tag);
+        ValueOutput output = ValueOutput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         output.putString("Source", BuiltInRegistries.FLUID.getKey(this.source).toString());
     }
@@ -87,11 +92,16 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         ValueInput input = ValueInput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    public void load(net.minecraft.nbt.CompoundTag tag) {
+        super.load(tag);
+        ValueInput input = ValueInput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         this.source = BuiltInRegistries.FLUID.getValue(
                 Identifier.parse(input.getStringOr("Source", "minecraft:empty")));

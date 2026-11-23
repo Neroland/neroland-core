@@ -21,7 +21,11 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 public record GateSyncPayload(List<String> gates) implements CustomPacketPayload {
 
     public static final Type<GateSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "gate_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "gate_sync"), GateSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, GateSyncPayload> STREAM_CODEC =
             StreamCodec.of(GateSyncPayload::write, GateSyncPayload::read);

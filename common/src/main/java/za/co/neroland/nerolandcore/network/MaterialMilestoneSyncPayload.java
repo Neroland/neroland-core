@@ -14,8 +14,12 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 @org.jetbrains.annotations.ApiStatus.Internal
 public record MaterialMilestoneSyncPayload(List<String> values) implements CustomPacketPayload {
 
-    public static final Type<MaterialMilestoneSyncPayload> TYPE = new Type<>(
-            Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "material_milestone_sync"));
+    public static final Type<MaterialMilestoneSyncPayload> TYPE =
+            //? if >=1.20.5 {
+            new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "material_milestone_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "material_milestone_sync"), MaterialMilestoneSyncPayload.class);
+            *///?}
     public static final StreamCodec<RegistryFriendlyByteBuf, MaterialMilestoneSyncPayload> STREAM_CODEC =
             StreamCodec.of(MaterialMilestoneSyncPayload::write, MaterialMilestoneSyncPayload::read);
     private static final int MAX_VALUES = 4096;

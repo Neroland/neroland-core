@@ -75,13 +75,21 @@ public final class UpgradeContainer {
 
     public void save(ValueOutput output) {
         for (int i = 0; i < this.items.size(); i++) {
+            //? if >=1.20.5 {
             output.store("Upgrade" + i, ItemStack.OPTIONAL_CODEC, this.items.get(i));
+            //?} else {
+            /*output.store("Upgrade" + i, ItemStack.CODEC, this.items.get(i));
+            *///?}
         }
     }
 
     public void load(ValueInput input) {
         for (int i = 0; i < this.items.size(); i++) {
+            //? if >=1.20.5 {
             this.items.set(i, input.read("Upgrade" + i, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+            //?} else {
+            /*this.items.set(i, input.read("Upgrade" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+            *///?}
         }
     }
 }

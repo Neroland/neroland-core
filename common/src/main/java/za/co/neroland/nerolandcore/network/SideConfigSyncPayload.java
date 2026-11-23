@@ -24,7 +24,11 @@ import za.co.neroland.nerolandcore.sideconfig.Channel;
 public record SideConfigSyncPayload(BlockPos pos, Map<Channel, Integer> packed) implements CustomPacketPayload {
 
     public static final Type<SideConfigSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "side_config_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "side_config_sync"), SideConfigSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SideConfigSyncPayload> STREAM_CODEC =
             StreamCodec.of(SideConfigSyncPayload::write, SideConfigSyncPayload::read);

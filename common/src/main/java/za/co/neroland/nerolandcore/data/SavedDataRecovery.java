@@ -1,5 +1,7 @@
 package za.co.neroland.nerolandcore.data;
 
+import java.io.IOException;
+
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,9 +19,10 @@ import com.mojang.serialization.DynamicOps;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+//? if >=1.20.5 {
 import net.minecraft.nbt.NbtAccounter;
+//?}
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -242,7 +245,7 @@ public final class SavedDataRecovery {
             return null; // nothing on disk yet: a genuinely new store
         }
         try {
-            return new Preflight(NbtIo.readCompressed(primary, NbtAccounter.unlimitedHeap()), null, false);
+            return new Preflight(readCompressed(primary), null, false);
         } catch (Exception unreadable) {
             return new Preflight(null, new SavedDataDecodeException("primary file is unreadable", unreadable),
                     quarantine(primary, name));
@@ -368,7 +371,15 @@ public final class SavedDataRecovery {
     /** Registry-aware NBT ops: the explicit provider if given, else the level's registry access. */
     private static DynamicOps<Tag> ops(ServerLevel level, HolderLookup.Provider registries) {
         HolderLookup.Provider lookup = registries != null ? registries : level.registryAccess();
-        return lookup.createSerializationContext(NbtOps.INSTANCE);
+        return SavedDataCompat.nbtOps(lookup);
+    }
+
+    private static CompoundTag readCompressed(Path file) throws IOException {
+        //? if >=1.20.5 {
+        return NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
+        //?} else {
+        /*return NbtIo.readCompressed(file.toFile());
+        *///?}
     }
 
     /** A codec/IO failure detected by {@link #verifyPrimary}; carries no stored values. */
@@ -430,7 +441,7 @@ public final class SavedDataRecovery {
             if (!Files.isRegularFile(file)) {
                 return null;
             }
-            CompoundTag tag = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
+            CompoundTag tag = readCompressed(file);
             Tag data = tag.get("data");
             if (data == null) {
                 return null;
@@ -461,14 +472,17 @@ public final class SavedDataRecovery {
         try {
             Path file = backupFile(level, name);
             CompoundTag tag = new CompoundTag();
-            tag.put("data", SavedDataCompat.codec(type, level).encodeStart(ops(level, registries), instance).getOrThrow());
+            tag.put("data", SavedDataCompat.codec(type, level).encodeStart(ops(level, registries), instance)
+                    .result().orElseThrow(() -> new IllegalStateException("Saved data backup could not be encoded")));
             int hash = tag.hashCode();
             if (state.written && state.lastWrittenHash == hash && Files.isRegularFile(file)) {
                 return; // unchanged since the last written backup, and that backup is still there
             }
             Files.createDirectories(file.getParent());
             Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
-            NbtIo.writeCompressed(tag, tmp);
+            try (var output = Files.newOutputStream(tmp)) {
+                NbtIo.writeCompressed(tag, output);
+            }
             try {
                 Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } catch (AtomicMoveNotSupportedException unsupported) {

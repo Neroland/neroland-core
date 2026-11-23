@@ -11,7 +11,7 @@ package za.co.neroland.nerolandcore.data.compat;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 
 public final class ValueOutput {
 
@@ -52,7 +52,7 @@ public final class ValueOutput {
     }
 
     public <T> void store(String key, Codec<T> codec, T value) {
-        codec.encodeStart(this.registries.createSerializationContext(NbtOps.INSTANCE), value)
+        codec.encodeStart(SavedDataCompat.nbtOps(this.registries), value)
                 .result()
                 .ifPresent(encoded -> this.tag.put(key, encoded));
     }

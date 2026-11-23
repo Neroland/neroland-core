@@ -540,7 +540,11 @@ public final class SideConfigComponent {
                     to.setItem(slot, copy);
                     remaining -= put;
                     to.setChanged();
+                //? if >=1.20.5 {
                 } else if (net.minecraft.world.item.ItemStack.isSameItemSameComponents(existing, stack)) {
+                //?} else {
+                /*} else if (net.minecraft.world.item.ItemStack.isSameItemSameTags(existing, stack)) {
+                *///?}
                     int put = Math.min(remaining, cap - existing.getCount());
                     if (put > 0) {
                         existing.grow(put);

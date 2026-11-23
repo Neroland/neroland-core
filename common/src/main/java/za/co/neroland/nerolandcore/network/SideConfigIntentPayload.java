@@ -35,7 +35,11 @@ public record SideConfigIntentPayload(
     public static final int OP_REQUEST = 6;
 
     public static final Type<SideConfigIntentPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "side_config_intent"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "side_config_intent"), SideConfigIntentPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SideConfigIntentPayload> STREAM_CODEC =
             StreamCodec.of(SideConfigIntentPayload::write, SideConfigIntentPayload::read);

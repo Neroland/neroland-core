@@ -44,16 +44,23 @@ public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContaine
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         ValueOutput output = ValueOutput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag) {
+        super.saveAdditional(tag);
+        ValueOutput output = ValueOutput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         //? if >=1.21.6 {
         ContainerHelper.saveAllItems(output, this.items);
-        //?} else {
+        //?} else if >=1.20.5 {
         /*ContainerHelper.saveAllItems(output.tag(), this.items, output.registries());
+        *///?} else {
+        /*ContainerHelper.saveAllItems(output.tag(), this.items);
         *///?}
     }
 
@@ -61,17 +68,24 @@ public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContaine
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         ValueInput input = ValueInput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    public void load(net.minecraft.nbt.CompoundTag tag) {
+        super.load(tag);
+        ValueInput input = ValueInput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         this.items.clear();
         //? if >=1.21.6 {
         ContainerHelper.loadAllItems(input, this.items);
-        //?} else {
+        //?} else if >=1.20.5 {
         /*ContainerHelper.loadAllItems(input.tag(), this.items, input.registries());
+        *///?} else {
+        /*ContainerHelper.loadAllItems(input.tag(), this.items);
         *///?}
     }
 
@@ -135,7 +149,11 @@ public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Override
     public void setItem(int slot, ItemStack stack) {
+        //? if >=1.20.5 {
         stack.limitSize(this.getMaxStackSize());
+        //?} else {
+        /*stack.setCount(Math.min(stack.getCount(), this.getMaxStackSize()));
+        *///?}
         this.items.set(slot, stack);
         this.setChanged();
     }

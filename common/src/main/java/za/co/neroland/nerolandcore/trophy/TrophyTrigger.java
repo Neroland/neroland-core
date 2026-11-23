@@ -52,7 +52,12 @@ public sealed interface TrophyTrigger permits TrophyTrigger.Advancement, TrophyT
         }
     }
 
-    Codec<TrophyTrigger> CODEC = Type.CODEC.dispatch("type", TrophyTrigger::type, TrophyTrigger::mapCodecFor);
+    Codec<TrophyTrigger> CODEC =
+            //? if >=1.20.5 {
+            Type.CODEC.dispatch("type", TrophyTrigger::type, TrophyTrigger::mapCodecFor);
+            //?} else {
+            /*Type.CODEC.dispatch("type", TrophyTrigger::type, type -> mapCodecFor(type).codec());
+            *///?}
 
     Type type();
 
@@ -132,7 +137,7 @@ public sealed interface TrophyTrigger permits TrophyTrigger.Advancement, TrophyT
 
         private static final MapCodec<NeroEvent> MILESTONE_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 TrophyCodecs.ID.fieldOf("milestone").forGetter(NeroEvent::target),
-                TrophyCodecs.ID.optionalFieldOf("material").forGetter(NeroEvent::material))
+                TrophyCodecs.optionalField(TrophyCodecs.ID, "material").forGetter(NeroEvent::material))
                 .apply(instance, NeroEvent::ofMaterialMilestone));
 
         private static final MapCodec<NeroEvent> REPUTATION_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -141,12 +146,16 @@ public sealed interface TrophyTrigger permits TrophyTrigger.Advancement, TrophyT
                 .apply(instance, NeroEvent::ofReputation));
 
         private static final MapCodec<NeroEvent> CURRENCY_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TrophyCodecs.ID.optionalFieldOf("currency", DEFAULT_CURRENCY).forGetter(NeroEvent::target),
+                TrophyCodecs.optionalField(TrophyCodecs.ID, "currency", DEFAULT_CURRENCY).forGetter(NeroEvent::target),
                 TrophyCodecs.POSITIVE.fieldOf("at_least").forGetter(NeroEvent::atLeast))
                 .apply(instance, NeroEvent::ofCurrency));
 
         public static final MapCodec<NeroEvent> MAP_CODEC =
+                //? if >=1.20.5 {
                 Kind.CODEC.dispatchMap("event", NeroEvent::event, NeroEvent::codecFor);
+                //?} else {
+                /*Kind.CODEC.dispatchMap("event", NeroEvent::event, kind -> codecFor(kind).codec());
+                *///?}
 
         public NeroEvent {
             Objects.requireNonNull(event, "event");
@@ -213,7 +222,7 @@ public sealed interface TrophyTrigger permits TrophyTrigger.Advancement, TrophyT
         public static final Identifier DEFAULT_STAT_TYPE = Identifier.withDefaultNamespace("custom");
 
         public static final MapCodec<Stat> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TrophyCodecs.ID.optionalFieldOf("stat_type", DEFAULT_STAT_TYPE).forGetter(Stat::statType),
+                TrophyCodecs.optionalField(TrophyCodecs.ID, "stat_type", DEFAULT_STAT_TYPE).forGetter(Stat::statType),
                 TrophyCodecs.ID.fieldOf("stat").forGetter(Stat::stat),
                 TrophyCodecs.POSITIVE.fieldOf("at_least").forGetter(Stat::atLeast))
                 .apply(instance, Stat::new));
@@ -233,7 +242,7 @@ public sealed interface TrophyTrigger permits TrophyTrigger.Advancement, TrophyT
     record ItemObtained(Identifier item, int count) implements TrophyTrigger {
         public static final MapCodec<ItemObtained> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 TrophyCodecs.ID.fieldOf("item").forGetter(ItemObtained::item),
-                TrophyCodecs.POSITIVE.optionalFieldOf("count", 1).forGetter(ItemObtained::count))
+                TrophyCodecs.optionalField(TrophyCodecs.POSITIVE, "count", 1).forGetter(ItemObtained::count))
                 .apply(instance, ItemObtained::new));
 
         public ItemObtained {
@@ -250,7 +259,7 @@ public sealed interface TrophyTrigger permits TrophyTrigger.Advancement, TrophyT
     record BlockPlaced(Identifier block, int count) implements TrophyTrigger {
         public static final MapCodec<BlockPlaced> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 TrophyCodecs.ID.fieldOf("block").forGetter(BlockPlaced::block),
-                TrophyCodecs.POSITIVE.optionalFieldOf("count", 1).forGetter(BlockPlaced::count))
+                TrophyCodecs.optionalField(TrophyCodecs.POSITIVE, "count", 1).forGetter(BlockPlaced::count))
                 .apply(instance, BlockPlaced::new));
 
         public BlockPlaced {

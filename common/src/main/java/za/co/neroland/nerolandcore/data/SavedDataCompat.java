@@ -3,7 +3,11 @@ package za.co.neroland.nerolandcore.data;
 import java.util.function.Supplier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -36,13 +40,15 @@ public final class SavedDataCompat {
     public static <T extends SavedData> SavedDataType<T> type(Identifier id, Supplier<T> constructor, Codec<T> codec) {
         //? if >=26.1 {
         return new SavedDataType<>(id, constructor, codec, null);
-        //?} else {
+        //?} else if >=1.20.5 {
         /*// Before 26.1 vanilla's DimensionDataStorage.readTagFromDisk runs dataFixType.update(..) with no null
         // check, so a null type throws on every reload of an existing file (vanilla then logs it and hands back
         // an empty store). RANDOM_SEQUENCES is a saved-data type with no data fixes, and the update is a no-op
         // when the file's DataVersion matches the running game, so it only satisfies the call.
         return new SavedDataType<>(legacyId(id), constructor, codec,
                 net.minecraft.util.datafix.DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
+        *///?} else {
+        /*return new SavedDataType<>(legacyId(id), constructor, codec, null);
         *///?}
     }
 
@@ -73,8 +79,11 @@ public final class SavedDataCompat {
     public static <T extends SavedData> T computeIfAbsent(ServerLevel level, SavedDataType<T> type) {
         //? if >=1.21.5 {
         return level.getDataStorage().computeIfAbsent(type);
-        //?} else {
+        //?} else if >=1.20.5 {
         /*return level.getDataStorage().computeIfAbsent(type.factory(level), type.id());
+        *///?} else {
+        /*return level.getDataStorage().computeIfAbsent(tag -> type.read(tag, level.registryAccess()),
+                () -> type.attach(type.constructor().get(), level.registryAccess()), type.id());
         *///?}
     }
 
@@ -94,8 +103,18 @@ public final class SavedDataCompat {
     public static <T extends SavedData> void set(ServerLevel level, SavedDataType<T> type, T instance) {
         //? if >=1.21.5 {
         level.getDataStorage().set(type, instance);
-        //?} else {
+        //?} else if >=1.20.5 {
         /*level.getDataStorage().set(type.id(), type.attach(instance));
+        *///?} else {
+        /*level.getDataStorage().set(type.id(), type.attach(instance, level.registryAccess()));
+        *///?}
+    }
+
+    public static DynamicOps<Tag> nbtOps(HolderLookup.Provider registries) {
+        //? if >=1.20.5 {
+        return registries.createSerializationContext(NbtOps.INSTANCE);
+        //?} else {
+        /*return net.minecraft.resources.RegistryOps.create(NbtOps.INSTANCE, registries);
         *///?}
     }
 }

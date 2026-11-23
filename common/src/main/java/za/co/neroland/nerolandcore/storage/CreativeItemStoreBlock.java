@@ -43,10 +43,18 @@ public class CreativeItemStoreBlock extends AbstractStorageBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            InteractionHand hand, BlockHitResult hit) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (stack.isEmpty()) {
+            return useWithoutItem(state, level, pos, player, hit);
+        }
     *///?}
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CreativeItemStoreBlockEntity store) {
             store.setSource(stack);
@@ -58,14 +66,16 @@ public class CreativeItemStoreBlock extends AbstractStorageBlock {
                     "block.nerolandcore.creative_item_store.set", stack.getHoverName()), false);
             *///?}
         }
-        //? if >=1.21.2 {
-        return InteractionResult.SUCCESS;
-        //?} else {
+        //? if >=1.20.5 && <1.21.2 {
         /*return net.minecraft.world.ItemInteractionResult.SUCCESS;
-        *///?}
+        *///?} else {
+        return InteractionResult.SUCCESS;
+        //?}
     }
 
+    //? if >=1.20.5 {
     @Override
+    //?}
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CreativeItemStoreBlockEntity store) {
             store.setSource(ItemStack.EMPTY);

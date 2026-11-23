@@ -29,6 +29,15 @@ ext.legacyRenames = [
     // 1.21.11 renamed ResourceLocation -> Identifier and ResourceKey.location() -> identifier().
     [below: '1.21.11', from: /\bIdentifier\b/, to: 'ResourceLocation'],
     [below: '1.21.11', from: /\.identifier\(\)/, to: '.location()'],
+    [below: '1.21', from: /\b((?:net\.minecraft\.resources\.)?ResourceLocation)\.(?:fromNamespaceAndPath|parse|withDefaultNamespace)\(/, to: 'new $1('],
+    [below: '1.20.5', from: /\bSpawnPlacementType\b/, to: 'SpawnPlacements.Type'],
+    [below: '1.20.5', from: /import net\.minecraft\.world\.entity\.SpawnPlacements\.Type;/, to: ''],
+    [below: '1.20.5', from: /import net\.minecraft\.network\.RegistryFriendlyByteBuf;/, to: 'import net.minecraft.network.FriendlyByteBuf;'],
+    [below: '1.20.5', from: /\bRegistryFriendlyByteBuf\b/, to: 'FriendlyByteBuf'],
+    [below: '1.20.5', from: /import net\.minecraft\.network\.codec\.StreamCodec;/, to: 'import za.co.neroland.nerolandcore.network.legacy.LegacyStreamCodec;'],
+    [below: '1.20.5', from: /\bStreamCodec\b/, to: 'LegacyStreamCodec'],
+    [below: '1.20.5', from: /import net\.minecraft\.network\.protocol\.common\.custom\.CustomPacketPayload;/, to: 'import za.co.neroland.nerolandcore.network.legacy.LegacyPayload;'],
+    [below: '1.20.5', from: /\bCustomPacketPayload\b/, to: 'LegacyPayload'],
     // 26.1 renamed GuiGraphics -> GuiGraphicsExtractor and its drawString(..) -> text(..). The text()
     // rename is keyed on the receiver names this codebase uses for the graphics object (g / graphics).
     [below: '26.1', from: /\bGuiGraphicsExtractor\b/, to: 'GuiGraphics'],
@@ -66,7 +75,7 @@ subprojects {
 
     // Minecraft 1.21.x runs on Java 21, so its cells must emit Java 21 bytecode (and may not use
     // Java 22+ language features). 26.x cells stay on Java 25. A node's project name IS its MC version.
-    def javaRelease = project.name.startsWith('1.') ? 21 : 25
+    def javaRelease = project.name == '1.20' ? 17 : (project.name.startsWith('1.') ? 21 : 25)
     ext.javaRelease = javaRelease
 
     java {
@@ -262,11 +271,13 @@ subprojects {
                 return
             }
             def base = new File(rootProject.ext.commonResources).canonicalFile
+            def legacyResult = sc.eval(sc.current.version, '<1.20.5')
             def outDir = node.file('build/generated/legacy-recipes')
             def legacyRecipes = node.tasks.register('legacyRecipes') {
                 group = 'stonecutter'
-                description = 'Rewrites short-form recipe ingredients to the pre-1.21.2 object form.'
+                description = 'Converts recipes and their unlocks for older Minecraft data formats.'
                 inputs.dir(base)
+                inputs.property('legacyResult', legacyResult)
                 outputs.dir(outDir)
                 doLast {
                     node.delete(outDir)
@@ -280,10 +291,29 @@ subprojects {
                     }
                     base.eachFileRecurse(groovy.io.FileType.FILES) { f ->
                         def rel = base.toPath().relativize(f.toPath()).toString().replace('\\', '/')
-                        if (!(rel ==~ /data\/[^\/]+\/recipe\/.+\.json/)) {
+                        def recipe = rel ==~ /data\/[^\/]+\/recipe\/.+\.json/
+                        def recipeUnlock = legacyResult && (rel ==~ /data\/[^\/]+\/advancement\/recipes\/.+\.json/)
+                        if (!recipe && !recipeUnlock) {
                             return
                         }
                         def json = slurper.parse(f)
+                        if (recipeUnlock) {
+                            json.criteria.values().each { criterion ->
+                                if (criterion.trigger == 'minecraft:inventory_changed') {
+                                    criterion.conditions.items.each { predicate ->
+                                        if (predicate.items instanceof String) {
+                                            def items = predicate.items
+                                            if (items.startsWith('#')) {
+                                                predicate.remove('items')
+                                                predicate.tag = items.substring(1)
+                                            } else {
+                                                predicate.items = [items]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if (json.key instanceof Map) {
                             json.key = json.key.collectEntries { k, v -> [(k): conv(v)] }
                         }
@@ -293,6 +323,14 @@ subprojects {
                         ['ingredient', 'template', 'base', 'addition'].each { k ->
                             if (json[k] != null) {
                                 json[k] = conv(json[k])
+                            }
+                        }
+                        if (legacyResult && json.result instanceof Map && json.result.id instanceof String) {
+                            if (json.type in ['minecraft:smelting', 'minecraft:blasting', 'minecraft:smoking',
+                                    'minecraft:campfire_cooking']) {
+                                json.result = json.result.id
+                            } else {
+                                json.result.item = json.result.remove('id')
                             }
                         }
                         def dst = new File(outDir, rel)
@@ -305,6 +343,50 @@ subprojects {
             node.tasks.named('processResources') {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
+        }
+    }
+    if (isNode && project.name == '1.20') {
+        def common = new File(rootProject.ext.commonResources)
+        def legacyItemModels = tasks.register('legacyItemModels') {
+            def assets = new File(common, 'assets/nerolandcore')
+            def out = layout.buildDirectory.dir('generated/legacy-item-models')
+            inputs.dir(assets)
+            outputs.dir(out)
+            doLast {
+                def destination = out.get().asFile
+                project.delete(destination)
+                def models = new File(destination, 'assets/nerolandcore/models/item')
+                models.mkdirs()
+                new File(assets, 'items').eachFileMatch(~/.*\.json/) { definition ->
+                    if (!new File(assets, "models/item/${definition.name}").isFile()) {
+                        def model = new groovy.json.JsonSlurper().parse(definition).model
+                        if (model.type != 'minecraft:model' || !model.model?.startsWith('nerolandcore:block/')) {
+                            throw new GradleException("Unsupported 1.20 item model: ${definition.name}")
+                        }
+                        new File(models, definition.name).text = groovy.json.JsonOutput.toJson([parent: model.model])
+                    }
+                }
+            }
+        }
+        sourceSets.main.resources.srcDir(files(layout.buildDirectory.dir('generated/legacy-item-models'))
+                .builtBy(legacyItemModels))
+        tasks.named('processResources') {
+            filesMatching('pack.mcmeta') {
+                filter { line -> line.replace('"pack_format": 84', '"pack_format": 15') }
+            }
+            filesMatching('**/*.mixins.json') {
+                filter { line -> line.replace('JAVA_21', 'JAVA_17') }
+            }
+            if (project.parent.name == 'forge') {
+                filesMatching('nerolandcore-common.mixins.json') {
+                    filter { line -> line.replace('"minVersion": "0.8",', '"minVersion": "0.8",\n  "refmap": "nerolandcore.refmap.json",') }
+                }
+            }
+            eachFile { file ->
+                file.path = file.path.replaceFirst(/^(data\/[^\/]+\/)(advancement|loot_table|recipe)\//, '$1$2s/')
+                        .replaceFirst(/^(data\/[^\/]+\/tags\/)(block|entity_type|fluid|item)\//, '$1$2s/')
+            }
+            includeEmptyDirs = false
         }
     }
     if (isNode) {

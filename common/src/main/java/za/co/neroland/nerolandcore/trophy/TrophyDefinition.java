@@ -43,17 +43,17 @@ public record TrophyDefinition(Identifier id, Identifier icon, TrophyTier tier, 
 
     /** Decodes a definition file. Unknown top-level keys, of any shape, are ignored. */
     public static final Codec<Data> DATA_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            TrophyCodecs.POSITIVE.optionalFieldOf("schema", SCHEMA).forGetter(Data::schema),
+            TrophyCodecs.optionalField(TrophyCodecs.POSITIVE, "schema", SCHEMA).forGetter(Data::schema),
             TrophyCodecs.ID.fieldOf("icon").forGetter(Data::icon),
             TrophyTier.CODEC.fieldOf("tier").forGetter(Data::tier),
-            TrophyTrigger.CODEC.optionalFieldOf("trigger").forGetter(Data::trigger),
-            Codec.BOOL.optionalFieldOf("hidden", false).forGetter(Data::hidden),
-            TrophyCodecs.LANG_KEY_CODEC.optionalFieldOf("title").forGetter(Data::title),
-            TrophyCodecs.LANG_KEY_CODEC.optionalFieldOf("description").forGetter(Data::description),
-            TrophyCodecs.MOD_IDS.optionalFieldOf("requires_mod", List.of()).forGetter(Data::requiresMods),
-            TrophyCodecs.MOD_ID.optionalFieldOf("category").forGetter(Data::category),
-            TrophyReward.CODEC.optionalFieldOf("reward").forGetter(Data::reward),
-            TrophyCodecs.ANY_INT.optionalFieldOf("order", 0).forGetter(Data::order))
+            TrophyCodecs.optionalField(TrophyTrigger.CODEC, "trigger").forGetter(Data::trigger),
+            TrophyCodecs.optionalField(Codec.BOOL, "hidden", false).forGetter(Data::hidden),
+            TrophyCodecs.optionalField(TrophyCodecs.LANG_KEY_CODEC, "title").forGetter(Data::title),
+            TrophyCodecs.optionalField(TrophyCodecs.LANG_KEY_CODEC, "description").forGetter(Data::description),
+            TrophyCodecs.optionalField(TrophyCodecs.MOD_IDS, "requires_mod", List.of()).forGetter(Data::requiresMods),
+            TrophyCodecs.optionalField(TrophyCodecs.MOD_ID, "category").forGetter(Data::category),
+            TrophyCodecs.optionalField(TrophyReward.CODEC, "reward").forGetter(Data::reward),
+            TrophyCodecs.optionalField(TrophyCodecs.ANY_INT, "order", 0).forGetter(Data::order))
             .apply(instance, (schema, icon, tier, trigger, hidden, title, description, requiresMods, category,
                     reward, order) -> new Data(icon, tier, trigger, hidden, title, description, requiresMods,
                     category, reward, order, schema)));

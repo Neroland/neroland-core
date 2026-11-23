@@ -1,5 +1,6 @@
 package za.co.neroland.nerolandcore.forge;
 
+//? if >=1.20.5 {
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -14,7 +15,7 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
 import za.co.neroland.nerolandcore.platform.NetworkPlatform;
 
-/** Forge side of the cross-loader packet seam. Registered via {@code META-INF/services}. */
+// Forge side of the cross-loader packet seam. Registered via {@code META-INF/services}.
 public final class ForgeNetwork implements NetworkPlatform {
 
     private static Channel<CustomPacketPayload> channel;
@@ -70,3 +71,75 @@ public final class ForgeNetwork implements NetworkPlatform {
         }
     }
 }
+//?} else {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
+
+import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.network.CoreNetwork;
+import za.co.neroland.nerolandcore.network.legacy.LegacyPayload;
+import za.co.neroland.nerolandcore.platform.NetworkPlatform;
+
+public final class ForgeNetwork implements NetworkPlatform {
+    private static final String PROTOCOL = "1";
+    private static SimpleChannel channel;
+
+    public static void register() {
+        channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(NerolandCoreCommon.MOD_ID, "main"),
+                () -> PROTOCOL, ForgeNetwork::acceptVersion, ForgeNetwork::acceptVersion);
+        int id = 0;
+        for (CoreNetwork.Clientbound<?> packet : CoreNetwork.clientbound()) {
+            registerClientbound(packet, id++);
+        }
+        for (CoreNetwork.Serverbound<?> packet : CoreNetwork.serverbound()) {
+            registerServerbound(packet, id++);
+        }
+    }
+
+    private static boolean acceptVersion(String version) {
+        return PROTOCOL.equals(version) || NetworkRegistry.ABSENT.version().equals(version)
+                || NetworkRegistry.ACCEPTVANILLA.equals(version);
+    }
+
+    private static <T extends LegacyPayload> void registerClientbound(CoreNetwork.Clientbound<T> packet, int id) {
+        channel.messageBuilder(packet.type().payloadClass(), id, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((payload, buffer) -> packet.codec().encode(buffer, payload))
+                .decoder(packet.codec()::decode)
+                .consumerMainThread((payload, context) -> packet.handler().accept(payload))
+                .add();
+    }
+
+    private static <T extends LegacyPayload> void registerServerbound(CoreNetwork.Serverbound<T> packet, int id) {
+        channel.messageBuilder(packet.type().payloadClass(), id, NetworkDirection.PLAY_TO_SERVER)
+                .encoder((payload, buffer) -> packet.codec().encode(buffer, payload))
+                .decoder(packet.codec()::decode)
+                .consumerMainThread((payload, context) -> {
+                    ServerPlayer player = context.get().getSender();
+                    if (player != null) {
+                        packet.handler().accept(payload, player);
+                    }
+                })
+                .add();
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, LegacyPayload payload) {
+        if (channel != null && channel.isRemotePresent(player.connection.connection)) {
+            channel.send(PacketDistributor.PLAYER.with(() -> player), payload);
+        }
+    }
+
+    @Override
+    public void sendToServer(LegacyPayload payload) {
+        var connection = Minecraft.getInstance().getConnection();
+        if (channel != null && connection != null && channel.isRemotePresent(connection.getConnection())) {
+            channel.sendToServer(payload);
+        }
+    }
+}
+*///?}

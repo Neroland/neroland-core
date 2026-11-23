@@ -23,7 +23,11 @@ import za.co.neroland.nerolandcore.NerolandCoreCommon;
 public record ConfigSyncPayload(Map<String, String> values) implements CustomPacketPayload {
 
     public static final Type<ConfigSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "config_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerolandCoreCommon.MOD_ID, "config_sync"), ConfigSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ConfigSyncPayload> STREAM_CODEC =
             StreamCodec.of(ConfigSyncPayload::write, ConfigSyncPayload::read);

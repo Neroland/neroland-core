@@ -103,7 +103,7 @@ public final class FabricFluidHandlers {
         @Override
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            if (resource.hasComponents() || !this.view.insertable()) {
+            if (hasMetadata(resource) || !this.view.insertable()) {
                 return 0; // a Nero tank holds a bare fluid; never silently strip components
             }
             long offered = toMillibuckets(maxAmount);
@@ -121,7 +121,7 @@ public final class FabricFluidHandlers {
         @Override
         public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            if (resource.hasComponents() || !this.view.extractable()
+            if (hasMetadata(resource) || !this.view.extractable()
                     || this.store.getFluid() != resource.getFluid()) {
                 return 0;
             }
@@ -188,6 +188,14 @@ public final class FabricFluidHandlers {
      * this thread, so this adapter belongs at the START of a transfer (Core's lookups, side-config
      * push/pull, machine ticks) and never inside another storage's transaction.
      */
+    private static boolean hasMetadata(FluidVariant variant) {
+        //? if >=1.20.5 {
+        return variant.hasComponents();
+        //?} else {
+        /*return variant.hasNbt();
+        *///?}
+    }
+
     private static final class StandardToNero implements NeroFluidStorage {
 
         private final Storage<FluidVariant> storage;

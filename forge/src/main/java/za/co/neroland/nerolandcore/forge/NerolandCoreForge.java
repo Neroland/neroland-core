@@ -32,7 +32,12 @@ import za.co.neroland.nerolandcore.telemetry.NerolandCoreTelemetry;
 @Mod(NerolandCoreCommon.MOD_ID)
 public final class NerolandCoreForge {
 
+    //? if >=1.20.5 {
     public NerolandCoreForge(FMLJavaModLoadingContext context) {
+    //?} else {
+    /*public NerolandCoreForge() {
+        FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
+    *///?}
         NerolandCoreCommon.LOGGER.info("[Neroland Core] Forge bootstrap");
         //? if >=1.21.6 {
         BusGroup modBusGroup = context.getModBusGroup();
@@ -87,9 +92,15 @@ public final class NerolandCoreForge {
         TickEvent.ServerTickEvent.Post.BUS.addListener(event -> RetentionSchedule.onServerTick(event.server()));
         //?} else if >=1.21.6 {
         /*TickEvent.ServerTickEvent.Post.BUS.addListener(event -> RetentionSchedule.onServerTick(event.getServer()));
-        *///?} else {
+        *///?} else if >=1.20.5 {
         /*MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent.Post event) ->
                 RetentionSchedule.onServerTick(event.getServer()));
+        *///?} else {
+        /*MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+            if (event.phase == TickEvent.Phase.END) {
+                RetentionSchedule.onServerTick(event.getServer());
+            }
+        });
         *///?}
     }
 }

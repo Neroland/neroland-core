@@ -33,7 +33,11 @@ public class GasTankBlock extends BaseEntityBlock {
     }
 
     @Override
+    //? if >=1.20.5 {
     protected RenderShape getRenderShape(BlockState state) {
+    //?} else {
+    /*public RenderShape getRenderShape(BlockState state) {
+    *///?}
         return RenderShape.MODEL;
     }
 
@@ -43,8 +47,14 @@ public class GasTankBlock extends BaseEntityBlock {
         return new GasTankBlockEntity(pos, state);
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+    *///?}
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof GasTankBlockEntity tank) {
             if (NeroGases.isEmpty(tank.getTank().getGas()) || tank.getTank().getAmount() <= 0) {

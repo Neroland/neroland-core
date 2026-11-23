@@ -208,7 +208,7 @@ public final class TrophyDefinitions {
             TrophyDefinition definition;
             try {
                 definition = TrophyDefinition.of(id, TrophyDefinition.DATA_CODEC
-                        .parse(JsonOps.INSTANCE, read(entry.getValue())).getOrThrow());
+                        .parse(JsonOps.INSTANCE, read(entry.getValue())).result().orElseThrow());
             } catch (TooLarge tooLarge) {
                 issues.add(file, TrophyLoadReport.TOO_LARGE);
                 continue;
@@ -250,7 +250,7 @@ public final class TrophyDefinitions {
             examined++;
             TrophyCollection.Data data;
             try {
-                data = TrophyCollection.DATA_CODEC.parse(JsonOps.INSTANCE, read(entry.getValue())).getOrThrow();
+                data = TrophyCollection.DATA_CODEC.parse(JsonOps.INSTANCE, read(entry.getValue())).result().orElseThrow();
             } catch (TooLarge tooLarge) {
                 issues.add(file, TrophyLoadReport.TOO_LARGE);
                 continue;

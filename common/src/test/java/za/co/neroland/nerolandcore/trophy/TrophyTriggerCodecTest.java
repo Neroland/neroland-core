@@ -23,9 +23,9 @@ class TrophyTriggerCodecTest {
     }
 
     private static TrophyTrigger roundTrip(String json) {
-        TrophyTrigger decoded = decode(json).getOrThrow();
-        JsonElement encoded = TrophyTrigger.CODEC.encodeStart(JsonOps.INSTANCE, decoded).getOrThrow();
-        assertEquals(decoded, TrophyTrigger.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow());
+        TrophyTrigger decoded = decode(json).result().orElseThrow();
+        JsonElement encoded = TrophyTrigger.CODEC.encodeStart(JsonOps.INSTANCE, decoded).result().orElseThrow();
+        assertEquals(decoded, TrophyTrigger.CODEC.parse(JsonOps.INSTANCE, encoded).result().orElseThrow());
         return decoded;
     }
 
@@ -68,7 +68,7 @@ class TrophyTriggerCodecTest {
     void neroEventCurrencyDefaultsToCredits() {
         assertEquals(TrophyTrigger.NeroEvent.ofCurrency(TrophyTrigger.NeroEvent.DEFAULT_CURRENCY, 1000),
                 roundTrip("{\"type\":\"nero_event\",\"event\":\"currency\",\"at_least\":1000}"));
-        assertTrue(decode("{\"type\":\"nero_event\",\"event\":\"currency\",\"at_least\":0}").isError());
+        assertTrue(decode("{\"type\":\"nero_event\",\"event\":\"currency\",\"at_least\":0}").error().isPresent());
     }
 
     @Test
@@ -109,34 +109,34 @@ class TrophyTriggerCodecTest {
                 "{\"type\":\"item_obtained\",\"item\":\"notinstalled:item\"}",
                 "{\"type\":\"block_placed\",\"block\":\"notinstalled:block\"}",
                 "{\"type\":\"dimension_visited\",\"dimension\":\"notinstalled:world\"}")) {
-            assertTrue(decode(json).isSuccess(), json);
+            assertTrue(decode(json).result().isPresent(), json);
         }
     }
 
     @Test
     void unknownTypeAndReservedThresholdAreRejected() {
-        assertTrue(decode("{\"type\":\"kill_count\",\"entity\":\"minecraft:zombie\"}").isError());
-        assertTrue(decode("{\"type\":\"nero_event\",\"event\":\"threshold\",\"channel\":\"nerotech:power\"}").isError());
+        assertTrue(decode("{\"type\":\"kill_count\",\"entity\":\"minecraft:zombie\"}").error().isPresent());
+        assertTrue(decode("{\"type\":\"nero_event\",\"event\":\"threshold\",\"channel\":\"nerotech:power\"}").error().isPresent());
     }
 
     @Test
     void numbersAreBoundedAndWhole() {
-        assertTrue(decode("{\"type\":\"stat\",\"stat\":\"minecraft:jump\",\"at_least\":0}").isError());
-        assertTrue(decode("{\"type\":\"stat\",\"stat\":\"minecraft:jump\",\"at_least\":2147483648}").isError());
-        assertTrue(decode("{\"type\":\"stat\",\"stat\":\"minecraft:jump\",\"at_least\":1.5}").isError());
-        assertTrue(decode("{\"type\":\"item_obtained\",\"item\":\"minecraft:dirt\",\"count\":-1}").isError());
+        assertTrue(decode("{\"type\":\"stat\",\"stat\":\"minecraft:jump\",\"at_least\":0}").error().isPresent());
+        assertTrue(decode("{\"type\":\"stat\",\"stat\":\"minecraft:jump\",\"at_least\":2147483648}").error().isPresent());
+        assertTrue(decode("{\"type\":\"stat\",\"stat\":\"minecraft:jump\",\"at_least\":1.5}").error().isPresent());
+        assertTrue(decode("{\"type\":\"item_obtained\",\"item\":\"minecraft:dirt\",\"count\":-1}").error().isPresent());
     }
 
     @Test
     void overLongIdentifiersAreRejected() {
         String longPath = "a".repeat(130);
-        assertTrue(decode("{\"type\":\"advancement\",\"advancement\":\"x:" + longPath + "\"}").isError());
+        assertTrue(decode("{\"type\":\"advancement\",\"advancement\":\"x:" + longPath + "\"}").error().isPresent());
     }
 
     @Test
     void tierCodecAndRanks() {
         assertEquals(TrophyTier.NERO, TrophyTier.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString("\"nero\""))
-                .getOrThrow());
+                .result().orElseThrow());
         assertTrue(TrophyTier.BRONZE.rank() < TrophyTier.SILVER.rank());
         assertTrue(TrophyTier.GOLD.rank() < TrophyTier.NERO.rank());
     }

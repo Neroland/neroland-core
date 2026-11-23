@@ -8,6 +8,12 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-11-26
+
+### Added
+
+- Minecraft Java Edition 1.20 builds for Fabric and Forge, using Java 17.
+
 ## [1.21.0] - 2026-11-26
 
 ### Added

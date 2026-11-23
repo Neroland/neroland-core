@@ -35,14 +35,14 @@ public record TrophyCollection(Identifier id, String title, String description, 
 
     /** Decodes a collection file. Unknown top-level keys, of any shape, are ignored. */
     public static final Codec<Data> DATA_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            TrophyCodecs.POSITIVE.optionalFieldOf("schema", TrophyDefinition.SCHEMA).forGetter(Data::schema),
+            TrophyCodecs.optionalField(TrophyCodecs.POSITIVE, "schema", TrophyDefinition.SCHEMA).forGetter(Data::schema),
             TrophyCodecs.ID.fieldOf("icon").forGetter(Data::icon),
-            TrophyCodecs.LANG_KEY_CODEC.optionalFieldOf("title").forGetter(Data::title),
-            TrophyCodecs.LANG_KEY_CODEC.optionalFieldOf("description").forGetter(Data::description),
+            TrophyCodecs.optionalField(TrophyCodecs.LANG_KEY_CODEC, "title").forGetter(Data::title),
+            TrophyCodecs.optionalField(TrophyCodecs.LANG_KEY_CODEC, "description").forGetter(Data::description),
             TrophyCodecs.ID.listOf().fieldOf("members").forGetter(Data::members),
             TrophyCodecs.TRIM_CODEC.fieldOf("trim").forGetter(Data::trim),
-            TrophyCodecs.ID.optionalFieldOf("trophy").forGetter(Data::trophy),
-            TrophyCodecs.MOD_IDS.optionalFieldOf("requires_mod", List.of()).forGetter(Data::requiresMods))
+            TrophyCodecs.optionalField(TrophyCodecs.ID, "trophy").forGetter(Data::trophy),
+            TrophyCodecs.optionalField(TrophyCodecs.MOD_IDS, "requires_mod", List.of()).forGetter(Data::requiresMods))
             .apply(instance, (schema, icon, title, description, members, trim, trophy, requiresMods) ->
                     new Data(icon, title, description, members, trim, trophy, requiresMods, schema)));
 

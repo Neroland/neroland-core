@@ -30,7 +30,11 @@ public class CreativeBatteryBlock extends BaseEntityBlock {
     }
 
     @Override
+    //? if >=1.20.5 {
     protected RenderShape getRenderShape(BlockState state) {
+    //?} else {
+    /*public RenderShape getRenderShape(BlockState state) {
+    *///?}
         return RenderShape.MODEL;
     }
 
