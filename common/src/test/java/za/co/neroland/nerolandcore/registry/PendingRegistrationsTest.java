@@ -51,7 +51,8 @@ class PendingRegistrationsTest {
         var pending = new PendingRegistrations<Integer>();
         List<Integer> attached = new ArrayList<>();
         var start = new CountDownLatch(1);
-        try (var executor = Executors.newFixedThreadPool(8)) {
+        var executor = Executors.newFixedThreadPool(8);
+        try {
             List<Future<?>> tasks = new ArrayList<>();
             for (int mod = 0; mod < 8; mod++) {
                 int base = mod * 1000;
@@ -70,6 +71,8 @@ class PendingRegistrationsTest {
             for (Future<?> task : tasks) {
                 task.get(15, TimeUnit.SECONDS);
             }
+        } finally {
+            executor.shutdownNow();
         }
         pending.attachAll(attached::add);
         assertEquals(8000, attached.size());

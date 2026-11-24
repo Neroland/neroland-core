@@ -8,6 +8,15 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.23.0] - 2026-11-26
+
+### Added
+
+- Minecraft Java Edition 1.20.1 through 1.20.6 builds for Fabric.
+- Forge builds for Minecraft 1.20.1, 1.20.2, 1.20.3, 1.20.4 and 1.20.6.
+- NeoForge builds for Minecraft 1.20.4 and 1.20.6.
+- The Forge 1.20.1 jar also passed dedicated-server testing on the legacy NeoForge fork (47.1.106).
+
 ## [1.22.0] - 2026-11-26
 
 ### Added

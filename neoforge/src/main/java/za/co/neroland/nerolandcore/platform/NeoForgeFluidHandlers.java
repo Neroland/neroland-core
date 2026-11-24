@@ -338,6 +338,14 @@ public final class NeoForgeFluidHandlers {
         return simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE;
     }
 
+    private static boolean hasMetadata(FluidStack stack) {
+        //? if >=1.20.5 {
+        return !stack.isComponentsPatchEmpty();
+        //?} else {
+        /^return stack.hasTag();
+        ^///?}
+    }
+
    // Nero tank seen as a one-tank IFluidHandler. Permissions are checked against the GatedFluidView.
     private static final class NeroToStandard implements IFluidHandler {
 
@@ -375,7 +383,7 @@ public final class NeoForgeFluidHandlers {
         }
 
         private boolean accepts(FluidStack stack) {
-            if (stack.isEmpty() || !stack.isComponentsPatchEmpty() || !this.view.insertable()) {
+            if (stack.isEmpty() || hasMetadata(stack) || !this.view.insertable()) {
                 return false;
             }
             Fluid held = this.store.getFluid();
@@ -392,7 +400,7 @@ public final class NeoForgeFluidHandlers {
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            if (resource.isEmpty() || !resource.isComponentsPatchEmpty()
+            if (resource.isEmpty() || hasMetadata(resource)
                     || this.store.getFluid() != resource.getFluid()) {
                 return FluidStack.EMPTY;
             }

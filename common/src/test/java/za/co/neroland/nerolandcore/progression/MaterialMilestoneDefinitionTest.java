@@ -15,8 +15,8 @@ class MaterialMilestoneDefinitionTest {
         MaterialMilestone.Data data = new MaterialMilestone.Data(GateScope.TEAM,
                 java.util.List.of(MaterialObservation.OWNER_MOD, MaterialObservation.PLANET_VISIT),
                 "Known Material");
-        var json = MaterialMilestone.DATA_CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow();
-        MaterialMilestone.Data decoded = MaterialMilestone.DATA_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        var json = MaterialMilestone.DATA_CODEC.encodeStart(JsonOps.INSTANCE, data).result().orElseThrow();
+        MaterialMilestone.Data decoded = MaterialMilestone.DATA_CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
 
         assertEquals(data, decoded);
         MaterialMilestone definition = new MaterialMilestone(Identifier.parse("test:known"), decoded);

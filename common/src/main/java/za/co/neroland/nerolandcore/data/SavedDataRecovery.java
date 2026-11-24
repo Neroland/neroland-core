@@ -19,7 +19,7 @@ import com.mojang.serialization.DynamicOps;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-//? if >=1.20.5 {
+//? if >=1.20.3 {
 import net.minecraft.nbt.NbtAccounter;
 //?}
 import net.minecraft.nbt.NbtIo;
@@ -375,7 +375,7 @@ public final class SavedDataRecovery {
     }
 
     private static CompoundTag readCompressed(Path file) throws IOException {
-        //? if >=1.20.5 {
+        //? if >=1.20.3 {
         return NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
         //?} else {
         /*return NbtIo.readCompressed(file.toFile());

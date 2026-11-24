@@ -73,7 +73,7 @@ publishing {
 sourceSets.main.java.srcDir rootProject.ext.commonJava
 sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
-if (mc == '1.20') {
+if (mc == '1.20' || mc.startsWith('1.20.')) {
     sourceSets.test.java {
         srcDir "${rootProject.projectDir}/common/src/test/java"
         include '**/LegacyNetworkCodecTest.java', '**/TrophyTriggerCodecTest.java'

@@ -141,13 +141,13 @@ class ErasureTombstonesTest {
         store.markEntity(entity);
 
         ErasureTombstones loaded = ErasureTombstones.storeCodec().parse(JsonOps.INSTANCE, encode(store))
-                .getOrThrow();
+                .result().orElseThrow();
         assertTrue(loaded.isOwnerErased(owner));
         assertTrue(loaded.isEntityMarked(entity));
         assertEquals(2, loaded.count());
 
         ErasureTombstones empty = ErasureTombstones.storeCodec()
-                .parse(JsonOps.INSTANCE, new com.google.gson.JsonObject()).getOrThrow();
+                .parse(JsonOps.INSTANCE, new com.google.gson.JsonObject()).result().orElseThrow();
         assertEquals(0, empty.count(), "a missing file field reads as empty");
     }
 
@@ -234,6 +234,6 @@ class ErasureTombstonesTest {
     }
 
     private static JsonElement encode(ErasureTombstones store) {
-        return ErasureTombstones.storeCodec().encodeStart(JsonOps.INSTANCE, store).getOrThrow();
+        return ErasureTombstones.storeCodec().encodeStart(JsonOps.INSTANCE, store).result().orElseThrow();
     }
 }

@@ -76,9 +76,14 @@ public final class ForgeNetwork implements NetworkPlatform {
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
+//? if >=1.20.2 {
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.SimpleChannel;
+//?} else {
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+//?}
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.network.CoreNetwork;
@@ -86,12 +91,16 @@ import za.co.neroland.nerolandcore.network.legacy.LegacyPayload;
 import za.co.neroland.nerolandcore.platform.NetworkPlatform;
 
 public final class ForgeNetwork implements NetworkPlatform {
-    private static final String PROTOCOL = "1";
     private static SimpleChannel channel;
 
     public static void register() {
+        //? if >=1.20.2 {
+        channel = ChannelBuilder.named(new ResourceLocation(NerolandCoreCommon.MOD_ID, "main"))
+                .networkProtocolVersion(1).optional().simpleChannel();
+        //?} else {
         channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(NerolandCoreCommon.MOD_ID, "main"),
-                () -> PROTOCOL, ForgeNetwork::acceptVersion, ForgeNetwork::acceptVersion);
+                () -> "1", ForgeNetwork::acceptVersion, ForgeNetwork::acceptVersion);
+        //?}
         int id = 0;
         for (CoreNetwork.Clientbound<?> packet : CoreNetwork.clientbound()) {
             registerClientbound(packet, id++);
@@ -101,10 +110,12 @@ public final class ForgeNetwork implements NetworkPlatform {
         }
     }
 
+    //? if <1.20.2 {
     private static boolean acceptVersion(String version) {
-        return PROTOCOL.equals(version) || NetworkRegistry.ABSENT.version().equals(version)
+        return "1".equals(version) || NetworkRegistry.ABSENT.version().equals(version)
                 || NetworkRegistry.ACCEPTVANILLA.equals(version);
     }
+    //?}
 
     private static <T extends LegacyPayload> void registerClientbound(CoreNetwork.Clientbound<T> packet, int id) {
         channel.messageBuilder(packet.type().payloadClass(), id, NetworkDirection.PLAY_TO_CLIENT)
@@ -119,7 +130,11 @@ public final class ForgeNetwork implements NetworkPlatform {
                 .encoder((payload, buffer) -> packet.codec().encode(buffer, payload))
                 .decoder(packet.codec()::decode)
                 .consumerMainThread((payload, context) -> {
+                    //? if >=1.20.2 {
+                    ServerPlayer player = context.getSender();
+                    //?} else {
                     ServerPlayer player = context.get().getSender();
+                    //?}
                     if (player != null) {
                         packet.handler().accept(payload, player);
                     }
@@ -129,8 +144,17 @@ public final class ForgeNetwork implements NetworkPlatform {
 
     @Override
     public void sendToPlayer(ServerPlayer player, LegacyPayload payload) {
-        if (channel != null && channel.isRemotePresent(player.connection.connection)) {
+        //? if >=1.20.2 {
+        var connection = player.connection.getConnection();
+        //?} else {
+        var connection = player.connection.connection;
+        //?}
+        if (channel != null && channel.isRemotePresent(connection)) {
+            //? if >=1.20.2 {
+            channel.send(payload, connection);
+            //?} else {
             channel.send(PacketDistributor.PLAYER.with(() -> player), payload);
+            //?}
         }
     }
 
@@ -138,7 +162,11 @@ public final class ForgeNetwork implements NetworkPlatform {
     public void sendToServer(LegacyPayload payload) {
         var connection = Minecraft.getInstance().getConnection();
         if (channel != null && connection != null && channel.isRemotePresent(connection.getConnection())) {
+            //? if >=1.20.2 {
+            channel.send(payload, connection.getConnection());
+            //?} else {
             channel.sendToServer(payload);
+            //?}
         }
     }
 }

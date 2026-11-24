@@ -40,7 +40,7 @@ public final class SavedDataCompat {
     public static <T extends SavedData> SavedDataType<T> type(Identifier id, Supplier<T> constructor, Codec<T> codec) {
         //? if >=26.1 {
         return new SavedDataType<>(id, constructor, codec, null);
-        //?} else if >=1.20.5 {
+        //?} else if >=1.20.2 {
         /*// Before 26.1 vanilla's DimensionDataStorage.readTagFromDisk runs dataFixType.update(..) with no null
         // check, so a null type throws on every reload of an existing file (vanilla then logs it and hands back
         // an empty store). RANDOM_SEQUENCES is a saved-data type with no data fixes, and the update is a no-op
@@ -81,6 +81,10 @@ public final class SavedDataCompat {
         return level.getDataStorage().computeIfAbsent(type);
         //?} else if >=1.20.5 {
         /*return level.getDataStorage().computeIfAbsent(type.factory(level), type.id());
+        *///?} else if >=1.20.2 {
+        /*return level.getDataStorage().computeIfAbsent(
+                new SavedData.Factory<>(() -> type.attach(type.constructor().get(), level.registryAccess()),
+                        tag -> type.read(tag, level.registryAccess()), type.dataFixType()), type.id());
         *///?} else {
         /*return level.getDataStorage().computeIfAbsent(tag -> type.read(tag, level.registryAccess()),
                 () -> type.attach(type.constructor().get(), level.registryAccess()), type.id());

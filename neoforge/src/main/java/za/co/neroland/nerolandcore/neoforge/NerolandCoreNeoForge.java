@@ -12,7 +12,11 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 //?}
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+//? if >=1.20.5 {
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+//?} else {
+/*import net.neoforged.neoforge.event.TickEvent;
+*///?}
 
 import za.co.neroland.nerolandcore.NerolandCoreCommon;
 import za.co.neroland.nerolandcore.command.CoreCommands;
@@ -62,8 +66,16 @@ public final class NerolandCoreNeoForge {
             }
         });
         // Scheduled data-retention housekeeping (server start, then daily).
+        //? if >=1.20.5 {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) ->
                 RetentionSchedule.onServerTick(event.getServer()));
+        //?} else {
+        /*NeoForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+            if (event.phase == TickEvent.Phase.END) {
+                RetentionSchedule.onServerTick(event.getServer());
+            }
+        });
+        *///?}
         // Nero Mods Demo (26.3+): build a new demo world's hub and exhibits once the server has started.
         //? if >=26.3 {
         /*NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStartedEvent event) ->
