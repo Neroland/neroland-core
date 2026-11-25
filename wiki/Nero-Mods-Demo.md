@@ -18,6 +18,9 @@ plate there to come back.
 The world is a showroom: the time stays at noon, the weather stays clear, and no mobs spawn on their own.
 Picking the same mods always gives the same world.
 
+If another mod interrupts the Create World screen, Minecraft displays a notification and leaves the current
+screen open. Return to the demo picker to try again.
+
 ## What is stored
 
 Only a small marker inside the demo world itself: that it is a demo world, which mods were picked, and

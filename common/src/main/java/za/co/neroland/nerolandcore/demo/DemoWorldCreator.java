@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
@@ -16,6 +17,7 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
@@ -42,27 +44,41 @@ public final class DemoWorldCreator {
 
     // GLFW_KEY_ENTER; only used to satisfy Button.onPress.
     private static final int KEY_ENTER = 257;
+    private static final SystemToast.SystemToastId CREATE_FAILED = new SystemToast.SystemToastId();
 
     private DemoWorldCreator() {
     }
 
     // Starts creating a demo world for `moduleIds`; on failure returns to `back`.
     public static void create(Minecraft mc, List<String> moduleIds, Screen back) {
-        DemoPending.offer(DemoWorlds.LEVEL_NAME, moduleIds);
+        DemoPending.clear();
         try {
-            CreateWorldScreen.openFresh(mc, () -> mc.gui.setScreen(back));
+            CreateWorldScreen.openFresh(mc, () -> {
+                DemoPending.clear();
+                mc.gui.setScreen(back);
+            });
             if (!(mc.gui.screen() instanceof CreateWorldScreen screen)) {
-                throw new IllegalStateException("Create World screen did not open");
+                // Forge lets screen-opening listeners cancel or replace the requested screen.
+                NerolandCoreCommon.LOGGER.warn("[Neroland Core] Demo world creation was interrupted while opening Create World.");
+                showFailure(mc);
+                return;
             }
             configure(screen.getUiState());
+            DemoPending.offer(DemoWorlds.LEVEL_NAME, moduleIds);
             if (!pressCreate(screen)) {
                 throw new IllegalStateException("Create button not found");
             }
         } catch (RuntimeException e) {
             DemoPending.clear();
             NerolandCoreCommon.LOGGER.error("[Neroland Core] Could not create the demo world.", e);
+            showFailure(mc);
             mc.gui.setScreen(back);
         }
+    }
+
+    private static void showFailure(Minecraft mc) {
+        SystemToast.add(mc.gui.toastManager(), CREATE_FAILED,
+                Component.translatable("demo.nerolandcore.picker.create_failed"), null);
     }
 
     static void configure(WorldCreationUiState ui) {

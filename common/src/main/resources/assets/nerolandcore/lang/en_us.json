@@ -109,6 +109,7 @@
   "demo.nerolandcore.picker.subtitle": "Pick the mods to show. A new creative world is made with one exhibit each.",
   "demo.nerolandcore.picker.empty": "No installed mod has a demo exhibit yet.",
   "demo.nerolandcore.picker.create": "Create Demo World",
+  "demo.nerolandcore.picker.create_failed": "Could not create the demo world",
   "demo.nerolandcore.hub.title": "Nero Mods Demo",
   "demo.nerolandcore.hub.walk": "Walk east along the path to visit each exhibit",
   "demo.nerolandcore.hub.count": "Exhibits: %s",

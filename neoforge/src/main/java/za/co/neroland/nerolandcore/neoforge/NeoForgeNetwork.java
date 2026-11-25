@@ -9,6 +9,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 //?}
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import za.co.neroland.nerolandcore.network.CoreNetwork;
@@ -49,7 +50,9 @@ public final class NeoForgeNetwork implements NetworkPlatform {
 
     @Override
     public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayer(player, payload);
+        if (NetworkRegistry.hasChannel(player.connection, payload.type().id())) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
     }
 
     @Override
