@@ -6,7 +6,8 @@ see what each one does before starting a real world. Added in Neroland Core 1.20
 ## Making a demo world
 
 1. Open **Singleplayer**. In the top-left corner of the world list, press **Nero Mods Demo**.
-   (If you have no saved worlds yet, the game opens Create World straight away; the button is there instead.)
+   If you have no saved worlds yet, the game opens Create World straight away. The demo button is near the
+   bottom left, above the footer.
 2. Tick the mods you want to see. Every installed mod with a demo exhibit is listed and ticked.
 3. Press **Create Demo World**.
 
@@ -18,7 +19,7 @@ plate there to come back.
 The world is a showroom: the time stays at noon, the weather stays clear, and no mobs spawn on their own.
 Picking the same mods always gives the same world.
 
-If another mod interrupts the Create World screen, Minecraft displays a notification and leaves the current
+If opening the Create World screen is interrupted, Minecraft displays a notification and leaves the current
 screen open. Return to the demo picker to try again.
 
 ## What is stored

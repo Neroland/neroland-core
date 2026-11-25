@@ -40,7 +40,8 @@ public final class DemoClient {
             Minecraft mc = Minecraft.getInstance();
             Button button = Button.builder(Component.translatable(BUTTON_KEY),
                             b -> mc.gui.setScreen(new DemoPickerScreen(screen)))
-                    .bounds(4, 4, BUTTON_WIDTH, BUTTON_HEIGHT)
+                    .bounds(4, screen instanceof CreateWorldScreen ? screen.height - 58 : 4,
+                            BUTTON_WIDTH, BUTTON_HEIGHT)
                     .tooltip(Tooltip.create(Component.translatable("demo.nerolandcore.button.tooltip")))
                     .build();
             add.accept(button);

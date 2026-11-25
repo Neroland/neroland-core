@@ -59,7 +59,9 @@ public final class DemoWorldCreator {
             });
             if (!(mc.gui.screen() instanceof CreateWorldScreen screen)) {
                 // Forge lets screen-opening listeners cancel or replace the requested screen.
-                NerolandCoreCommon.LOGGER.warn("[Neroland Core] Demo world creation was interrupted while opening Create World.");
+                Screen current = mc.gui.screen();
+                NerolandCoreCommon.LOGGER.warn("[Neroland Core] Demo world creation was interrupted while opening Create World (current screen: {}).",
+                        current == null ? "none" : current.getClass().getSimpleName());
                 showFailure(mc);
                 return;
             }
