@@ -1,5 +1,6 @@
 package za.co.neroland.nerolandcore.platform;
 
+//? if >=1.20.3 {
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -31,3 +32,34 @@ public final class NeoForgeGasLookup implements GasLookup {
         return level.getCapability(GAS, pos, side);
     }
 }
+//?} else {
+/*import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.CapabilityManager;
+import net.neoforged.neoforge.common.capabilities.CapabilityToken;
+
+import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerolandcore.gas.NeroGasStorage;
+
+
+public final class NeoForgeGasLookup implements GasLookup {
+
+
+    public static final Capability<NeroGasStorage> GAS =
+            CapabilityManager.get(new CapabilityToken<>() { });
+
+    @Nullable
+    @Override
+    public NeroGasStorage find(Level level, BlockPos pos, @Nullable Direction side) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be == null) {
+            return null;
+        }
+        return be.getCapability(GAS, side).orElse(null);
+    }
+}
+*///?}

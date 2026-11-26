@@ -8,6 +8,14 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+### Added
+
+- Minecraft 1.20.2, 1.20.3 and 1.20.5 on NeoForge. The 1.20.3 and 1.20.5 targets
+  use NeoForge 20.3.8-beta and 20.5.21-beta, respectively.
+- A shared Configurator API lets mods expose their own controls and power readouts.
+  Configurators can also use Core's existing machine side configuration.
+- A rolling 20-tick energy meter tracks generation, transfer and consumption for in-game readouts.
+
 ## [1.23.0] - 2026-11-26
 
 ### Added

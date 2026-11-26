@@ -1,5 +1,6 @@
 package za.co.neroland.nerolandcore.platform;
 
+//? if >=1.20.3 {
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -155,3 +156,79 @@ public final class NeoForgeEnergyLookup implements EnergyLookup {
     }
     *///?}
 }
+//?} else {
+/*import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.CapabilityManager;
+import net.neoforged.neoforge.common.capabilities.CapabilityToken;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+
+import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerolandcore.energy.EnergyConversions;
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+
+
+public final class NeoForgeEnergyLookup implements EnergyLookup {
+
+
+    public static final Capability<NeroEnergyStorage> ENERGY =
+            CapabilityManager.get(new CapabilityToken<>() { });
+
+    @Nullable
+    @Override
+    public NeroEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be == null) {
+            return null;
+        }
+        NeroEnergyStorage nero = be.getCapability(ENERGY, side).orElse(null);
+        if (nero != null) {
+            return nero;
+        }
+        // Standard-FE fallback: adapt any third-party Forge Energy block to the Nero surface.
+        IEnergyStorage forgeEnergy = be.getCapability(Capabilities.ENERGY, side).orElse(null);
+        return forgeEnergy == null ? null : new EnergyStorageAdapter(forgeEnergy);
+    }
+
+
+    private static final class EnergyStorageAdapter implements NeroEnergyStorage {
+
+        private final IEnergyStorage handler;
+
+        private EnergyStorageAdapter(IEnergyStorage handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public long getAmount() {
+            return EnergyConversions.forgeToNero(this.handler.getEnergyStored());
+        }
+
+        @Override
+        public long getCapacity() {
+            return EnergyConversions.forgeToNero(this.handler.getMaxEnergyStored());
+        }
+
+        @Override
+        public long insert(long maxAmount, boolean simulate) {
+            int fe = clampToInt(EnergyConversions.neroToForge(maxAmount));
+            return fe <= 0 ? 0 : EnergyConversions.forgeToNero(this.handler.receiveEnergy(fe, simulate));
+        }
+
+        @Override
+        public long extract(long maxAmount, boolean simulate) {
+            int fe = clampToInt(EnergyConversions.neroToForge(maxAmount));
+            return fe <= 0 ? 0 : EnergyConversions.forgeToNero(this.handler.extractEnergy(fe, simulate));
+        }
+
+        private static int clampToInt(long value) {
+            return (int) Math.max(0, Math.min(Integer.MAX_VALUE, value));
+        }
+    }
+}
+*///?}

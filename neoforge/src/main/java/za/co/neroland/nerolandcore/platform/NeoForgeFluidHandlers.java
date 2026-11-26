@@ -40,7 +40,8 @@ public final class NeoForgeFluidHandlers {
     }
 
    //? if >=1.21.9 {
-    // Expose a Nero tank on NeoForge's standard fluid capability, ungated.
+
+   // Expose a Nero tank on NeoForge's standard fluid capability, ungated.
     public static ResourceHandler<FluidResource> asResourceHandler(NeroFluidStorage store) {
         return asResourceHandler(GatedFluidView.open(store));
     }
@@ -306,6 +307,14 @@ public final class NeoForgeFluidHandlers {
     // (millibuckets both ways, component-carrying stacks rejected); the method names are kept so
     // downstream call sites stay identical, only the handler type differs per version.
 
+    private static FluidStack copyWithAmount(FluidStack source, int amount) {
+        //? if >=1.20.4 {
+        return source.copyWithAmount(amount);
+        //?} else {
+        return new FluidStack(source, amount);
+        //?}
+    }
+
    // Expose a Nero tank on NeoForge's standard fluid capability, ungated.
     public static IFluidHandler asResourceHandler(NeroFluidStorage store) {
         return asResourceHandler(GatedFluidView.open(store));
@@ -452,7 +461,7 @@ public final class NeoForgeFluidHandlers {
                 if (remaining <= 0) {
                     break;
                 }
-                filled += part.fill(resource.copyWithAmount(remaining), action);
+                filled += part.fill(copyWithAmount(resource, remaining), action);
             }
             return filled;
         }
@@ -468,9 +477,9 @@ public final class NeoForgeFluidHandlers {
                 if (remaining <= 0) {
                     break;
                 }
-                drained += part.drain(resource.copyWithAmount(remaining), action).getAmount();
+                drained += part.drain(copyWithAmount(resource, remaining), action).getAmount();
             }
-            return drained <= 0 ? FluidStack.EMPTY : resource.copyWithAmount(drained);
+            return drained <= 0 ? FluidStack.EMPTY : copyWithAmount(resource, drained);
         }
 
         @Override
@@ -478,7 +487,7 @@ public final class NeoForgeFluidHandlers {
             for (IFluidHandler part : this.parts) {
                 FluidStack probe = part.drain(maxDrain, FluidAction.SIMULATE);
                 if (!probe.isEmpty()) {
-                    return drain(probe.copyWithAmount(maxDrain), action);
+                    return drain(copyWithAmount(probe, maxDrain), action);
                 }
             }
             return FluidStack.EMPTY;

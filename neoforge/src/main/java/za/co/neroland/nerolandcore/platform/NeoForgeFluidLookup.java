@@ -1,5 +1,6 @@
 package za.co.neroland.nerolandcore.platform;
 
+//? if >=1.20.3 {
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -58,3 +59,42 @@ public final class NeoForgeFluidLookup implements FluidLookup {
         return standard == null ? null : NeoForgeFluidHandlers.asNeroFluid(standard);
     }
 }
+//?} else {
+/*import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.CapabilityManager;
+import net.neoforged.neoforge.common.capabilities.CapabilityToken;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+
+import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerolandcore.fluid.NeroFluidStorage;
+
+
+public final class NeoForgeFluidLookup implements FluidLookup {
+
+
+    public static final Capability<NeroFluidStorage> FLUID =
+            CapabilityManager.get(new CapabilityToken<>() { });
+
+    @Nullable
+    @Override
+    public NeroFluidStorage find(Level level, BlockPos pos, @Nullable Direction side) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be == null) {
+            return null;
+        }
+        NeroFluidStorage nero = be.getCapability(FLUID, side).orElse(null);
+        if (nero != null) {
+            return nero;
+        }
+        // Standard-fluid fallback: adapt any third-party fluid handler to the Nero surface.
+        return be.getCapability(Capabilities.FLUID_HANDLER, side)
+                .map(NeoForgeFluidHandlers::asNeroFluid)
+                .orElse(null);
+    }
+}
+*///?}

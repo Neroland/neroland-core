@@ -63,3 +63,7 @@ reload`. Set it to `0` to disable automatic transfer entirely and rely on pipes.
 Side configuration is saved with the machine (block) in the world. It records only
 how a machine routes resources — never anything about you — so it falls outside
 Core's player-data handling. See [Privacy & Data](Privacy-and-Data.md).
+
+The Configurators from NeroTech, NeroLogistics and Nerospace share basic machine controls.
+On conduits and pipes, sneak-use opens the face panel. On machines that expose a power reading,
+sneak-use shows their recent energy rate.

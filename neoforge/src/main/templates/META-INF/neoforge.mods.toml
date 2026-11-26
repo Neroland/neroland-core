@@ -12,19 +12,18 @@ description = '''
 Neroland Core - multiloader build (NeoForge).
 '''
 
-[[mixins]]
-config = "nerolandcore-common.mixins.json"
+${mod_mixin_entry}
 
 [[dependencies.${mod_id}]]
 modId = "neoforge"
-type = "required"
+${required_dependency}
 versionRange = "[0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "minecraft"
-type = "required"
+${required_dependency}
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"

@@ -1,5 +1,6 @@
 package za.co.neroland.nerolandcore.neoforge;
 
+//? if >=1.20.3 {
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -153,3 +154,175 @@ public final class NeoForgeCoreCapabilities {
                 ModBlockEntities.TRASH_CAN.get(), (be, side) -> be.getGas());
     }
 }
+//?} else {
+/*import java.util.EnumMap;
+import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+
+import net.neoforged.neoforge.common.NeoForge;
+
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+
+import za.co.neroland.nerolandcore.NerolandCoreCommon;
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+import za.co.neroland.nerolandcore.fluid.NeroFluidStorage;
+import za.co.neroland.nerolandcore.gas.NeroGasStorage;
+import za.co.neroland.nerolandcore.platform.NeoForgeEnergyLookup;
+import za.co.neroland.nerolandcore.platform.NeoForgeFluidHandlers;
+import za.co.neroland.nerolandcore.platform.NeoForgeFluidLookup;
+import za.co.neroland.nerolandcore.platform.NeoForgeGasLookup;
+import za.co.neroland.nerolandcore.storage.BatteryBlockEntity;
+import za.co.neroland.nerolandcore.storage.CreativeBatteryBlockEntity;
+import za.co.neroland.nerolandcore.storage.CreativeFluidTankBlockEntity;
+import za.co.neroland.nerolandcore.storage.CreativeGasTankBlockEntity;
+import za.co.neroland.nerolandcore.storage.CreativeItemStoreBlockEntity;
+import za.co.neroland.nerolandcore.storage.FluidTankBlockEntity;
+import za.co.neroland.nerolandcore.storage.GasTankBlockEntity;
+import za.co.neroland.nerolandcore.storage.ItemStoreBlockEntity;
+import za.co.neroland.nerolandcore.storage.TrashCanBlockEntity;
+
+
+public final class NeoForgeCoreCapabilities {
+
+    private static final ResourceLocation STORAGE_CAPS =
+            new ResourceLocation(NerolandCoreCommon.MOD_ID, "storage_caps");
+
+    private NeoForgeCoreCapabilities() {
+    }
+
+    public static void register(net.neoforged.bus.api.IEventBus modEventBus) {
+
+
+        NeoForge.EVENT_BUS.addGenericListener(BlockEntity.class, NeoForgeCoreCapabilities::onAttachBlockEntity);
+
+    }
+
+
+    private static void onAttachBlockEntity(AttachCapabilitiesEvent<BlockEntity> event) {
+
+        StorageCaps caps = createCaps(event.getObject());
+        if (caps != null) {
+            event.addCapability(STORAGE_CAPS, caps);
+            event.addListener(caps::invalidate);
+        }
+    }
+
+    @Nullable
+    private static StorageCaps createCaps(BlockEntity be) {
+        Supplier<NeroEnergyStorage> energy = null;
+        Supplier<NeroFluidStorage> fluid = null;
+        Supplier<NeroGasStorage> gas = null;
+
+        if (be instanceof BatteryBlockEntity battery) {
+            energy = battery::getEnergy;
+        } else if (be instanceof CreativeBatteryBlockEntity battery) {
+            energy = battery::getEnergy;
+        } else if (be instanceof FluidTankBlockEntity tank) {
+            fluid = tank::getTank;
+        } else if (be instanceof CreativeFluidTankBlockEntity tank) {
+            fluid = tank::getTank;
+        } else if (be instanceof GasTankBlockEntity tank) {
+            gas = tank::getTank;
+        } else if (be instanceof CreativeGasTankBlockEntity tank) {
+            gas = tank::getTank;
+        } else if (be instanceof TrashCanBlockEntity trash) {
+            fluid = trash::getFluid;
+            gas = trash::getGas;
+        }
+
+        Container container = (be instanceof ItemStoreBlockEntity || be instanceof CreativeItemStoreBlockEntity
+                || be instanceof TrashCanBlockEntity)
+                ? (Container) be : null;
+        if (energy == null && fluid == null && gas == null && container == null) {
+            return null;
+        }
+        return new StorageCaps(energy, fluid, gas, container);
+    }
+
+    private static IItemHandler itemHandler(Container container, @Nullable Direction side) {
+        if (container instanceof WorldlyContainer worldly && side != null) {
+            return new SidedInvWrapper(worldly, side);
+        }
+        return new InvWrapper(container);
+    }
+
+    private static final class StorageCaps implements ICapabilityProvider {
+
+        private final LazyOptional<NeroEnergyStorage> energy;
+        private final LazyOptional<NeroFluidStorage> fluid;
+        private final LazyOptional<IFluidHandler> fluidStandard;
+        private final LazyOptional<NeroGasStorage> gas;
+        @Nullable
+        private final Container container;
+        @Nullable
+        private final LazyOptional<IItemHandler> itemUnsided;
+        private final EnumMap<Direction, LazyOptional<IItemHandler>> itemBySide = new EnumMap<>(Direction.class);
+
+        StorageCaps(@Nullable Supplier<NeroEnergyStorage> energy, @Nullable Supplier<NeroFluidStorage> fluid,
+                @Nullable Supplier<NeroGasStorage> gas, @Nullable Container container) {
+            this.energy = energy == null ? LazyOptional.empty() : LazyOptional.<NeroEnergyStorage>of(energy::get);
+            this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.<NeroFluidStorage>of(fluid::get);
+            Supplier<NeroFluidStorage> fluidSupplier = fluid;
+            this.fluidStandard = fluid == null
+                    ? LazyOptional.empty()
+                    : LazyOptional.<IFluidHandler>of(() -> NeoForgeFluidHandlers.asResourceHandler(fluidSupplier.get()));
+            this.gas = gas == null ? LazyOptional.empty() : LazyOptional.<NeroGasStorage>of(gas::get);
+            this.container = container;
+            this.itemUnsided = container == null ? null : LazyOptional.of(() -> itemHandler(container, null));
+        }
+
+        @Override
+        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+            if (cap == NeoForgeEnergyLookup.ENERGY) {
+                return energy.cast();
+            }
+            if (cap == NeoForgeFluidLookup.FLUID) {
+                return fluid.cast();
+            }
+            if (cap == NeoForgeGasLookup.GAS) {
+                return gas.cast();
+            }
+            if (cap == net.neoforged.neoforge.common.capabilities.Capabilities.FLUID_HANDLER) {
+                // Standard Forge fluid surface, so third-party pipes fill/drain Core's tanks directly.
+                return fluidStandard.cast();
+            }
+            if (cap == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER && container != null) {
+                return item(side).cast();
+            }
+            return LazyOptional.empty();
+        }
+
+        private LazyOptional<IItemHandler> item(@Nullable Direction side) {
+            if (side == null) {
+                return itemUnsided == null ? LazyOptional.empty() : itemUnsided;
+            }
+            return itemBySide.computeIfAbsent(side, d -> LazyOptional.of(() -> itemHandler(container, d)));
+        }
+
+        void invalidate() {
+            energy.invalidate();
+            fluid.invalidate();
+            fluidStandard.invalidate();
+            gas.invalidate();
+            if (itemUnsided != null) {
+                itemUnsided.invalidate();
+            }
+            itemBySide.values().forEach(LazyOptional::invalidate);
+        }
+    }
+}
+*///?}

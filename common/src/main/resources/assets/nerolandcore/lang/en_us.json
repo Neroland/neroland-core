@@ -117,5 +117,7 @@
   "demo.nerolandcore.core.guide.1": "The shared foundation of every Nero mod",
   "demo.nerolandcore.core.guide.2": "Common materials and storage blocks",
   "demo.nerolandcore.core.label.materials": "Shared materials",
-  "demo.nerolandcore.core.label.storage": "Shared storage"
+  "demo.nerolandcore.core.label.storage": "Shared storage",
+  "item.nerolandcore.configurator.face": "%1$s on %2$s: %3$s",
+  "block.nerolandcore.power.production": "Generated: %s NE/t (last 20 ticks)"
 }

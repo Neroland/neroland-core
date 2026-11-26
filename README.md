@@ -13,6 +13,10 @@ testing is the recommended next step before tagging a release.
 - **Minecraft:** 26.1.2, 26.2 and 26.3
 - **Loaders:** NeoForge, MinecraftForge/Forge, Fabric (the "9 cells")
 - **Java:** 25
+- **Minecraft 1.20–1.20.6:** Fabric covers every release in this range. Forge covers 1.20–1.20.4
+  and 1.20.6. NeoForge covers 1.20.2–1.20.6, with NeoForge 20.3.8-beta for 1.20.3 and
+  20.5.21-beta for 1.20.5. Use the Forge 1.20.1 jar on NeoForge 1.20.1.
+  Java 17 is required through 1.20.4 and Java 21 for 1.20.5 and 1.20.6.
 - Mod id: `nerolandcore` · package `za.co.neroland.nerolandcore`
 
 ## Layout

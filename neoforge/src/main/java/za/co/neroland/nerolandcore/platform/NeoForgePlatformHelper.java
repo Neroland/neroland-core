@@ -67,10 +67,12 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
                 .toList();
     }
 
+    //? if >=1.20.3 {
     @Override
     public void invalidateCapabilities(Level level, BlockPos pos) {
         if (!level.isClientSide()) {
             level.invalidateCapabilities(pos);
         }
     }
+    //?}
 }

@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
+//? if <1.20.3 {
+/*import net.minecraft.SharedConstants;
+import net.minecraft.server.Bootstrap;
+*///?}
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -13,6 +17,13 @@ import net.minecraft.world.level.Level;
 
 /** Shared fixtures for the map API tests: dimensions, ids and a configurable fake provider. */
 final class MapTestSupport {
+
+    //? if <1.20.3 {
+    /*static {
+        SharedConstants.tryDetectVersion();
+        Bootstrap.bootStrap();
+    }
+    *///?}
 
     static final ResourceKey<Level> OVERWORLD = dim("overworld_test");
     static final ResourceKey<Level> MOON = dim("moon_test");
