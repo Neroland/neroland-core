@@ -1,22 +1,100 @@
 {
   "replace": false,
   "values": [
-    { "id": "nerolandcore:nero_alloy_block", "required": false },
-    { "id": "nerolandcore:nero_alloy_ingot", "required": false },
-    { "id": "nerolandcore:nero_alloy_nugget", "required": false },
-    { "id": "nerolandcore:nero_alloy_dust", "required": false },
-    { "id": "nerolandcore:nero_alloy_plate", "required": false },
-    { "id": "nerolandcore:starsteel_block", "required": false },
-    { "id": "nerolandcore:starsteel_ingot", "required": false },
-    { "id": "nerolandcore:starsteel_nugget", "required": false },
-    { "id": "nerolandcore:starsteel_dust", "required": false },
-    { "id": "nerolandcore:starsteel_plate", "required": false },
-    { "id": "nerolandcore:void_crystal_block", "required": false },
-    { "id": "nerolandcore:void_crystal", "required": false },
-    { "id": "nerolandcore:void_crystal_shard", "required": false },
-    { "id": "nerolandcore:void_crystal_dust", "required": false },
-    { "id": "nerolandcore:plasma_glass_block", "required": false },
-    { "id": "nerolandcore:plasma_glass_pane", "required": false },
-    { "id": "nerolandcore:plasma_glass", "required": false }
+    {
+      "id": "nerolandcore:nero_alloy_block",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:nero_alloy_ingot",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:nero_alloy_nugget",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:nero_alloy_dust",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:nero_alloy_plate",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:starsteel_block",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:starsteel_ingot",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:starsteel_nugget",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:starsteel_dust",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:starsteel_plate",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:void_crystal_block",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:void_crystal",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:void_crystal_shard",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:void_crystal_dust",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:plasma_glass_block",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:plasma_glass_pane",
+      "required": false
+    },
+    {
+      "id": "nerolandcore:plasma_glass",
+      "required": false
+    },
+    "nerolandcore:cindrite",
+    "nerolandcore:cindrite_ore",
+    "nerolandcore:glacite",
+    "nerolandcore:glacite_ore",
+    "nerolandcore:nerosium_ore",
+    "nerolandcore:deepslate_nerosium_ore",
+    "nerolandcore:raw_nerosium",
+    "nerolandcore:raw_nerosium_block",
+    "nerolandcore:nerosteel_ore",
+    "nerolandcore:raw_nerosteel",
+    "nerolandcore:xertz_quartz",
+    "nerolandcore:xertz_quartz_ore",
+    "nerolandcore:ilmenite_ore",
+    "nerolandcore:raw_ilmenite",
+    "nerolandcore:cheese_ore",
+    "nerolandcore:moon_cheese",
+    "nerolandcore:hematite_ore",
+    "nerolandcore:raw_hematite",
+    "nerolandcore:amber_sap_ore",
+    "nerolandcore:amber_sap",
+    "nerolandcore:voidglass_ore",
+    "nerolandcore:voidglass",
+    "nerolandcore:brine_salt",
+    "nerolandcore:raw_vent_sulfide",
+    "nerolandcore:vent_sulfide_ore",
+    "nerolandcore:brine_salt_ore",
+    "nerolandcore:pallurite_dust"
   ]
 }

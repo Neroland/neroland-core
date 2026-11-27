@@ -44,6 +44,7 @@ public final class ForgeClientSetup {
     private static void registerScreens() {
         try {
             MenuScreens.register(ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new);
+            MenuScreens.register(ModMenuTypes.ORE_RECLAIMER.get(), za.co.neroland.nerolandcore.client.OreReclaimerScreen::new);
         } catch (NoClassDefFoundError | ExceptionInInitializerError brokenMenuScreens) {
             // MC-NEROLAND-CORE-8: vanilla's MenuScreens failed its static initialiser before we got here,
             // because another mod's mixin into a screen class it loads crashed (MixinTransformerError). The JVM

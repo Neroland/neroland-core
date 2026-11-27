@@ -15,6 +15,23 @@
     "nerolandcore:creative_fluid_tank",
     "nerolandcore:creative_gas_tank",
     "nerolandcore:creative_item_store",
-    "nerolandcore:trash_can"
+    "nerolandcore:trash_can",
+    "nerolandcore:ilmenite_ore",
+    "nerolandcore:cheese_ore",
+    "nerolandcore:cindrite_ore",
+    "nerolandcore:deepslate_nerosium_ore",
+    "nerolandcore:glacite_ore",
+    "nerolandcore:hematite_ore",
+    "nerolandcore:nerosium_ore",
+    "nerolandcore:nerosteel_ore",
+    "nerolandcore:raw_nerosium_block",
+    "nerolandcore:xertz_quartz_ore",
+    "nerolandcore:voidglass_ore",
+    "nerolandcore:amber_sap_ore",
+    "nerolandcore:brine_salt_ore",
+    "nerolandcore:vent_sulfide_ore",
+    "nerolandcore:europium_ore",
+    "nerolandcore:ore_reclaimer",
+    "nerolandcore:embedded_meteor_ore"
   ]
 }

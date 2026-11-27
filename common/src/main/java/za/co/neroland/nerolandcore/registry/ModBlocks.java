@@ -28,8 +28,8 @@ import za.co.neroland.nerolandcore.storage.TrashCanBlock;
  * {@link UnaryOperator} so per-block variations stay inline.
  *
  * <p>Core ships only the four backbone materials' storage forms (plus Plasma
- * Glass's transparent block + pane). Ores live in the mods that introduce them
- * (e.g. Nerospace planet ores smelt into these). This is the single source of
+ * Glass's transparent block + pane). Every Nero ore lives in
+ * {@link za.co.neroland.nerolandcore.ore.CoreOres} since 1.25.0. This is the single source of
  * truth for Nero material blocks — referenced everywhere by tag, never by class.
  */
 @org.jetbrains.annotations.ApiStatus.Internal
@@ -90,6 +90,12 @@ public final class ModBlocks {
             BLOCKS.register("trash_can", key -> new TrashCanBlock(PropertiesCompat.block(key)
                     .mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    // --- Ore Reclaimer (1.25.0): unpowered, converts orphaned Nero ores into vanilla materials ------
+    public static final RegistryEntry<za.co.neroland.nerolandcore.reclaim.OreReclaimerBlock> ORE_RECLAIMER =
+            BLOCKS.register("ore_reclaimer", key -> new za.co.neroland.nerolandcore.reclaim.OreReclaimerBlock(
+                    PropertiesCompat.block(key).mapColor(MapColor.STONE).strength(3.5F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     /** Properties for the regular (mineable) storage blocks. */
     private static BlockBehaviour.Properties storageProps(ResourceKey<Block> key) {

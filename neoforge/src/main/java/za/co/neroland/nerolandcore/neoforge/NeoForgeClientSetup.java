@@ -31,12 +31,16 @@ public final class NeoForgeClientSetup {
 
     private static void onRegisterScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new);
+        event.register(ModMenuTypes.ORE_RECLAIMER.get(), za.co.neroland.nerolandcore.client.OreReclaimerScreen::new);
     }
     //?} else {
     /*public static void init(IEventBus modEventBus) {
         modEventBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) ->
-                event.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(
-                        ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new)));
+                event.enqueueWork(() -> {
+                    net.minecraft.client.gui.screens.MenuScreens.register(ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new);
+                    net.minecraft.client.gui.screens.MenuScreens.register(ModMenuTypes.ORE_RECLAIMER.get(),
+                            za.co.neroland.nerolandcore.client.OreReclaimerScreen::new);
+                }));
     }
     *///?}
 }

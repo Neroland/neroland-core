@@ -65,6 +65,11 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("trash_can",
                     key -> BlockEntityTypeCompat.create(TrashCanBlockEntity::new, ModBlocks.TRASH_CAN.get()));
 
+    public static final RegistryEntry<BlockEntityType<za.co.neroland.nerolandcore.reclaim.OreReclaimerBlockEntity>> ORE_RECLAIMER =
+            BLOCK_ENTITIES.register("ore_reclaimer",
+                    key -> BlockEntityTypeCompat.create(za.co.neroland.nerolandcore.reclaim.OreReclaimerBlockEntity::new,
+                            ModBlocks.ORE_RECLAIMER.get()));
+
     private ModBlockEntities() {
     }
 

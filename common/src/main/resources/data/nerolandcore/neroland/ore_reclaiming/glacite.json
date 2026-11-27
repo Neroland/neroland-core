@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:glacite",
+  "result": {
+    "id": "minecraft:lapis_lazuli",
+    "count": 3
+  },
+  "time": 800,
+  "when_absent": [
+    "nerospace"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:raw_vent_sulfide",
+  "result": {
+    "id": "minecraft:raw_copper",
+    "count": 1
+  },
+  "time": 800,
+  "when_absent": [
+    "nerospace"
+  ]
+}

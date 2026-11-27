@@ -8,6 +8,28 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.25.0] - 2026-11-27
+
+### Added
+
+- Every Nero ore now lives in Core, with the material it drops: Nerospace's planet ores (Nerosium,
+  Deepslate Nerosium, Nerosteel, Xertz Quartz, Amber Sap, Ilmenite, Cheese, Hematite, Cindrite, Glacite,
+  Voidglass, Brine Salt, Vent Sulfide and Europium Ore), the Block of Raw Nerosium, NeroEvents' Embedded
+  Meteor Ore and NeroPower's Pallurite Dust. They use `nerolandcore:` ids and appear in Core's creative tab.
+  Core does not generate them; each home mod still places them in the world.
+- Old worlds keep these blocks and items. Their old ids (`nerospace:`, `neroevents:`, `neropower:`) load
+  as the new Core ids on every loader and Minecraft line, including in chunks, containers and inventories.
+  This also works after the old home mod is removed.
+- `ore.OreBehaviours` lets a home mod attach extra behaviour to a Core ore, such as custom drops or an
+  effect after a player breaks it.
+- The Ore Reclaimer, an unpowered block that slowly turns a Nero ore or raw material into a vanilla one.
+  It only does this when the ore's home mod is not installed. Conversions are datapack files in
+  `neroland/ore_reclaiming/`, and hoppers and pipes can feed and empty it.
+- The Ore Reclaimer has its own block art: a hopper intake on top, an outlet underneath and a grinding window
+  on the front. It faces the player who placed it and animates while it is converting.
+
+## [1.24.0] - 2026-11-26
+
 ### Added
 
 - Minecraft 1.20.2, 1.20.3 and 1.20.5 on NeoForge. The 1.20.3 and 1.20.5 targets

@@ -57,6 +57,10 @@ public final class FabricCoreCapabilities {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.CREATIVE_ITEM_STORE.get());
 
+        // Ore Reclaimer — input from the top and sides, output from the bottom.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.ORE_RECLAIMER.get());
+
         // Trash Can — bottomless void sink for items / fluid / gas.
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.TRASH_CAN.get());

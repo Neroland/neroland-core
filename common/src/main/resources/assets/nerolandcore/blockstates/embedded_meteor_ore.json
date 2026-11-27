@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "nerolandcore:block/embedded_meteor_ore"
+      },
+      {
+        "model": "nerolandcore:block/embedded_meteor_ore",
+        "y": 90
+      },
+      {
+        "model": "nerolandcore:block/embedded_meteor_ore",
+        "y": 180
+      },
+      {
+        "model": "nerolandcore:block/embedded_meteor_ore",
+        "y": 270
+      }
+    ]
+  }
+}

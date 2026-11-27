@@ -50,6 +50,8 @@ public final class NerolandCoreNeoForge {
         NeoForgeNetwork.register(modEventBus);
         // Expose the shared storage blocks' energy/fluid/gas/item handlers cross-mod.
         NeoForgeCoreCapabilities.register(modEventBus);
+        // Alias ids that moved into Core (old Nerospace / NeroEvents / NeroPower ores) for old worlds.
+        NeoForgeLegacyAliases.register(modEventBus);
         //? if >=1.21.9 {
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
         //?} else {

@@ -101,7 +101,8 @@ public final class ForgeCoreCapabilities {
         }
 
         Container container = (be instanceof ItemStoreBlockEntity || be instanceof CreativeItemStoreBlockEntity
-                || be instanceof TrashCanBlockEntity)
+                || be instanceof TrashCanBlockEntity
+                || be instanceof za.co.neroland.nerolandcore.reclaim.OreReclaimerBlockEntity)
                 ? (Container) be : null;
         if (energy == null && fluid == null && gas == null && container == null) {
             return null;

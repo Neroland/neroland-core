@@ -376,6 +376,52 @@ subprojects {
         }
         sourceSets.main.resources.srcDir(files(layout.buildDirectory.dir('generated/legacy-item-models'))
                 .builtBy(legacyItemModels))
+        // Loot tables: below 1.20.5 a match_tool predicate names enchantments as
+        // {"enchantments": [{"enchantment": ..}]} instead of the 1.20.5+ item sub-predicate form
+        // {"predicates": {"minecraft:enchantments": [{"enchantments": ..}]}} the shared files use (the
+        // silk-touch branch of every ore loot table). Rewrite them in the processed resources.
+        if (project.javaRelease == 17) {
+            tasks.named('processResources', ProcessResources) {
+                doLast {
+                    def convert
+                    convert = { value ->
+                        if (value instanceof Map) {
+                            if (value.condition == 'minecraft:match_tool' && value.predicate instanceof Map) {
+                                def tools = value.predicate
+                                if (tools.items instanceof String) {
+                                    def ids = tools.items
+                                    if (ids.startsWith('#')) {
+                                        tools.remove('items')
+                                        tools.tag = ids.substring(1)
+                                    } else {
+                                        tools.items = [ids]
+                                    }
+                                }
+                                def enchantments = tools.remove('predicates')?.get('minecraft:enchantments')
+                                if (enchantments != null) {
+                                    tools.enchantments = enchantments.collect { predicate ->
+                                        if (predicate.enchantments instanceof String) {
+                                            predicate.enchantment = predicate.remove('enchantments')
+                                        }
+                                        predicate
+                                    }
+                                }
+                            }
+                            value.values().each { convert(it) }
+                        } else if (value instanceof List) {
+                            value.each { convert(it) }
+                        }
+                    }
+                    project.fileTree(destinationDir).matching {
+                        include 'data/*/loot_tables/**/*.json'
+                    }.each { file ->
+                        def loot = new groovy.json.JsonSlurper().parse(file)
+                        convert(loot)
+                        file.setText(groovy.json.JsonOutput.toJson(loot), 'UTF-8')
+                    }
+                }
+            }
+        }
         tasks.named('processResources') {
             filesMatching('pack.mcmeta') {
                 filter { line ->

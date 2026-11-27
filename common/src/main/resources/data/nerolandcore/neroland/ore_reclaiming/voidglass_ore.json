@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:voidglass_ore",
+  "result": {
+    "id": "minecraft:amethyst_block",
+    "count": 1
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

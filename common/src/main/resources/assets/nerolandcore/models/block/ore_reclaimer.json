@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "nerolandcore:block/ore_reclaimer_top",
+    "bottom": "nerolandcore:block/ore_reclaimer_bottom",
+    "side": "nerolandcore:block/ore_reclaimer_side",
+    "front": "nerolandcore:block/ore_reclaimer_front"
+  }
+}

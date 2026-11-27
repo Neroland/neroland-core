@@ -1,5 +1,10 @@
 {
   "values": [
-    "#c:gems/void_crystal"
+    "#c:gems/void_crystal",
+    "nerolandcore:xertz_quartz",
+    "nerolandcore:cindrite",
+    "nerolandcore:glacite",
+    "nerolandcore:voidglass",
+    "nerolandcore:amber_sap"
   ]
 }

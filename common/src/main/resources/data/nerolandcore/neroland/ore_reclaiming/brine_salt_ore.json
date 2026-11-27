@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:brine_salt_ore",
+  "result": {
+    "id": "minecraft:calcite",
+    "count": 1
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:voidglass",
+  "result": {
+    "id": "minecraft:amethyst_shard",
+    "count": 2
+  },
+  "time": 800,
+  "when_absent": [
+    "nerospace"
+  ]
+}

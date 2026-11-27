@@ -20,6 +20,8 @@ public final class CoreRegistries {
         // Order matters on the eager (Fabric) loader: blocks before items (block
         // items reference their block), then the creative tab, then its contents.
         ModBlocks.init();
+        // Ore blocks (1.25.0) register through ModBlocks / ModItems; blocks before their items.
+        za.co.neroland.nerolandcore.ore.CoreOres.init();
         ModBlockEntities.init();
         ModMenuTypes.init();
         ModItems.init();

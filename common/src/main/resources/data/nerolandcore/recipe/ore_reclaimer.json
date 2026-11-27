@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:furnace",
+    "H": "minecraft:hopper",
+    "I": "#c:ingots/iron",
+    "S": "minecraft:smooth_stone"
+  },
+  "pattern": [
+    "SHS",
+    "IFI",
+    "SSS"
+  ],
+  "result": {
+    "id": "nerolandcore:ore_reclaimer"
+  }
+}

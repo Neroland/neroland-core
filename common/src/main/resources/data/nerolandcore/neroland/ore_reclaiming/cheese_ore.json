@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:cheese_ore",
+  "result": {
+    "id": "minecraft:bread",
+    "count": 2
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

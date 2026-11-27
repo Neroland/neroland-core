@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:raw_europium",
+  "result": {
+    "id": "minecraft:glowstone_dust",
+    "count": 2
+  },
+  "time": 800,
+  "when_absent": [
+    "nerospace"
+  ]
+}

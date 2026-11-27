@@ -111,6 +111,7 @@ floor loads happily against a Core that is too old and then fails at runtime):
 | Map layer API (`za.co.neroland.nerolandcore.map`) | `1.19.0` |
 | Trophy API (`za.co.neroland.nerolandcore.trophy`) | `1.20.0` |
 | Demo worlds API (`za.co.neroland.nerolandcore.demo`) | `1.20.0` |
+| Nero ores (`ore.CoreOres`, `ore.OreBehaviours`), Ore Reclaimer, `registry.LegacyIds` | `1.25.0` |
 
 ## Map layers
 
@@ -290,6 +291,23 @@ award. The provider fires `TrophyEvents.fireCollectionCompleted` / `fireRecordEr
 inert while no real provider is bound). Core registers no trophy eraser: the provider stores the
 player data, so it must register its own `PlayerDataEraser` and cover the data in its privacy notice.
 To notice a `/reload`, poll `TrophyApi.definitions(server).generation()`.
+
+## Ores
+
+Since `1.25.0` every Nero ore and the raw material it drops is a Core block or item (`ore.CoreOres`,
+`nerolandcore:` ids). Core generates none of them: the home mod keeps its worldgen and points it at the Core ids.
+Reference the `CoreOres` entries or the `c:ores/*`, `c:raw_materials/*` and `c:gems/*` tags, never the old
+`nerospace:`, `neroevents:` or `neropower:` ids. Those still load in old worlds (`registry.LegacyIds`), but new data
+should not use them.
+
+A home mod that needs extra ore behaviour registers it at init:
+
+```java
+OreBehaviours.register(CoreOres.HEMATITE_ORE.id(), new MyOreBehaviour()); // modifyDrops / afterPlayerBreak
+```
+
+Add an Ore Reclaimer conversion for a new ore with a datapack file in `data/<namespace>/neroland/ore_reclaiming/`
+(see the wiki's *Ore Reclaimer* page).
 
 ## Demo worlds
 

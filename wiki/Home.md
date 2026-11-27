@@ -25,6 +25,8 @@ Built for **Minecraft 26.1.2 and 26.2** on **NeoForge, Forge, and Fabric**.
 - [Side Configuration](Side-Config.md) — the per-face input/output/power/disabled control every machine shares.
 - Storage blocks — passive endpoints Core ships: [Battery](Battery.md), [Fluid Tank](Fluid-Tank.md),
   [Gas Tank](Gas-Tank.md), [Item Store](Item-Store.md), [Trash Can](Trash-Can.md), and the [Creative Source Blocks](Creative-Source-Blocks.md).
+- [Ores](Ores.md) — every Nero ore and its raw material, owned by Core since 1.25.0.
+- [Ore Reclaimer](Ore-Reclaimer.md) — turns ores from a missing mod into vanilla materials (1.25.0).
 - [Progression Gates](Progression-Gates.md) — the shared milestone system.
 - [Meteor Material Registry](Meteor-Material-Registry.md) — the shared list of grindable random-output materials.
 - [Economy & Reputation](Economy-and-Reputation.md) — currency and faction-standing contracts.

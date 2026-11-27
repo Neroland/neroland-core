@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:xertz_quartz",
+  "result": {
+    "id": "minecraft:quartz",
+    "count": 1
+  },
+  "time": 800,
+  "when_absent": [
+    "nerospace"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:raw_nerosium_block",
+  "result": {
+    "id": "minecraft:raw_copper_block",
+    "count": 1
+  },
+  "time": 3200,
+  "when_absent": [
+    "nerospace"
+  ]
+}

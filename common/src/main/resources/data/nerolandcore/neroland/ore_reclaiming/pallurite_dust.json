@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:pallurite_dust",
+  "result": {
+    "id": "minecraft:glowstone_dust",
+    "count": 1
+  },
+  "time": 800,
+  "when_absent": [
+    "neropower"
+  ]
+}

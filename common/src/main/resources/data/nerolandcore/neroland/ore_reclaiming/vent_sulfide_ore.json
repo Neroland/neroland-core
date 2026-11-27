@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:vent_sulfide_ore",
+  "result": {
+    "id": "minecraft:copper_ore",
+    "count": 1
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

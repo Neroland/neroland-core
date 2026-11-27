@@ -23,6 +23,10 @@ public final class ModMenuTypes {
             MENUS.register("trash_can",
                     key -> new MenuType<>(TrashCanMenu::new, FeatureFlags.VANILLA_SET));
 
+    public static final RegistryEntry<MenuType<za.co.neroland.nerolandcore.menu.OreReclaimerMenu>> ORE_RECLAIMER =
+            MENUS.register("ore_reclaimer",
+                    key -> new MenuType<>(za.co.neroland.nerolandcore.menu.OreReclaimerMenu::new, FeatureFlags.VANILLA_SET));
+
     private ModMenuTypes() {
     }
 

@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:amber_sap_ore",
+  "result": {
+    "id": "minecraft:honeycomb_block",
+    "count": 1
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

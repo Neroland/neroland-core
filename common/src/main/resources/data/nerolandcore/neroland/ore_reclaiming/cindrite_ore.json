@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:cindrite_ore",
+  "result": {
+    "id": "minecraft:gold_ore",
+    "count": 1
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

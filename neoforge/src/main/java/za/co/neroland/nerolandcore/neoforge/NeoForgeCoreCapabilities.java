@@ -131,6 +131,17 @@ public final class NeoForgeCoreCapabilities {
                 (be, side) -> new InvWrapper(be));
         *///?}
 
+        // Ore Reclaimer — input from the top and sides, output from the bottom.
+        //? if >=1.21.9 {
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ORE_RECLAIMER.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+        //?} else {
+        /*event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.ORE_RECLAIMER.get(),
+                (be, side) -> side != null ? new SidedInvWrapper(be, side) : new InvWrapper(be));
+        *///?}
+
         // Trash Can — bottomless void sink for items / fluid / gas.
         //? if >=1.21.9 {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.TRASH_CAN.get(),
@@ -245,7 +256,8 @@ public final class NeoForgeCoreCapabilities {
         }
 
         Container container = (be instanceof ItemStoreBlockEntity || be instanceof CreativeItemStoreBlockEntity
-                || be instanceof TrashCanBlockEntity)
+                || be instanceof TrashCanBlockEntity
+                || be instanceof za.co.neroland.nerolandcore.reclaim.OreReclaimerBlockEntity)
                 ? (Container) be : null;
         if (energy == null && fluid == null && gas == null && container == null) {
             return null;
