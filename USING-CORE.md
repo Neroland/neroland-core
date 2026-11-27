@@ -112,6 +112,7 @@ floor loads happily against a Core that is too old and then fails at runtime):
 | Trophy API (`za.co.neroland.nerolandcore.trophy`) | `1.20.0` |
 | Demo worlds API (`za.co.neroland.nerolandcore.demo`) | `1.20.0` |
 | Nero ores (`ore.CoreOres`, `ore.OreBehaviours`), Ore Reclaimer, `registry.LegacyIds` | `1.25.0` |
+| Titan ore (`CoreOres.CLATHRATE_ORE`, `CoreOres.METHANE_CLATHRATE`) | `1.26.0` |
 
 ## Map layers
 
