@@ -32,6 +32,7 @@
     "nerolandcore:vent_sulfide_ore",
     "nerolandcore:europium_ore",
     "nerolandcore:ore_reclaimer",
-    "nerolandcore:embedded_meteor_ore"
+    "nerolandcore:embedded_meteor_ore",
+    "nerolandcore:clathrate_ore"
   ]
 }

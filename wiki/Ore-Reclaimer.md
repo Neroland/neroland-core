@@ -38,6 +38,7 @@ that keep Neroland Core but drop the mod an ore comes from, so leftover ores are
 | Europium Ore · Raw Europium | Redstone Ore · 2 Glowstone Dust | Nerospace |
 | Vent Sulfide Ore · Raw Vent Sulfide | Copper Ore · Raw Copper | Nerospace |
 | Brine Salt Ore · Brine Salt | Calcite · Sugar | Nerospace |
+| Clathrate Ore · Methane Clathrate | Packed Ice · Ice | Nerospace |
 | Amber Sap Ore · Amber Sap | Honeycomb Block · Honeycomb | Nerospace |
 | Cheese Ore · Moon Cheese | 2 Bread · Bread | Nerospace |
 | Embedded Meteor Ore | Deepslate Iron Ore | NeroEvents |

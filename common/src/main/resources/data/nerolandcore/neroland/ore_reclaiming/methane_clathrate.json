@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:methane_clathrate",
+  "result": {
+    "id": "minecraft:ice",
+    "count": 1
+  },
+  "time": 800,
+  "when_absent": [
+    "nerospace"
+  ]
+}

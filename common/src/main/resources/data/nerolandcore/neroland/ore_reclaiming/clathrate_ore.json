@@ -1,0 +1,11 @@
+{
+  "input": "nerolandcore:clathrate_ore",
+  "result": {
+    "id": "minecraft:packed_ice",
+    "count": 1
+  },
+  "time": 1600,
+  "when_absent": [
+    "nerospace"
+  ]
+}

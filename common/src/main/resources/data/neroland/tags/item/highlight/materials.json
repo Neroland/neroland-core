@@ -95,6 +95,8 @@
     "nerolandcore:raw_vent_sulfide",
     "nerolandcore:vent_sulfide_ore",
     "nerolandcore:brine_salt_ore",
-    "nerolandcore:pallurite_dust"
+    "nerolandcore:pallurite_dust",
+    "nerolandcore:clathrate_ore",
+    "nerolandcore:methane_clathrate"
   ]
 }

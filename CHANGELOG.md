@@ -8,6 +8,16 @@ See [`docs/API-STABILITY.md`](docs/API-STABILITY.md) for the versioning policy.
 
 ## [Unreleased]
 
+## [1.26.0] - 2026-11-27
+
+### Added
+
+- Clathrate Ore, Titan's ore: methane-laden ice that needs an iron pickaxe. It drops Methane Clathrate
+  (more with Fortune), and Silk Touch keeps the ore block. Nerospace generates it on Titan; Core places
+  none in the world. Both appear in Core's creative tab and carry the `c:ores/clathrate` and
+  `c:raw_materials/clathrate` tags.
+- Without Nerospace, the Ore Reclaimer turns Clathrate Ore into Packed Ice and Methane Clathrate into Ice.
+
 ## [1.25.0] - 2026-11-27
 
 ### Added

@@ -18,6 +18,7 @@
     "nerolandcore:hematite_ore",
     "nerolandcore:voidglass_ore",
     "nerolandcore:vent_sulfide_ore",
-    "nerolandcore:europium_ore"
+    "nerolandcore:europium_ore",
+    "nerolandcore:clathrate_ore"
   ]
 }

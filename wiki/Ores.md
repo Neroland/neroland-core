@@ -19,6 +19,7 @@ use `nerolandcore:` ids and appear in Core's creative tab. Core does **not** gen
 | Brine Salt Ore | Brine Salt | Nerospace | Europa |
 | Vent Sulfide Ore | Raw Vent Sulfide | Nerospace | Europa |
 | Europium Ore | Raw Europium | Nerospace | Europa |
+| Clathrate Ore (since 1.26.0) | Methane Clathrate | Nerospace | Titan |
 | Embedded Meteor Ore | Nero Alloy Dust or Starsteel Dust | NeroEvents | meteor craters |
 
 Also moved: the **Block of Raw Nerosium** (with its two compaction recipes) and NeroPower's

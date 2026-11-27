@@ -5,6 +5,7 @@
     "nerolandcore:raw_ilmenite",
     "nerolandcore:raw_hematite",
     "nerolandcore:raw_vent_sulfide",
-    "nerolandcore:raw_europium"
+    "nerolandcore:raw_europium",
+    "nerolandcore:methane_clathrate"
   ]
 }

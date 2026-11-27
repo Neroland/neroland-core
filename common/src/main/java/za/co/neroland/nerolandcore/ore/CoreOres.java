@@ -97,6 +97,10 @@ public final class CoreOres {
     public static final RegistryEntry<NeroOreBlock> EMBEDDED_METEOR_ORE = ore("embedded_meteor_ore", "neroevents",
             p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.0F, 6.0F).sound(SoundType.BASALT));
 
+    // --- Nerospace: Titan (since 1.26.0) ----------------------------------------------------------------
+    public static final RegistryEntry<NeroOreBlock> CLATHRATE_ORE = ore("clathrate_ore", "nerospace",
+            p -> p.mapColor(MapColor.ICE).strength(3.0F, 3.0F).sound(SoundType.GLASS));
+
     // --- Block items (creative order follows the blocks above) ------------------------------------------
     public static final RegistryEntry<BlockItem> NEROSIUM_ORE_ITEM = blockItem("nerosium_ore", NEROSIUM_ORE);
     public static final RegistryEntry<BlockItem> DEEPSLATE_NEROSIUM_ORE_ITEM =
@@ -116,6 +120,7 @@ public final class CoreOres {
     public static final RegistryEntry<BlockItem> EUROPIUM_ORE_ITEM = blockItem("europium_ore", EUROPIUM_ORE);
     public static final RegistryEntry<BlockItem> EMBEDDED_METEOR_ORE_ITEM =
             blockItem("embedded_meteor_ore", EMBEDDED_METEOR_ORE);
+    public static final RegistryEntry<BlockItem> CLATHRATE_ORE_ITEM = blockItem("clathrate_ore", CLATHRATE_ORE);
 
     // --- Raw materials -----------------------------------------------------------------------------------
     public static final RegistryEntry<Item> RAW_NEROSIUM = item("raw_nerosium", "nerospace");
@@ -143,6 +148,8 @@ public final class CoreOres {
                     ChatFormatting.RED, ChatFormatting.ITALIC));
     /** Pallurite Dust: NeroPower's fertile fuel, centrifuged from tuff and fertile sources. */
     public static final RegistryEntry<Item> PALLURITE_DUST = item("pallurite_dust", "neropower");
+    /** Methane Clathrate: Titan's raw drop, a chunk of methane-laden ice. */
+    public static final RegistryEntry<Item> METHANE_CLATHRATE = item("methane_clathrate", "nerospace");
 
     static {
         HOME_MODS.put("moon_cheese", "nerospace");
@@ -161,6 +168,7 @@ public final class CoreOres {
         CREATIVE.add(RAW_VENT_SULFIDE);
         CREATIVE.add(RAW_EUROPIUM);
         CREATIVE.add(PALLURITE_DUST);
+        CREATIVE.add(METHANE_CLATHRATE);
     }
 
     private CoreOres() {
