@@ -51,16 +51,21 @@ public final class CoreCreativeTab {
                     .title(Component.translatable("itemGroup.nerolandcore"))
                     .icon(() -> new ItemStack(ModItems.NERO_ALLOY_INGOT.get()))
                     .displayItems((params, output) -> {
-                        CORE_CONTENTS.forEach(s -> output.accept(s.get()));
+                        CORE_CONTENTS.forEach(s -> {
+                            ItemLike item = resolve(s);
+                            if (item != null) {
+                                output.accept(item);
+                            }
+                        });
                         CONTENTS.forEach(s -> {
-                            ItemLike item = s.get();
-                            if (isCoreItem(item.asItem())) {
+                            ItemLike item = resolve(s);
+                            if (item != null && isCoreItem(item.asItem())) {
                                 output.accept(item);
                             }
                         });
                         STACKS.forEach(s -> {
-                            ItemStack stack = s.get();
-                            if (isCoreItem(stack.getItem())) {
+                            ItemStack stack = resolve(s);
+                            if (stack != null && isCoreItem(stack.getItem())) {
                                 output.accept(stack);
                             }
                         });
@@ -80,8 +85,8 @@ public final class CoreCreativeTab {
                     .title(Component.translatable("itemGroup.nerolandcore.decor"))
                     .icon(() -> new ItemStack(ModItems.PLASMA_GLASS_BLOCK_ITEM.get()))
                     .displayItems((params, output) -> DECOR_CONTENTS.forEach(s -> {
-                        ItemLike item = s.get();
-                        if (isCoreItem(item.asItem())) {
+                        ItemLike item = resolve(s);
+                        if (item != null && isCoreItem(item.asItem())) {
                             output.accept(item);
                         }
                     }))
@@ -130,6 +135,27 @@ public final class CoreCreativeTab {
     /** Core-internal: append one of Core's own items to the Neroland tab, in display order. */
     static void addCore(Supplier<? extends ItemLike> item) {
         CORE_CONTENTS.add(item);
+    }
+
+    /** Logs the "unbound entry skipped" warning once per session, not once per item. */
+    private static final AtomicBoolean UNBOUND_LOGGED = new AtomicBoolean();
+
+    /**
+     * Resolves a tab entry, or returns {@code null} when its registry object is not bound. On Forge a
+     * client that joins a server running an older Core has every id the server lacks removed by registry
+     * sync, so {@code RegistryObject.get()} throws when the tab is built. Skip the entry instead of
+     * crashing the creative inventory (MC-NEROLAND-CORE-7).
+     */
+    private static <T> T resolve(Supplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (RuntimeException e) {
+            if (UNBOUND_LOGGED.compareAndSet(false, true)) {
+                NerolandCoreCommon.LOGGER.warn("[Neroland Core] Skipping creative-tab entries that are not registered"
+                        + " in this session (is the server running an older Neroland Core?): {}", e.getMessage());
+            }
+            return null;
+        }
     }
 
     private static boolean isCoreItem(Item item) {
